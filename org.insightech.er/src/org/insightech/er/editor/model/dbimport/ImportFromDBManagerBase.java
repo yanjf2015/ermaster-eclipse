@@ -80,7 +80,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 
 	protected Map<String, Map<String, ColumnData>> columnDataCash;
 
-	private Map<String, List<ForeignKeyData>> tableForeignKeyDataMap;
+	protected Map<String, List<ForeignKeyData>> tableForeignKeyDataMap;
 
 	private UniqueWordDictionary dictionary;
 
@@ -239,7 +239,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			if (!dbObject.getType().equals(DBObject.TYPE_TABLE)) {
 				continue;
 			}
-			
+
 			String schemaName = dbObject.getSchema();
 
 			if (!schemas.contains(schemaName)) {
@@ -931,7 +931,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		return true;
 	}
 
-	private void cashForeignKeyData() throws SQLException {
+	protected void cashForeignKeyData() throws SQLException {
 		ResultSet foreignKeySet = null;
 		try {
 			foreignKeySet = metaData.getImportedKeys(null, null, null);
@@ -1155,6 +1155,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			} else {
 				referencedColumn = referenceMap.keySet().iterator().next();
 			}
+			
 		}
 
 		NormalColumn representedForeignKeyColumn = referenceMap.entrySet()
@@ -1162,7 +1163,9 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 
 		Relation relation = new Relation(referenceForPK,
 				referencedComplexUniqueKey, referencedColumn,
-				representedForeignKeyColumn.isNotNull());
+				representedForeignKeyColumn.isNotNull(),
+				representedForeignKeyColumn.isUniqueKey()
+						|| representedForeignKeyColumn.isSinglePrimaryKey());
 		relation.setName(representativeData.name);
 		relation.setSource(source);
 		relation.setTargetWithoutForeignKey(target);

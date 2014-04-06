@@ -64,7 +64,8 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 			nodeElementList.remove(currentElement);
 			nodeElementList.add((NodeElement) currentElement);
 
-			NodeElementEditPart editPart = (NodeElementEditPart) getHost().getParent();
+			NodeElementEditPart editPart = (NodeElementEditPart) getHost()
+					.getParent();
 			editPart.reorder();
 		}
 
@@ -295,7 +296,8 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 
 			Relation newRelation = new Relation(oldRelation.isReferenceForPK(),
 					oldRelation.getReferencedComplexUniqueKey(),
-					oldRelation.getReferencedColumn(), true);
+					oldRelation.getReferencedColumn(), oldColumn.isNotNull(),
+					oldColumn.isUniqueKey() || oldColumn.isSinglePrimaryKey());
 			newRelation
 					.setParentCardinality(oldRelation.getParentCardinality());
 			newRelation.setChildCardinality(oldRelation.getChildCardinality());

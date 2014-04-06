@@ -86,22 +86,18 @@ public class Index extends AbstractModel implements ObjectModel,
 		return list;
 	}
 
+	public void clearColumns() {
+		this.columns.clear();
+		this.descs.clear();
+		this.columnNames.clear();
+	}
+	
 	public boolean isNonUnique() {
 		return nonUnique;
 	}
 
 	public List<String> getColumnNames() {
-		List<String> list = new ArrayList<String>();
-
-		for (int i=0; i<this.columns.size(); i++) {
-			NormalColumn column = this.columns.get(i);
-			
-			if (this.table.getNormalColumns().contains(column)) {
-				list.add(this.columnNames.get(i));
-			}
-		}
-		
-		return list;
+		return this.columnNames;
 	}
 
 	public void addColumnName(String columnName, Boolean desc) {

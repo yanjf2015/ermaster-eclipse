@@ -27,8 +27,10 @@ public class CreateRelationByExistingColumnsCommand extends
 	private List<NormalColumn> foreignKeyColumnList;
 
 	private List<Boolean> notNullList;
-	
+
 	private boolean notNull;
+
+	private boolean unique;
 
 	private List<Word> wordList;
 
@@ -49,10 +51,9 @@ public class CreateRelationByExistingColumnsCommand extends
 		this.relation.setSource(sourceTable);
 		this.relation.setTargetWithoutForeignKey(targetTable);
 
-		
 		for (int i = 0; i < foreignKeyColumnList.size(); i++) {
 			NormalColumn foreignKeyColumn = foreignKeyColumnList.get(i);
-			
+
 			this.wordList.add(foreignKeyColumn.getWord());
 
 			sourceTable.getDiagram().getDiagramContents().getDictionary()
@@ -61,14 +62,14 @@ public class CreateRelationByExistingColumnsCommand extends
 			foreignKeyColumn.addReference(referencedColumnList.get(i),
 					this.relation);
 			foreignKeyColumn.setWord(null);
-			
+
 			foreignKeyColumn.setNotNull(this.notNull);
 		}
 
 		this.relation.getSource().refreshSourceConnections();
 		this.relation.getTarget().refresh();
 
-		//targetTable.setDirty();
+		// targetTable.setDirty();
 	}
 
 	/**
@@ -83,17 +84,17 @@ public class CreateRelationByExistingColumnsCommand extends
 
 		for (int i = 0; i < foreignKeyColumnList.size(); i++) {
 			NormalColumn foreignKeyColumn = foreignKeyColumnList.get(i);
-			
+
 			foreignKeyColumn.setNotNull(this.notNullList.get(i));
 			foreignKeyColumn.removeReference(this.relation);
 			foreignKeyColumn.setWord(wordList.get(i));
 
-			sourceTable.getDiagram().getDiagramContents().getDictionary().add(
-					foreignKeyColumn);
+			sourceTable.getDiagram().getDiagramContents().getDictionary()
+					.add(foreignKeyColumn);
 		}
 
-//		targetTable.setDirty();
-		
+		// targetTable.setDirty();
+
 		this.getSourceModel().refreshSourceConnections();
 		this.getTargetModel().refresh();
 	}
@@ -110,7 +111,8 @@ public class CreateRelationByExistingColumnsCommand extends
 		Map<Relation, Set<NormalColumn>> foreignKeySetMap = new HashMap<Relation, Set<NormalColumn>>();
 
 		for (NormalColumn normalColumn : targetTable.getNormalColumns()) {
-			NormalColumn rootReferencedColumn = normalColumn.getRootReferencedColumn();
+			NormalColumn rootReferencedColumn = normalColumn
+					.getRootReferencedColumn();
 			if (rootReferencedColumn != null) {
 				List<NormalColumn> foreignKeyList = referencedMap
 						.get(rootReferencedColumn);
@@ -156,19 +158,25 @@ public class CreateRelationByExistingColumnsCommand extends
 
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			this.notNull = false;
+			this.unique = false;
 			this.notNullList.clear();
-			
-			for (NormalColumn foreignKeyColumn : dialog.getForeignKeyColumnList()) {
+
+			for (NormalColumn foreignKeyColumn : dialog
+					.getForeignKeyColumnList()) {
 				this.notNullList.add(foreignKeyColumn.isNotNull());
 
 				if (foreignKeyColumn.isNotNull()) {
 					this.notNull = true;
 				}
+				if (foreignKeyColumn.isUniqueKey()
+						|| foreignKeyColumn.isSinglePrimaryKey()) {
+					this.unique = true;
+				}
 			}
-						
-			this.relation = new Relation(dialog.isReferenceForPK(), dialog
-					.getReferencedComplexUniqueKey(), dialog
-					.getReferencedColumn(), this.notNull);
+
+			this.relation = new Relation(dialog.isReferenceForPK(),
+					dialog.getReferencedComplexUniqueKey(),
+					dialog.getReferencedColumn(), this.notNull, this.unique);
 			this.referencedColumnList = dialog.getReferencedColumnList();
 			this.foreignKeyColumnList = dialog.getForeignKeyColumnList();
 

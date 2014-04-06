@@ -80,7 +80,7 @@ public class NormalColumn extends Column {
 
 	private NormalColumn() {
 	}
-	
+
 	/**
 	 * 外部キーを作成します
 	 * 
@@ -90,10 +90,9 @@ public class NormalColumn extends Column {
 	 * @param primaryKey
 	 *            主キーかどうか
 	 */
-	public NormalColumn createForeignKey(
-			Relation relation, boolean primaryKey) {
+	public NormalColumn createForeignKey(Relation relation, boolean primaryKey) {
 		NormalColumn newColumn = new NormalColumn();
-		
+
 		newColumn.word = null;
 
 		newColumn.referencedColumnList.add(this);
@@ -105,7 +104,7 @@ public class NormalColumn extends Column {
 		newColumn.autoIncrement = false;
 
 		newColumn.autoIncrementSetting = new Sequence();
-		
+
 		return newColumn;
 	}
 
@@ -228,6 +227,17 @@ public class NormalColumn extends Column {
 		return this.primaryKey;
 	}
 
+	public boolean isSinglePrimaryKey() {
+		if (this.isPrimaryKey()) {
+			if (this.getColumnHolder() instanceof ERTable) {
+				if (((ERTable) this.getColumnHolder()).getPrimaryKeySize() == 1) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	public boolean isUniqueKey() {
 		return this.uniqueKey;
 	}
@@ -248,7 +258,6 @@ public class NormalColumn extends Column {
 		return uniqueKeyName;
 	}
 
-	
 	public String getCharacterSet() {
 		return characterSet;
 	}
@@ -499,9 +508,9 @@ public class NormalColumn extends Column {
 	}
 
 	public static void copyData(NormalColumn from, NormalColumn to) {
-		to.init(from.isNotNull(), from.isPrimaryKey(), from.isUniqueKey(), from
-				.isAutoIncrement(), from.getDefaultValue(), from
-				.getConstraint(), from.uniqueKeyName, from.characterSet,
+		to.init(from.isNotNull(), from.isPrimaryKey(), from.isUniqueKey(),
+				from.isAutoIncrement(), from.getDefaultValue(),
+				from.getConstraint(), from.uniqueKeyName, from.characterSet,
 				from.collation);
 
 		to.autoIncrementSetting = (Sequence) from.autoIncrementSetting.clone();

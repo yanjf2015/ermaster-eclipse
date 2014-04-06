@@ -319,24 +319,28 @@ public class ERTable extends TableView implements TablePropertiesHolder,
 		boolean referenceForPK = false;
 		ComplexUniqueKey referencedComplexUniqueKey = null;
 		NormalColumn referencedColumn = null;
-
+		boolean notNull = false;
+		
 		if (this.getPrimaryKeySize() > 0) {
 			referenceForPK = true;
-
+			notNull = true;
+			
 		} else if (this.getComplexUniqueKeyList().size() > 0) {
 			referencedComplexUniqueKey = this.getComplexUniqueKeyList().get(0);
-
+			notNull = referencedComplexUniqueKey.getColumnList().get(0).isNotNull();
+			
 		} else {
 			for (NormalColumn normalColumn : this.getNormalColumns()) {
 				if (normalColumn.isUniqueKey()) {
 					referencedColumn = normalColumn;
+					notNull = referencedColumn.isNotNull();
 					break;
 				}
 			}
 		}
 
 		return new Relation(referenceForPK, referencedComplexUniqueKey,
-				referencedColumn, true);
+				referencedColumn, notNull, false);
 	}
 
 	public String getObjectType() {
@@ -347,6 +351,5 @@ public class ERTable extends TableView implements TablePropertiesHolder,
 	public String toString() {
 		return "name:" + this.getName() + ", " + super.toString();
 	}
-	
-	
+
 }

@@ -998,8 +998,8 @@ public class XMLLoader {
 			word = new Word(this.getStringValue(element, "physical_name"),
 					this.getStringValue(element, "logical_name"),
 					SqlType.valueOfId(type), new TypeData(null, null, false,
-							null, false, false, false, null), this.getStringValue(
-							element, "description"), database);
+							null, false, false, false, null),
+					this.getStringValue(element, "description"), database);
 
 			word = context.uniqueWordDictionary.getUniqueWord(word);
 		}
@@ -1693,7 +1693,8 @@ public class XMLLoader {
 	private void loadRelation(Element element, LoadContext context) {
 		boolean referenceForPK = this.getBooleanValue(element,
 				"reference_for_pk");
-		Relation connection = new Relation(referenceForPK, null, null, true);
+		Relation connection = new Relation(referenceForPK, null, null, true,
+				true);
 
 		this.load(connection, element, context);
 
@@ -1718,7 +1719,7 @@ public class XMLLoader {
 		if (!"null".equals(referencedColumnId)) {
 			context.referencedColumnMap.put(connection, referencedColumnId);
 		}
-		
+
 		this.loadConnectionColor(connection, element);
 	}
 
@@ -1759,7 +1760,7 @@ public class XMLLoader {
 
 			connection.addBendpoint(i, bendpoint);
 		}
-		
+
 		this.loadConnectionColor(connection, element);
 	}
 
@@ -1822,7 +1823,7 @@ public class XMLLoader {
 
 		model.setColor(rgb[0], rgb[1], rgb[2]);
 	}
-	
+
 	private void loadColor(ViewableModel model, Element element) {
 		int[] rgb = new int[] { 255, 255, 255 };
 		Element color = this.getElement(element, "color");

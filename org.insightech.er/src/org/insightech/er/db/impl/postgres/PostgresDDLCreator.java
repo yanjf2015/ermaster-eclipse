@@ -194,7 +194,7 @@ public class PostgresDDLCreator extends DDLCreator {
 				ddl.append(sequence.getMaxValue());
 			}
 			if (sequence.getStart() != null) {
-				ddl.append(" START ");
+				ddl.append(" RESTART ");
 				ddl.append(sequence.getStart());
 			}
 			if (sequence.getCache() != null) {

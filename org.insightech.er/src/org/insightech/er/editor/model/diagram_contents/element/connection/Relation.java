@@ -40,12 +40,12 @@ public class Relation extends ConnectionElement implements Comparable<Relation> 
 	private Relation original;
 
 	public Relation() {
-		this(false, null, null, true);
+		this(false, null, null, true, false);
 	}
 
 	public Relation(boolean referenceForPK,
 			ComplexUniqueKey referencedComplexUniqueKey,
-			NormalColumn referencedColumn, boolean notnull) {
+			NormalColumn referencedColumn, boolean notnullParent, boolean uniqueChild) {
 		this.onUpdateAction = "RESTRICT";
 		this.onDeleteAction = "RESTRICT";
 
@@ -53,12 +53,16 @@ public class Relation extends ConnectionElement implements Comparable<Relation> 
 		this.referencedComplexUniqueKey = referencedComplexUniqueKey;
 		this.referencedColumn = referencedColumn;
 
-		if (notnull) {
+		if (notnullParent) {
 			this.parentCardinality = PARENT_CARDINALITY_1;
 		} else {
 			this.parentCardinality = PARENT_CARDINALITY_0_OR_1;
 		}
-		this.childCardinality = "1..n";
+		if (uniqueChild) {
+			this.childCardinality = "1";
+		} else {
+			this.childCardinality = "1..n";
+		}
 	}
 
 	private Relation getOriginal() {
@@ -241,7 +245,7 @@ public class Relation extends ConnectionElement implements Comparable<Relation> 
 	public Relation copy() {
 		Relation to = new Relation(this.isReferenceForPK(),
 				this.getReferencedComplexUniqueKey(),
-				this.getReferencedColumn(), true);
+				this.getReferencedColumn(), true, true);
 
 		to.setName(this.getName());
 		to.setOnDeleteAction(this.getOnDeleteAction());

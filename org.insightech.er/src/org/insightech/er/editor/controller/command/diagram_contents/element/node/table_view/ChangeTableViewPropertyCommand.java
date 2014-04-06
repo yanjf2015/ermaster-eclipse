@@ -1,6 +1,7 @@
 package org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view;
 
 import org.insightech.er.editor.controller.command.AbstractCommand;
+import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 
 public class ChangeTableViewPropertyCommand extends AbstractCommand {
@@ -27,6 +28,10 @@ public class ChangeTableViewPropertyCommand extends AbstractCommand {
 		
 		this.tableView.getDiagram().refreshVisuals();
 		this.tableView.getDiagram().getDiagramContents().getIndexSet().refresh();
+		
+		for (Relation relation : this.tableView.getIncomingRelations()) {
+			relation.refreshVisuals();
+		}
 		
 		this.tableView.getDiagram().getEditor().refreshPropertySheet();
 	}

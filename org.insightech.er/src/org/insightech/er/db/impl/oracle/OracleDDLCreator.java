@@ -341,7 +341,7 @@ public class OracleDDLCreator extends DDLCreator {
 
 	@Override
 	public String getDDL(Trigger trigger) {
-		return super.getDDL(trigger) + "\r\n/";
+		return super.getDDL(trigger) + "\r\n\r\n/\r\n";
 	}
 	
 	@Override

@@ -92,8 +92,7 @@ public class CopyIndex extends Index {
 		to.setType(from.getType());
 		to.setDescription(from.getDescription());
 
-		to.getColumns().clear();
-		to.getDescs().clear();
+		to.clearColumns();
 
 		List<Boolean> descs = from.getDescs();
 		int i = 0;
