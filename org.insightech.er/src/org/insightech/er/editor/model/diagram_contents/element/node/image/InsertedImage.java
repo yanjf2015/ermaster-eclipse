@@ -7,21 +7,19 @@ import java.io.InputStream;
 import org.apache.commons.codec.binary.Base64;
 import org.insightech.er.Activator;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
+import org.insightech.er.util.Format;
 import org.insightech.er.util.io.IOUtils;
 
-public class InsertedImage extends NodeElement {
+public class InsertedImage extends NodeElement implements Comparable<InsertedImage> {
 
 	private static final long serialVersionUID = -2035035973213266486L;
 
 	private String base64EncodedData;
 
-	/** 0�@�`�@360 */
 	private int hue;
 
-	/** -100�@�`�@+100 */
 	private int saturation;
 
-	/** -100�@�`�@+100 */
 	private int brightness;
 
 	private int alpha;
@@ -119,4 +117,12 @@ public class InsertedImage extends NodeElement {
 
 	public void setDirty() {
 	}
+
+	public int compareTo(InsertedImage other) {
+		int compareTo = 0;
+
+		compareTo = Format.null2blank(this.base64EncodedData).compareTo(
+				Format.null2blank(other.base64EncodedData));
+
+		return compareTo;	}
 }

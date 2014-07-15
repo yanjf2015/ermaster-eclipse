@@ -302,53 +302,53 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 	}
 
 	protected void setEnabledBySqlType() {
-		String database = diagram.getDatabase();
+		String database = this.diagram.getDatabase();
 
-		SqlType selectedType = SqlType.valueOf(diagram.getDatabase(),
-				typeCombo.getText());
+		SqlType selectedType = SqlType.valueOf(database,
+				this.typeCombo.getText());
 
 		if (selectedType != null) {
-			if (!selectedType.isNeedLength(diagram.getDatabase())) {
-				lengthText.setEnabled(false);
+			if (!selectedType.isNeedLength(database)) {
+				this.lengthText.setEnabled(false);
 			} else {
-				lengthText.setEnabled(true);
+				this.lengthText.setEnabled(true);
 			}
 
 			if (!selectedType.isNeedDecimal(database)) {
-				decimalText.setEnabled(false);
+				this.decimalText.setEnabled(false);
 			} else {
-				decimalText.setEnabled(true);
+				this.decimalText.setEnabled(true);
 			}
 
 			if (this.unsignedCheck != null) {
 				if (!selectedType.isNumber()) {
-					unsignedCheck.setEnabled(false);
+					this.unsignedCheck.setEnabled(false);
 				} else {
-					unsignedCheck.setEnabled(true);
+					this.unsignedCheck.setEnabled(true);
 				}
 			}
 
 			if (this.zerofillCheck != null) {
 				if (!selectedType.isNumber()) {
-					zerofillCheck.setEnabled(false);
+					this.zerofillCheck.setEnabled(false);
 				} else {
-					zerofillCheck.setEnabled(true);
+					this.zerofillCheck.setEnabled(true);
 				}
 			}
 
 			if (this.binaryCheck != null) {
 				if (!selectedType.isFullTextIndexable()) {
-					binaryCheck.setEnabled(false);
+					this.binaryCheck.setEnabled(false);
 				} else {
-					binaryCheck.setEnabled(true);
+					this.binaryCheck.setEnabled(true);
 				}
 			}
 
 			if (this.argsText != null) {
 				if (selectedType.doesNeedArgs()) {
-					argsText.setEnabled(true);
+					this.argsText.setEnabled(true);
 				} else {
-					argsText.setEnabled(false);
+					this.argsText.setEnabled(false);
 				}
 			}
 		}
@@ -449,34 +449,46 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 			return "error.column.name.empty";
 		}
 
-		text = lengthText.getText();
+		if (this.lengthText.isEnabled()) {
 
-		if (!text.equals("")) {
-			try {
-				int len = Integer.parseInt(text);
-				if (len < 0) {
-					return "error.column.length.zero";
+			text = this.lengthText.getText();
+
+			if (text.equals("")) {
+				return "error.column.length.empty";
+				
+			} else {
+				try {
+					int len = Integer.parseInt(text);
+					if (len < 0) {
+						return "error.column.length.zero";
+					}
+	
+				} catch (NumberFormatException e) {
+					return "error.column.length.degit";
 				}
-
-			} catch (NumberFormatException e) {
-				return "error.column.length.degit";
 			}
 		}
-
-		text = decimalText.getText();
-
-		if (!text.equals("")) {
-			try {
-				int len = Integer.parseInt(text);
-				if (len < 0) {
-					return "error.column.decimal.zero";
+		
+		if (this.decimalText.isEnabled()) {
+		
+			text = this.decimalText.getText();
+	
+			if (text.equals("")) {
+				return "error.column.decimal.empty";
+				
+			} else {
+				try {
+					int len = Integer.parseInt(text);
+					if (len < 0) {
+						return "error.column.decimal.zero";
+					}
+	
+				} catch (NumberFormatException e) {
+					return "error.column.decimal.degit";
 				}
-
-			} catch (NumberFormatException e) {
-				return "error.column.decimal.degit";
 			}
 		}
-
+		
 		if (arrayDimensionText != null) {
 			text = arrayDimensionText.getText();
 

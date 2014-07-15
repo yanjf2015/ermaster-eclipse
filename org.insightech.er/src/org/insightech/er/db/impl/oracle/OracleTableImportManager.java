@@ -38,9 +38,9 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void cashColumnData(List<DBObject> dbObjectList,
+	protected void cacheColumnData(List<DBObject> dbObjectList,
 			IProgressMonitor monitor) throws SQLException, InterruptedException {
-		super.cashColumnData(dbObjectList, monitor);
+		super.cacheColumnData(dbObjectList, monitor);
 
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -60,10 +60,10 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 				tableName = this.dbSetting.getTableNameWithSchema(tableName,
 						schema);
 
-				Map<String, ColumnData> cash = this.columnDataCash
+				Map<String, ColumnData> cache = this.columnDataCache
 						.get(tableName);
-				if (cash != null) {
-					ColumnData columnData = cash.get(columnName);
+				if (cache != null) {
+					ColumnData columnData = cache.get(columnName);
 					if (columnData != null) {
 						columnData.description = comments;
 					}
@@ -80,7 +80,7 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void cashTableComment(IProgressMonitor monitor)
+	protected void cacheTableComment(IProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -303,7 +303,7 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 		// .getTableNameWithSchema(tableName, schema);
 		//
 		// if (!this.dbSetting.getUser().equalsIgnoreCase(schema)) {
-		// this.cashColumnData(schema, null, null);
+		// this.cacheColumnData(schema, null, null);
 		//
 		// ERTable table = this.importTable(tableNameWithSchema
 		// , tableName, schema);

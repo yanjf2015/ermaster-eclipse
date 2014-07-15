@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.element.node.note;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class NoteSet extends AbstractModel implements ObjectListModel,
 		this.noteList = new ArrayList<Note>();
 	}
 
+	public void sort() {
+		Collections.sort(this.noteList);
+	}
+	
 	public void add(Note note) {
 		this.noteList.add(note);
 	}

@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.element.node.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class ViewSet extends AbstractModel implements ObjectListModel,
 		this.viewList = new ArrayList<View>();
 	}
 
+	public void sort() {
+		Collections.sort(this.viewList);
+	}
+	
 	public void add(View view) {
 		this.viewList.add(view);
 	}

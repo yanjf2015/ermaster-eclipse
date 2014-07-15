@@ -870,6 +870,9 @@ public class PersistentXmlImpl extends Persistent {
 		xml.append("\t<category_name_to_export>")
 				.append(escape(exportSetting.getCategoryNameToExport()))
 				.append("</category_name_to_export>\n");
+		xml.append("\t<html_output>")
+				.append(escape(exportSetting.getHtmlOutput()))
+				.append("</html_output>\n");
 		xml.append("\t<ddl_output>")
 				.append(escape(exportSetting.getDdlOutput()))
 				.append("</ddl_output>\n");

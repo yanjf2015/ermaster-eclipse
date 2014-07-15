@@ -78,7 +78,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 
 	protected Map<String, String> tableCommentMap;
 
-	protected Map<String, Map<String, ColumnData>> columnDataCash;
+	protected Map<String, Map<String, ColumnData>> columnDataCache;
 
 	protected Map<String, List<ForeignKeyData>> tableForeignKeyDataMap;
 
@@ -169,7 +169,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	public ImportFromDBManagerBase() {
 		this.tableMap = new HashMap<String, ERTable>();
 		this.tableCommentMap = new HashMap<String, String>();
-		this.columnDataCash = new HashMap<String, Map<String, ColumnData>>();
+		this.columnDataCache = new HashMap<String, Map<String, ColumnData>>();
 		this.tableForeignKeyDataMap = new HashMap<String, List<ForeignKeyData>>();
 		this.dictionary = new UniqueWordDictionary();
 	}
@@ -203,8 +203,8 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 					.getResourceString("dialog.message.import.db.objects"),
 					this.taskTotalCount);
 
-			this.cashTableComment(monitor);
-			this.cashColumnData(dbObjectList, monitor);
+			this.cacheTableComment(monitor);
+			this.cacheColumnData(dbObjectList, monitor);
 
 			this.importedSequences = this.importSequences(this.dbObjectList,
 					monitor);
@@ -231,7 +231,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		monitor.done();
 	}
 
-	protected void cashColumnData(List<DBObject> dbObjectList,
+	protected void cacheColumnData(List<DBObject> dbObjectList,
 			IProgressMonitor monitor) throws SQLException, InterruptedException {
 		Set<String> schemas = new HashSet<String>();
 
@@ -247,7 +247,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 					monitor.subTask("reading schema: " + schemaName);
 				}
 
-				this.cashColumnDataX(schemaName, null, dbObjectList, monitor);
+				this.cacheColumnDataX(schemaName, null, dbObjectList, monitor);
 
 				schemas.add(schemaName);
 
@@ -258,7 +258,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		}
 	}
 
-	protected void cashColumnDataX(String schemaName, String tableName,
+	protected void cacheColumnDataX(String schemaName, String tableName,
 			List<DBObject> dbObjectList, IProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 		ResultSet columnSet = null;
@@ -273,18 +273,18 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 				String tableNameWithSchema = this.dbSetting
 						.getTableNameWithSchema(tableName, schema);
 
-				Map<String, ColumnData> cash = this.columnDataCash
+				Map<String, ColumnData> cache = this.columnDataCache
 						.get(tableNameWithSchema);
-				if (cash == null) {
-					cash = new LinkedHashMap<String, ColumnData>();
-					this.columnDataCash.put(tableNameWithSchema, cash);
+				if (cache == null) {
+					cache = new LinkedHashMap<String, ColumnData>();
+					this.columnDataCache.put(tableNameWithSchema, cache);
 				}
 
 				ColumnData columnData = this.createColumnData(columnSet);
 
-				this.cashOtherColumnData(tableName, schema, columnData);
+				this.cacheOtherColumnData(tableName, schema, columnData);
 
-				cash.put(columnData.columnName, columnData);
+				cache.put(columnData.columnName, columnData);
 			}
 
 		} finally {
@@ -321,11 +321,11 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		return columnData;
 	}
 
-	protected void cashOtherColumnData(String tableName, String schema,
+	protected void cacheOtherColumnData(String tableName, String schema,
 			ColumnData columnData) throws SQLException {
 	}
 
-	protected void cashTableComment(IProgressMonitor monitor)
+	protected void cacheTableComment(IProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 	}
 
@@ -551,11 +551,11 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	protected void setForeignKeys(List<ERTable> list) throws SQLException {
-		this.cashForeignKeyData();
+		this.cacheForeignKeyData();
 
 		for (ERTable target : list) {
 			if (this.tableForeignKeyDataMap != null) {
-				this.setForeignKeysUsingCash(target);
+				this.setForeignKeysUsingCache(target);
 			} else {
 				this.setForeignKeys(target);
 			}
@@ -740,7 +740,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	protected Map<String, ColumnData> getColumnDataMap(
 			String tableNameWithSchema, String tableName, String schema)
 			throws SQLException, InterruptedException {
-		return this.columnDataCash.get(tableNameWithSchema);
+		return this.columnDataCache.get(tableNameWithSchema);
 	}
 
 	private List<Column> getColumns(String tableNameWithSchema,
@@ -931,7 +931,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		return true;
 	}
 
-	protected void cashForeignKeyData() throws SQLException {
+	protected void cacheForeignKeyData() throws SQLException {
 		ResultSet foreignKeySet = null;
 		try {
 			foreignKeySet = metaData.getImportedKeys(null, null, null);
@@ -983,7 +983,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		}
 	}
 
-	private void setForeignKeysUsingCash(ERTable target) throws SQLException {
+	private void setForeignKeysUsingCache(ERTable target) throws SQLException {
 		String tableName = target.getPhysicalName();
 		String schema = target.getTableViewProperties(
 				this.dbSetting.getDbsystem()).getSchema();

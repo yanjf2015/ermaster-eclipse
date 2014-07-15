@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.not_element.group;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,10 @@ public class GroupSet extends AbstractModel implements Iterable<ColumnGroup> {
 		this.groups = new ArrayList<ColumnGroup>();
 	}
 
+	public void sort() {
+		Collections.sort(this.groups);
+	}
+	
 	public void add(ColumnGroup group) {
 		this.groups.add(group);
 	}

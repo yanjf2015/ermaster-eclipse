@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.element.node.image;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,10 @@ public class InsertedImageSet extends AbstractModel implements ObjectListModel,
 		this.insertedImageList = new ArrayList<InsertedImage>();
 	}
 
+	public void sort() {
+		Collections.sort(this.insertedImageList);
+	}
+	
 	public void add(InsertedImage insertedImage) {
 		this.insertedImageList.add(insertedImage);
 	}

@@ -37,8 +37,6 @@ public class TestData implements Cloneable, Comparable<TestData> {
 		this.name = name;
 	}
 
-	
-
 	public int getExportOrder() {
 		return exportOrder;
 	}
@@ -46,8 +44,6 @@ public class TestData implements Cloneable, Comparable<TestData> {
 	public void setExportOrder(int exportOrder) {
 		this.exportOrder = exportOrder;
 	}
-
-	
 
 	public Map<ERTable, TableTestData> getTableTestDataMap() {
 		return tableTestDataMap;

@@ -118,7 +118,7 @@ public class H2TableImportManager extends ImportFromDBManagerBase {
 	}
 
 	@Override
-	protected void cashForeignKeyData() throws SQLException {
+	protected void cacheForeignKeyData() throws SQLException {
 		this.tableForeignKeyDataMap = null;
 	}
 

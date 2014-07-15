@@ -6,32 +6,16 @@ import org.insightech.er.editor.model.diagram_contents.element.connection.Connec
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.util.Format;
 
-/**
- * �m�[�g�̃��f��
- * 
- * @author nakajima
- * 
- */
 public class Note extends NodeElement implements Comparable<Note> {
 
 	private static final long serialVersionUID = -8810455349879962852L;
 
 	private String text;
 
-	/**
-	 * �m�[�g�̖{����ԋp���܂��B
-	 * 
-	 * @return
-	 */
 	public String getText() {
 		return text;
 	}
 
-	/**
-	 * �m�[�g�̖{����ݒ肵�܂��B
-	 * 
-	 * @param text
-	 */
 	public void setText(String text) {
 		this.text = text;
 	}

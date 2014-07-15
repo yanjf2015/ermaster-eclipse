@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.element.node.table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,6 +20,10 @@ public class TableSet extends AbstractModel implements ObjectListModel,
 
 	public TableSet() {
 		this.tableList = new ArrayList<ERTable>();
+	}
+	
+	public void sort() {
+		Collections.sort(this.tableList);
 	}
 
 	public void add(ERTable table) {

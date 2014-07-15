@@ -12,6 +12,7 @@ import java.util.List;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -144,7 +145,8 @@ public class ExportToDDLDialog extends AbstractDialog {
 				parent, "label.tablespace.environment", 2, -1);
 
 		CompositeFactory.createLabel(parent, "label.output.file");
-		this.outputFileText = new FileText(parent, SWT.BORDER, ".sql");
+		this.outputFileText = new FileText(parent, SWT.BORDER,
+				this.getProjectPath(), ".sql");
 		this.outputFileText.setLayoutData(gridData);
 
 		this.fileEncodingCombo = CompositeFactory.createFileEncodingCombo(
@@ -362,6 +364,11 @@ public class ExportToDDLDialog extends AbstractDialog {
 		String saveFilePath = this.outputFileText.getFilePath();
 
 		File outputFile = new File(saveFilePath);
+
+		if (!outputFile.isAbsolute()) {
+			outputFile = new File(this.getProjectPath(), saveFilePath);
+		}
+
 		File outputDir = outputFile.getParentFile();
 
 		if (!outputDir.exists()) {
@@ -446,7 +453,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 			ddlCreator.init(environment, ddlTarget);
 
 			out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(saveFilePath), getEncoding())));
+					new FileOutputStream(outputFile), getEncoding())));
 
 			out.println(ddlCreator.getDropDDL(this.diagram));
 			out.println(ddlCreator.getCreateDDL(this.diagram));
@@ -466,8 +473,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 
 		if (openAfterSaved) {
 			try {
-				File fileToOpen = new File(saveFilePath);
-				URI uri = fileToOpen.toURI();
+				URI uri = outputFile.toURI();
 
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
@@ -593,5 +599,14 @@ public class ExportToDDLDialog extends AbstractDialog {
 
 	public ExportSetting getExportSetting() {
 		return this.exportSetting;
+	}
+
+	private String getProjectPath() {
+		IFile file = ((IFileEditorInput) this.editorPart.getEditorInput())
+				.getFile();
+
+		IProject project = file.getProject();
+
+		return project.getLocation().toString();
 	}
 }

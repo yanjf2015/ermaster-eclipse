@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.not_element;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +18,10 @@ public abstract class ObjectSet<T extends AbstractObjectModel> extends
 
 	public ObjectSet() {
 		this.objectList = new ArrayList<T>();
+	}
+	
+	public void sort() {
+		Collections.sort(this.objectList);
 	}
 
 	public void clear() {

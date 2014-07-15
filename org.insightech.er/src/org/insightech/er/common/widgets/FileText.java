@@ -1,5 +1,8 @@
 package org.insightech.er.common.widgets;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
@@ -18,15 +21,17 @@ public class FileText {
 
 	private String[] filterExtensions;
 
-	public FileText(Composite parent, int style) {
-		this(parent, style, new String[0]);
+	public FileText(Composite parent, int style, String projectPath) {
+		this(parent, style, projectPath, new String[0]);
 	}
 
-	public FileText(Composite parent, int style, String filterExtension) {
-		this(parent, style, new String[] { filterExtension });
+	public FileText(Composite parent, int style, String projectPath,
+			String filterExtension) {
+		this(parent, style, projectPath, new String[] { filterExtension });
 	}
 
-	public FileText(Composite parent, int style, String[] filterExtensions) {
+	public FileText(Composite parent, int style, final String projectPath,
+			String[] filterExtensions) {
 		this.text = new Text(parent, style);
 
 		this.filterExtensions = filterExtensions;
@@ -43,7 +48,29 @@ public class FileText {
 			public void widgetSelected(SelectionEvent e) {
 				String saveFilePath = Activator.showSaveDialog(text.getText(),
 						FileText.this.filterExtensions);
-				text.setText(saveFilePath);
+				if (saveFilePath != null) {
+					try {
+						File saveFile = new File(saveFilePath);
+						File projectFile = new File(projectPath);
+
+						saveFilePath = saveFile.getCanonicalPath();
+						String canonicalProjectPath = projectFile
+								.getCanonicalPath();
+
+						System.out.println(saveFilePath);
+						System.out.println(canonicalProjectPath);
+
+						if (saveFilePath.startsWith(canonicalProjectPath)) {
+							saveFilePath = saveFilePath
+									.substring(canonicalProjectPath.length() + 1);
+						}
+
+						text.setText(saveFilePath);
+
+					} catch (IOException ioe) {
+						Activator.showExceptionDialog(ioe);
+					}
+				}
 			}
 		});
 	}

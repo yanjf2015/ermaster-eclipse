@@ -15,6 +15,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
+import org.insightech.er.editor.model.settings.ExportSetting;
 import org.insightech.er.editor.view.action.AbstractBaseAction;
 
 public abstract class AbstractExportAction extends AbstractBaseAction {
@@ -34,7 +35,9 @@ public abstract class AbstractExportAction extends AbstractBaseAction {
 	protected void save(IEditorPart editorPart, GraphicalViewer viewer)
 			throws Exception {
 
-		String saveFilePath = this.getSaveFilePath(editorPart, viewer);
+		String saveFilePath = this.getSaveFilePath(editorPart, viewer, this
+				.getDiagram().getDiagramContents().getSettings()
+				.getExportSetting());
 		if (saveFilePath == null) {
 			return;
 		}
@@ -63,7 +66,7 @@ public abstract class AbstractExportAction extends AbstractBaseAction {
 	}
 
 	protected String getSaveFilePath(IEditorPart editorPart,
-			GraphicalViewer viewer) {
+			GraphicalViewer viewer, ExportSetting exportSetting) {
 
 		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
 

@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeSet;
@@ -58,6 +59,15 @@ public class DiagramContents {
 		this.testDataList.clear();
 	}
 
+	public void sort() {
+		this.contents.sort();
+		this.groups.sort();
+		this.sequenceSet.sort();
+		this.triggerSet.sort();
+		this.tablespaceSet.sort();
+		Collections.sort(this.testDataList);	
+	}
+	
 	public NodeSet getContents() {
 		return this.contents;
 	}

@@ -54,7 +54,7 @@ public class PostgresTableImportManager extends ImportFromDBManagerBase {
 	}
 
 	@Override
-	protected void cashOtherColumnData(String tableName, String schema,
+	protected void cacheOtherColumnData(String tableName, String schema,
 			ColumnData columnData) throws SQLException {
 
 		if (columnData.type.equals("interval")) {

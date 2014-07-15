@@ -1117,6 +1117,8 @@ public class XMLLoader {
 		if (element != null) {
 			exportSetting.setCategoryNameToExport(this.getStringValue(element,
 					"category_name_to_export"));
+			exportSetting.setHtmlOutput(this.getStringValue(element,
+					"html_output"));
 			exportSetting.setDdlOutput(this.getStringValue(element,
 					"ddl_output"));
 			exportSetting.setExcelOutput(this.getStringValue(element,

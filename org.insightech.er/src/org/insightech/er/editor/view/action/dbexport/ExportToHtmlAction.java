@@ -24,6 +24,7 @@ import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.ERDiagramEditor;
+import org.insightech.er.editor.controller.command.settings.ChangeSettingsCommand;
 import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.ExportToHtmlWithProgressManager;
@@ -31,6 +32,9 @@ import org.insightech.er.editor.model.diagram_contents.element.node.Location;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
+import org.insightech.er.editor.model.settings.ExportSetting;
+import org.insightech.er.editor.model.settings.Settings;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.io.FileUtils;
 
 public class ExportToHtmlAction extends AbstractExportAction {
@@ -51,7 +55,7 @@ public class ExportToHtmlAction extends AbstractExportAction {
 	 */
 	@Override
 	protected String getSaveFilePath(IEditorPart editorPart,
-			GraphicalViewer viewer) {
+			GraphicalViewer viewer, ExportSetting exportSetting) {
 
 		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
 
@@ -60,13 +64,30 @@ public class ExportToHtmlAction extends AbstractExportAction {
 
 		IProject project = file.getProject();
 
-		fileDialog.setFilterPath(project.getLocation().toString());
+		String path = exportSetting.getHtmlOutput();
+		if (Check.isEmpty(path)) {
+			path = project.getLocation().toString();
+		}
+		fileDialog.setFilterPath(path);
 		fileDialog.setMessage(ResourceString
 				.getResourceString("dialog.message.export.html.dir.select"));
 
 		String saveFilePath = fileDialog.open();
 
 		if (saveFilePath != null) {
+			ERDiagram diagram = this.getDiagram();
+
+			if (!saveFilePath.equals(diagram.getDiagramContents().getSettings()
+					.getExportSetting().getHtmlOutput())) {
+				Settings newSettings = (Settings) diagram.getDiagramContents()
+						.getSettings().clone();
+				newSettings.getExportSetting().setHtmlOutput(saveFilePath);
+
+				ChangeSettingsCommand command = new ChangeSettingsCommand(diagram,
+						newSettings, false);
+				this.execute(command);
+			}
+			
 			saveFilePath = saveFilePath + OUTPUT_DIR;
 		}
 
@@ -97,7 +118,6 @@ public class ExportToHtmlAction extends AbstractExportAction {
 
 			boolean outputImage = true;
 
-			// 出力ディレクトリの削除
 			File dir = new File(saveFilePath);
 			FileUtils.deleteDirectory(dir);
 

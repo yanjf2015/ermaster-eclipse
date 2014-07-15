@@ -65,7 +65,7 @@ public abstract class DBManagerBase implements DBManager {
 				path = PreferenceInitializer.getJDBCDriverPath(this.getId(),
 						driverClassName);
 
-				// Cash the class loader to map.
+				// Cache the class loader to map.
 				// Because if I use the another loader with the driver using
 				// native library(.dll)
 				// next error occur.

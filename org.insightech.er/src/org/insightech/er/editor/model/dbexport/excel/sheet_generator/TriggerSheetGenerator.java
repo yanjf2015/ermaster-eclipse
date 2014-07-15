@@ -19,13 +19,6 @@ public class TriggerSheetGenerator extends AbstractSheetGenerator {
 
 	private static final String KEYWORD_TRIGGER_SQL = "$SQL";
 
-	/**
-	 * �g���K�[�V�[�g�Ƀf�[�^��ݒ肵�܂�.
-	 * 
-	 * @param workbook
-	 * @param sheet
-	 * @param view
-	 */
 	public void setTriggerData(HSSFWorkbook workbook, HSSFSheet sheet,
 			Trigger trigger) {
 		POIUtils.replace(sheet, KEYWORD_TRIGGER_NAME, this.getValue(
@@ -45,6 +38,7 @@ public class TriggerSheetGenerator extends AbstractSheetGenerator {
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
 			Map<String, LoopDefinition> loopDefinitionMap) {
+		
 		for (Trigger trigger : diagram.getDiagramContents().getTriggerSet()) {
 			String name = trigger.getName();
 			HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,

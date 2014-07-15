@@ -30,7 +30,9 @@ public class DirectoryText {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String filePath = Activator.showDirectoryDialog(text.getText());
-				text.setText(filePath);
+				if (filePath != null) {
+					text.setText(filePath);
+				}
 			}
 		});
 	}

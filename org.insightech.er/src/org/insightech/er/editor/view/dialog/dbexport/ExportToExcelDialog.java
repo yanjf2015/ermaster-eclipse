@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
@@ -105,7 +106,8 @@ public class ExportToExcelDialog extends AbstractDialog {
 
 		CompositeFactory.createLabel(parent, "label.output.excel.file");
 
-		this.outputExcelFileText = new FileText(parent, SWT.BORDER, ".xls");
+		this.outputExcelFileText = new FileText(parent, SWT.BORDER,
+				this.getProjectPath(), ".xls");
 		this.outputExcelFileText.setLayoutData(gridData);
 
 		this.outputExcelFileText.addModifyListener(new ModifyListener() {
@@ -117,7 +119,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 		CompositeFactory.createLabel(parent, "label.output.image.file");
 
 		this.outputImageFileText = new FileText(parent, SWT.BORDER,
-				new String[] { "*.png", "*.jpeg" });
+				this.getProjectPath(), new String[] { "*.png", "*.jpeg" });
 		this.outputImageFileText.setLayoutData(gridData);
 
 		this.outputImageFileText.addModifyListener(new ModifyListener() {
@@ -215,6 +217,11 @@ public class ExportToExcelDialog extends AbstractDialog {
 			String outputImageFilePath = this.outputImageFileText.getFilePath();
 
 			File outputExcelFile = new File(outputExcelFilePath);
+			
+			if (!outputExcelFile.isAbsolute()) {
+				outputExcelFile = new File(this.getProjectPath(), outputExcelFilePath);
+			}
+			
 			File outputExcelDir = outputExcelFile.getParentFile();
 
 			if (!outputExcelDir.exists()) {
@@ -232,6 +239,11 @@ public class ExportToExcelDialog extends AbstractDialog {
 			}
 
 			File outputImageFile = new File(outputImageFilePath);
+			
+			if (!outputImageFile.isAbsolute()) {
+				outputImageFile = new File(this.getProjectPath(), outputImageFilePath);
+			}
+
 			File outputImageDir = outputImageFile.getParentFile();
 
 			if (!outputImageDir.exists()) {
@@ -508,4 +520,12 @@ public class ExportToExcelDialog extends AbstractDialog {
 		return "dialog.title.export.excel";
 	}
 
+	private String getProjectPath() {
+		IFile file = ((IFileEditorInput) this.editorPart.getEditorInput())
+				.getFile();
+
+		IProject project = file.getProject();
+
+		return project.getLocation().toString();
+	}
 }

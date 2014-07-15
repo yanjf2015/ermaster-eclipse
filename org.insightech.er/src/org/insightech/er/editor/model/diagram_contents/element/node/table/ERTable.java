@@ -19,12 +19,6 @@ import org.insightech.er.editor.model.diagram_contents.element.node.table.proper
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.ComplexUniqueKey;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.CopyComplexUniqueKey;
 
-/**
- * �e�[�u���̃��f��
- * 
- * @author nakajima
- * 
- */
 public class ERTable extends TableView implements TablePropertiesHolder,
 		ColumnHolder, ObjectModel {
 

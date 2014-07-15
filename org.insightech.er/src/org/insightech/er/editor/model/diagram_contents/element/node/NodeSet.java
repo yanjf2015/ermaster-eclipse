@@ -38,6 +38,13 @@ public class NodeSet extends AbstractModel implements Iterable<NodeElement> {
 		this.nodeElementList = new ArrayList<NodeElement>();
 	}
 
+	public void sort() {
+		this.tableSet.sort();
+		this.viewSet.sort();
+		this.noteSet.sort();
+		this.insertedImageSet.sort();
+	}
+
 	public void addNodeElement(NodeElement nodeElement) {
 		if (nodeElement instanceof ERTable) {
 			this.tableSet.add((ERTable) nodeElement);

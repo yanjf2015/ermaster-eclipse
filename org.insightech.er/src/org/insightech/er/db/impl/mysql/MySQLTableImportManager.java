@@ -65,7 +65,7 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 	}
 
 	@Override
-	protected void cashOtherColumnData(String tableName, String schema,
+	protected void cacheOtherColumnData(String tableName, String schema,
 			ColumnData columnData) throws SQLException {
 		String tableNameWithSchema = this.dbSetting.getTableNameWithSchema(
 				tableName, schema);
@@ -154,9 +154,9 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 	}
 
 	@Override
-	protected void cashColumnData(List<DBObject> dbObjectList,
+	protected void cacheColumnData(List<DBObject> dbObjectList,
 			IProgressMonitor monitor) throws SQLException, InterruptedException {
-		super.cashColumnData(dbObjectList, monitor);
+		super.cacheColumnData(dbObjectList, monitor);
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -203,22 +203,23 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 					this.tablePropertiesMap.put(tableName, tableProperties);
 				}
 
-				Map<String, ColumnData> columnDataMap = this.columnDataCash
+				Map<String, ColumnData> columnDataMap = this.columnDataCache
 						.get(tableName);
 				ColumnData columnData = columnDataMap.get(columnName);
 
-				if (!tableCharacterSet.equals(characterSet)) {
-					columnData.characterSet = characterSet;
+				if (columnData != null) {
+					if (!tableCharacterSet.equals(characterSet)) {
+						columnData.characterSet = characterSet;
+					}
+	
+					if (!tableCollation.equals(collation)) {
+						columnData.collation = collation;
+					}
+					
+					if (collation.endsWith("_bin")) {
+						columnData.isBinary = true;
+					}
 				}
-
-				if (!tableCollation.equals(collation)) {
-					columnData.collation = collation;
-				}
-				
-				if (collation.endsWith("_bin")) {
-					columnData.isBinary = true;
-				}
-
 			}
 
 		} finally {
