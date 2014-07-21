@@ -56,6 +56,8 @@ public class ExportToHtmlManager {
 			Map<TableView, Location> tableLocationMap) {
 		this.outputDir = outputDir;
 		this.diagram = diagram;
+		this.diagram.getDiagramContents().sort();
+		
 		this.tableLocationMap = tableLocationMap;
 
 		Map<Object, Integer> idMap = new HashMap<Object, Integer>();
@@ -87,23 +89,19 @@ public class ExportToHtmlManager {
 	}
 
 	public void doProcess() throws IOException, InterruptedException {
-		// �Œ�t�@�C���̃R�s�[
+
 		for (int i = 0; i < FIX_FILES.length; i++) {
 			this.copyOut(FIX_FILES[i], FIX_FILES[i]);
 		}
 
-		// �e���v���[�g���琶��
 		String template = null;
 
-		// �C���[�W
 		String imageSrc = "image/er.png";
 
-		// �A�C�R��
 		for (String iconFile : ICON_FILES) {
 			this.copyOutResource("image/" + iconFile, iconFile);
 		}
 
-		// �g�b�v�K�w
 		String allclasses = overviewPageGenerator.generateAllClasses(diagram,
 				htmlReportPageGeneratorList);
 		this.writeOut("allclasses.html", allclasses);
@@ -116,7 +114,6 @@ public class ExportToHtmlManager {
 				imageSrc, tableLocationMap, htmlReportPageGeneratorList);
 		this.writeOut("overview-summary.html", overviewSummary);
 
-		// �I�u�W�F�N�g�^�C�v���̊K�w
 		for (int i = 0; i < htmlReportPageGeneratorList.size(); i++) {
 
 			HtmlReportPageGenerator pageGenerator = (HtmlReportPageGenerator) htmlReportPageGeneratorList

@@ -24,8 +24,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
@@ -50,8 +48,20 @@ import org.insightech.er.editor.model.settings.DBSetting;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
-public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
-		IRunnableWithProgress {
+public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
+
+	public interface ProgressMonitor {
+
+		public void beginTask(String message, int counter);
+
+		public void worked(int counter);
+
+		public boolean isCanceled();
+
+		public void done();
+
+		public void subTask(String message);
+	}
 
 	private static Logger logger = Logger
 			.getLogger(ImportFromDBManagerBase.class.getName());
@@ -62,7 +72,10 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			.compile("(.+) [aA][sS] (.+)");
 
 	private static final Pattern TYPE_WITH_LENGTH_PATTERN = Pattern
-			.compile(".+\\((\\d+)\\).*");
+			.compile("(.+)\\((\\d+)\\).*");
+
+	private static final Pattern TYPE_WITH_DECIMAL_PATTERN = Pattern
+			.compile("(.+)\\((\\d+),(\\d+)\\).*");
 
 	protected Connection con;
 
@@ -193,7 +206,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 		}
 	}
 
-	public void run(IProgressMonitor monitor) throws InvocationTargetException,
+	public void run(ProgressMonitor monitor) throws InvocationTargetException,
 			InterruptedException {
 
 		try {
@@ -232,7 +245,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	protected void cacheColumnData(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		Set<String> schemas = new HashSet<String>();
 
 		for (DBObject dbObject : dbObjectList) {
@@ -244,7 +257,13 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 
 			if (!schemas.contains(schemaName)) {
 				if (monitor != null) {
-					monitor.subTask("reading schema: " + schemaName);
+					String displayName = schemaName;
+
+					if (schemaName == null) {
+						displayName = ResourceString
+								.getResourceString("label.none");
+					}
+					monitor.subTask("reading schema: " + displayName);
 				}
 
 				this.cacheColumnDataX(schemaName, null, dbObjectList, monitor);
@@ -259,7 +278,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	protected void cacheColumnDataX(String schemaName, String tableName,
-			List<DBObject> dbObjectList, IProgressMonitor monitor)
+			List<DBObject> dbObjectList, ProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 		ResultSet columnSet = null;
 
@@ -325,12 +344,12 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			ColumnData columnData) throws SQLException {
 	}
 
-	protected void cacheTableComment(IProgressMonitor monitor)
+	protected void cacheTableComment(ProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 	}
 
 	private List<Sequence> importSequences(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		List<Sequence> list = new ArrayList<Sequence>();
 
 		for (Iterator<DBObject> iter = dbObjectList.iterator(); iter.hasNext();) {
@@ -406,7 +425,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	private List<Trigger> importTriggers(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		List<Trigger> list = new ArrayList<Trigger>();
 
 		for (Iterator<DBObject> iter = dbObjectList.iterator(); iter.hasNext();) {
@@ -449,7 +468,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	protected List<ERTable> importTables(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		List<ERTable> list = new ArrayList<ERTable>();
 
 		for (Iterator<DBObject> iter = dbObjectList.iterator(); iter.hasNext();) {
@@ -789,30 +808,39 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			}
 
 			int size = 0;
+			int decimalDegits = 0;
 
 			if (zerofillIndex != -1) {
-				Matcher matcher = TYPE_WITH_LENGTH_PATTERN.matcher(type);
+				Matcher matcher = TYPE_WITH_DECIMAL_PATTERN.matcher(type);
 				if (matcher.find()) {
-					size = Integer.parseInt(matcher.group(1));
+					type = matcher.group(1);
+					size = Integer.parseInt(matcher.group(2));
+					decimalDegits = Integer.parseInt(matcher.group(3));
+
+				} else {
+					matcher = TYPE_WITH_LENGTH_PATTERN.matcher(type);
+
+					if (matcher.find()) {
+						type = matcher.group(1);
+						size = Integer.parseInt(matcher.group(2));
+					}
 				}
 
 			} else {
-				size = this.getLength(type, columnData.size);
-
+				size = columnData.size;
+				decimalDegits = columnData.decimalDegits;
 			}
 
 			Integer length = new Integer(size);
+			Integer decimal = new Integer(decimalDegits);
 
 			SqlType sqlType = SqlType.valueOf(this.dbSetting.getDbsystem(),
-					type, size);
+					type, size, decimal);
 
 			if (sqlType == null || LOG_SQL_TYPE) {
 				logger.info(columnName + ": " + type + ", " + size + ", "
 						+ columnData.decimalDegits);
 			}
-
-			int decimalDegits = columnData.decimalDegits;
-			Integer decimal = new Integer(decimalDegits);
 
 			boolean notNull = false;
 			if (columnData.nullable == DatabaseMetaData.columnNoNulls) {
@@ -1155,7 +1183,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 			} else {
 				referencedColumn = referenceMap.keySet().iterator().next();
 			}
-			
+
 		}
 
 		NormalColumn representedForeignKeyColumn = referenceMap.entrySet()
@@ -1225,7 +1253,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	private List<View> importViews(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		List<View> list = new ArrayList<View>();
 
 		for (Iterator<DBObject> iter = dbObjectList.iterator(); iter.hasNext();) {
@@ -1525,7 +1553,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 	}
 
 	private List<Tablespace> importTablespaces(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		List<Tablespace> list = new ArrayList<Tablespace>();
 
 		for (Iterator<DBObject> iter = dbObjectList.iterator(); iter.hasNext();) {
@@ -1573,10 +1601,6 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager,
 
 	public Exception getException() {
 		return exception;
-	}
-
-	protected int getLength(String type, int size) {
-		return size;
 	}
 
 	public static void main(String[] args) throws InputException,

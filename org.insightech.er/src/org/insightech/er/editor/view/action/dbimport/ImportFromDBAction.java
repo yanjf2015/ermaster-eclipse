@@ -17,7 +17,7 @@ import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbimport.DBObjectSet;
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.dbimport.PreImportFromDBManager;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.settings.DBSetting;
@@ -145,7 +145,7 @@ public class ImportFromDBAction extends AbstractImportAction {
 					ProgressMonitorDialog dialog = new ProgressMonitorDialog(
 							PlatformUI.getWorkbench()
 									.getActiveWorkbenchWindow().getShell());
-					ImportFromDBManagerBase tableImportManager = (ImportFromDBManagerBase) manager
+					ImportFromDBManagerEclipseBase tableImportManager = (ImportFromDBManagerEclipseBase) manager
 							.getTableImportManager();
 					tableImportManager.init(con, this.dbSetting, diagram,
 							importDialog.getSelectedDbObjects(),

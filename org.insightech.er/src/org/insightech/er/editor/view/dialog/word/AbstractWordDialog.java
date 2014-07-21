@@ -301,6 +301,15 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 		this.descriptionText.setText(Format.toString(description));
 	}
 
+	protected SqlType getSelectedType() {
+		String database = this.diagram.getDatabase();
+		
+		SqlType selectedType = SqlType.valueOf(database,
+				this.typeCombo.getText());
+
+		return selectedType;
+	}
+	
 	protected void setEnabledBySqlType() {
 		String database = this.diagram.getDatabase();
 

@@ -70,7 +70,8 @@ public class H2DBManager extends DBManagerBase {
 
 	@Override
 	protected int[] getSupportItems() {
-		return new int[] { SUPPORT_SCHEMA, SUPPORT_SEQUENCE, SUPPORT_SEQUENCE_NOCACHE };
+		return new int[] { SUPPORT_SCHEMA, SUPPORT_SEQUENCE,
+				SUPPORT_SEQUENCE_NOCACHE };
 	}
 
 	public ImportFromDBManager getTableImportManager() {
@@ -109,6 +110,8 @@ public class H2DBManager extends DBManagerBase {
 	@Override
 	public List<String> getSystemSchemaList() {
 		List<String> list = new ArrayList<String>();
+
+		list.add("information_schema");
 
 		return list;
 	}

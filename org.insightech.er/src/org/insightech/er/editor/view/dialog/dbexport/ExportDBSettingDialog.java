@@ -190,11 +190,6 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 		return true;
 	}
 
-	/**
-	 * ddl ‚ðŽæ“¾‚µ‚Ü‚·.
-	 * 
-	 * @return ddl
-	 */
 	public String getDdl() {
 		return ddl;
 	}

@@ -52,6 +52,8 @@ public abstract class DDLCreator {
 	public String getDropDDL(ERDiagram diagram) {
 		StringBuilder ddl = new StringBuilder();
 
+		diagram.getDiagramContents().sort();
+		
 		if (this.ddlTarget.dropIndex) {
 			ddl.append(this.getDropIndexes(diagram));
 		}
@@ -233,6 +235,8 @@ public abstract class DDLCreator {
 	public String getCreateDDL(ERDiagram diagram) {
 		StringBuilder ddl = new StringBuilder();
 
+		diagram.getDiagramContents().sort();
+		
 		if (this.ddlTarget.createTablespace) {
 			ddl.append(this.getCreateTablespaces(diagram));
 		}
@@ -499,7 +503,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDDL(ERTable table) {
+	protected String getDDL(ERTable table) {
 		StringBuilder ddl = new StringBuilder();
 
 		String tableDescription = table.getDescription();
@@ -718,14 +722,14 @@ public abstract class DDLCreator {
 		return true;
 	}
 
-	public List<String> getCommentDDL(ERTable table) {
+	protected List<String> getCommentDDL(ERTable table) {
 		return new ArrayList<String>();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getPostDDL(ERTable table) {
+	protected String getPostDDL(ERTable table) {
 		TableViewProperties commonTableProperties = (TableViewProperties) this
 				.getDiagram().getDiagramContents().getSettings()
 				.getTableViewProperties();
@@ -748,7 +752,7 @@ public abstract class DDLCreator {
 		return postDDL.toString();
 	}
 
-	public String getDDL(Index index, ERTable table) {
+	protected String getDDL(Index index, ERTable table) {
 		StringBuilder ddl = new StringBuilder();
 
 		String description = index.getDescription();
@@ -811,7 +815,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDDL(Relation relation) {
+	protected String getDDL(Relation relation) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("ALTER TABLE ");
@@ -871,7 +875,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDDL(View view) {
+	protected String getDDL(View view) {
 		StringBuilder ddl = new StringBuilder();
 
 		String description = view.getDescription();
@@ -899,7 +903,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDDL(Trigger trigger) {
+	protected String getDDL(Trigger trigger) {
 		StringBuilder ddl = new StringBuilder();
 
 		String description = trigger.getDescription();
@@ -923,7 +927,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDDL(Sequence sequence) {
+	protected String getDDL(Sequence sequence) {
 		StringBuilder ddl = new StringBuilder();
 
 		String description = sequence.getDescription();
@@ -969,7 +973,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDropDDL(Index index, ERTable table) {
+	protected String getDropDDL(Index index, ERTable table) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP INDEX ");
@@ -982,7 +986,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDropDDL(TableView table, Set<TableView> doneTables) {
+	protected String getDropDDL(TableView table, Set<TableView> doneTables) {
 		StringBuilder ddl = new StringBuilder();
 
 		doneTables.add(table);
@@ -1012,11 +1016,11 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getPostDropDDL(TableView table) {
+	protected String getPostDropDDL(TableView table) {
 		return "";
 	}
 
-	public String getDropDDL(View view) {
+	protected String getDropDDL(View view) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP VIEW ");
@@ -1030,7 +1034,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDropDDL(Trigger trigger) {
+	protected String getDropDDL(Trigger trigger) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP TRIGGER ");
@@ -1043,7 +1047,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDropDDL(Tablespace tablespace) {
+	protected String getDropDDL(Tablespace tablespace) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP ");
@@ -1057,7 +1061,7 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	public String getDropDDL(Sequence sequence) {
+	protected String getDropDDL(Sequence sequence) {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP ");
@@ -1148,7 +1152,7 @@ public abstract class DDLCreator {
 		return comment;
 	}
 
-	public String getCreateOrReplacePrefix() {
+	protected String getCreateOrReplacePrefix() {
 		return "CREATE";
 	}
 

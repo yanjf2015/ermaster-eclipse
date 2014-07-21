@@ -275,6 +275,10 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 				String driverClassName = manager.getDriverClassName();
 				this.driverClassName.setText(driverClassName);
 			}
+			
+		} else {
+			this.enableUseDefaultDriver();
+			this.enableField();
 		}
 	}
 
@@ -283,11 +287,6 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 		return 2;
 	}
 
-	/**
-	 * dbSetting ‚ðŽæ“¾‚µ‚Ü‚·.
-	 * 
-	 * @return dbSetting
-	 */
 	public DBSetting getDbSetting() {
 		return this.dbSetting;
 	}

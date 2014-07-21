@@ -4,9 +4,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 
-public class PostgresTableImportManager extends ImportFromDBManagerBase {
+public class PostgresTableImportManager extends ImportFromDBManagerEclipseBase {
 
 	@Override
 	protected String getTableNameWithSchema(String schema, String tableName) {
@@ -35,19 +35,7 @@ public class PostgresTableImportManager extends ImportFromDBManagerBase {
 		String type = columnData.type.toLowerCase();
 
 		if (type.startsWith("time")) {
-			if (columnData.decimalDegits == 6) {
-				columnData.size = 0;
-			} else {
-				columnData.size = columnData.decimalDegits;
-			}
-
-			columnData.decimalDegits = 0;
-
-		} else if (type.equals("numeric")) {
-			if (columnData.size == 131089 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
+			columnData.size = columnData.decimalDegits;
 		}
 
 		return columnData;

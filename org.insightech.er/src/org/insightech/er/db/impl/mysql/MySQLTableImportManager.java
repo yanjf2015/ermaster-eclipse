@@ -11,16 +11,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.dbimport.DBObject;
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableViewProperties;
 import org.insightech.er.util.Format;
 
-public class MySQLTableImportManager extends ImportFromDBManagerBase {
+public class MySQLTableImportManager extends ImportFromDBManagerEclipseBase {
 
 	private Map<String, MySQLTableProperties> tablePropertiesMap;
 
@@ -88,12 +87,12 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 			String restrictType = this.getRestrictType(tableNameWithSchema,
 					columnData);
 			columnData.type = restrictType;
-			
+
 		} else if (columnData.type.toUpperCase().indexOf(" UNSIGNED") != -1) {
 			String restrictType = this.getRestrictType(tableNameWithSchema,
 					columnData);
 			columnData.type = restrictType;
-			
+
 		}
 	}
 
@@ -133,19 +132,31 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 		ColumnData columnData = super.createColumnData(columnSet);
 		String type = columnData.type.toLowerCase();
 
-		if (type.startsWith("decimal")) {
-			if (columnData.size == 10 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("double")) {
-			if (columnData.size == 22 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("float")) {
+		if (type.startsWith("float")) {
+			// there are two case.
+			// 1. float unsigned zerofill --> 0,0
+			// 2. float(12,0) --> 12,0
+			// So, I change 12,0 --> 0,0
 			if (columnData.size == 12 && columnData.decimalDegits == 0) {
 				columnData.size = 0;
+			}
+
+		} else if (type.startsWith("bigint")) {
+			// there are two case.
+			// 1. bigint(20) unsigned zerofill --> 20,0
+			// 2. bigint(19) --> 19,0
+			// So, I change 19,0 --> 20,0
+			if (columnData.size == 19) {
+				columnData.size = 20;
+			}
+
+		} else if (type.startsWith("mediumint")) {
+			// there are two case.
+			// 1. mediumint(8) unsigned zerofill --> 8,0
+			// 2. mediumint(7) --> 7,0
+			// So, I change 7,0 --> 8,0
+			if (columnData.size == 7) {
+				columnData.size = 8;
 			}
 
 		}
@@ -155,7 +166,7 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 
 	@Override
 	protected void cacheColumnData(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		super.cacheColumnData(dbObjectList, monitor);
 
 		PreparedStatement ps = null;
@@ -211,11 +222,11 @@ public class MySQLTableImportManager extends ImportFromDBManagerBase {
 					if (!tableCharacterSet.equals(characterSet)) {
 						columnData.characterSet = characterSet;
 					}
-	
+
 					if (!tableCollation.equals(collation)) {
 						columnData.collation = collation;
 					}
-					
+
 					if (collation.endsWith("_bin")) {
 						columnData.isBinary = true;
 					}

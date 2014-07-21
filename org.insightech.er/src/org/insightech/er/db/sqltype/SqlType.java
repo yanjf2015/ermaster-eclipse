@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.insightech.er.db.DBManagerFactory;
+import org.insightech.er.db.impl.db2.DB2DBManager;
 import org.insightech.er.db.impl.mysql.MySQLDBManager;
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.TypeData;
 import org.insightech.er.util.Format;
@@ -54,7 +55,9 @@ public class SqlType implements Serializable {
 
 	private static Map<String, Map<TypeKey, SqlType>> dbSqlTypeMap = new HashMap<String, Map<TypeKey, SqlType>>();
 
-	private static Map<String, Map<SqlType, String>> dbAliasMap = new HashMap<String, Map<SqlType, String>>();
+	private static Map<String, Map<SqlType, String>> dbSqlTypeToAliasMap = new HashMap<String, Map<SqlType, String>>();
+
+	private static Map<String, Map<String, SqlType>> dbAliasToSqlTypeMap = new HashMap<String, Map<String, SqlType>>();
 
 	static {
 		try {
@@ -71,22 +74,22 @@ public class SqlType implements Serializable {
 
 		private int size;
 
-		public TypeKey(String alias, int size) {
+		private int decimal;
+
+		public TypeKey(String alias, int size, int decimal) {
 			if (alias != null) {
 				alias = alias.toUpperCase();
 			}
 
 			this.alias = alias;
 
-			if (size == 0) {
+			if (size == Integer.MAX_VALUE) {
 				this.size = 0;
-			} else if (size == Integer.MAX_VALUE) {
-				this.size = 0;
-			} else if (size > 0) {
-				this.size = 1;
 			} else {
-				this.size = -1;
+				this.size = size;
 			}
+
+			this.decimal = decimal;
 		}
 
 		@Override
@@ -95,7 +98,8 @@ public class SqlType implements Serializable {
 
 			if (this.alias == null) {
 				if (other.alias == null) {
-					if (this.size == other.size) {
+					if (this.size == other.size
+							&& this.decimal == other.decimal) {
 						return true;
 					}
 					return false;
@@ -105,7 +109,8 @@ public class SqlType implements Serializable {
 				}
 
 			} else {
-				if (this.alias.equals(other.alias) && this.size == other.size) {
+				if (this.alias.equals(other.alias) && this.size == other.size
+						&& this.decimal == other.decimal) {
 					return true;
 				}
 			}
@@ -116,14 +121,16 @@ public class SqlType implements Serializable {
 		@Override
 		public int hashCode() {
 			if (this.alias == null) {
-				return this.size;
+				return (this.size * 10) + this.decimal;
 			}
-			return (this.alias.hashCode() * 10) + this.size;
+			return (this.alias.hashCode() * 100) + (this.size * 10)
+					+ this.decimal;
 		}
 
 		@Override
 		public String toString() {
-			return "TypeKey [alias=" + alias + ", size=" + size + "]";
+			return "TypeKey [alias=" + alias + ", size=" + size + ", decimal="
+					+ decimal + "]";
 		}
 
 	}
@@ -139,23 +146,17 @@ public class SqlType implements Serializable {
 	}
 
 	public static void setDBAliasMap(
-			Map<String, Map<SqlType, String>> dbAliasMap,
+			Map<String, Map<SqlType, String>> dbSqlTypeToAliasMap,
+			Map<String, Map<String, SqlType>> dbAliasToSqlTypeMap,
 			Map<String, Map<TypeKey, SqlType>> dbSqlTypeMap) {
-		SqlType.dbAliasMap = dbAliasMap;
 		SqlType.dbSqlTypeMap = dbSqlTypeMap;
+		SqlType.dbSqlTypeToAliasMap = dbSqlTypeToAliasMap;
+		SqlType.dbAliasToSqlTypeMap = dbAliasToSqlTypeMap;
 	}
 
-	public void addToSqlTypeMap(String typeKeyId, String database) {
-		int size = 0;
-
-		if (!this.isUnsupported(database)) {
-			if (this.isNeedLength(database)) {
-				size = 1;
-			}
-			TypeKey typeKey = new TypeKey(typeKeyId, size);
-			Map<TypeKey, SqlType> sqlTypeMap = dbSqlTypeMap.get(database);
-			sqlTypeMap.put(typeKey, this);
-		}
+	public void addToSqlTypeMap(TypeKey typeKey, String database) {
+		Map<TypeKey, SqlType> sqlTypeMap = dbSqlTypeMap.get(database);
+		sqlTypeMap.put(typeKey, this);
 	}
 
 	public String getId() {
@@ -179,48 +180,48 @@ public class SqlType implements Serializable {
 	}
 
 	public static SqlType valueOf(String database, String alias) {
-		int size = 0;
-
-		Matcher matcher = NEED_LENGTH_PATTERN.matcher(alias);
-
-		if (matcher.matches()) {
-			size = 1;
-		}
-
-		return valueOf(database, alias, size);
+		return dbAliasToSqlTypeMap.get(database).get(alias);
 	}
 
-	public static SqlType valueOf(String database, String alias, int size) {
+	public static SqlType valueOf(String database, String alias, int size,
+			int decimal) {
 		if (alias == null) {
 			return null;
 		}
 
 		Map<TypeKey, SqlType> sqlTypeMap = dbSqlTypeMap.get(database);
 
-		// decimal(19,4) = money 等に対応
-		TypeKey typeKey = new TypeKey(alias, size);
+		TypeKey typeKey = new TypeKey(alias, size, decimal);
 		SqlType sqlType = sqlTypeMap.get(typeKey);
 
-		if (sqlType == null) {
-			if (MySQLDBManager.ID.equals(database)) {
-				alias = alias.replaceAll("\\(.*\\)", "(N)");
-				typeKey = new TypeKey(alias, size);
-				sqlType = sqlTypeMap.get(typeKey);
-			}
+		if (sqlType != null) {
+			return sqlType;
+		}
 
-			if (sqlType == null) {
-				alias = alias.replaceAll("\\(.*\\)", "");
+		if (decimal > 0) {
+			decimal = -1;
 
-				typeKey = new TypeKey(alias, size);
-				sqlType = sqlTypeMap.get(typeKey);
+			typeKey = new TypeKey(alias, size, decimal);
+			sqlType = sqlTypeMap.get(typeKey);
 
-				if (sqlType == null) {
-					// db import の場合に、サイズが取得されていても、指定はできないケースがある
-					typeKey = new TypeKey(alias, 0);
-					sqlType = sqlTypeMap.get(typeKey);
-				}
+			if (sqlType != null) {
+				return sqlType;
 			}
 		}
+
+		if (size > 0) {
+			size = -1;
+
+			typeKey = new TypeKey(alias, size, decimal);
+			sqlType = sqlTypeMap.get(typeKey);
+
+			if (sqlType != null) {
+				return sqlType;
+			}
+		}
+
+		typeKey = new TypeKey(alias, 0, 0);
+		sqlType = sqlTypeMap.get(typeKey);
 
 		return sqlType;
 	}
@@ -293,7 +294,7 @@ public class SqlType implements Serializable {
 	}
 
 	public static List<String> getAliasList(String database) {
-		Map<SqlType, String> aliasMap = dbAliasMap.get(database);
+		Map<SqlType, String> aliasMap = dbSqlTypeToAliasMap.get(database);
 
 		Set<String> aliases = new LinkedHashSet<String>();
 
@@ -310,7 +311,7 @@ public class SqlType implements Serializable {
 	}
 
 	public String getAlias(String database) {
-		Map<SqlType, String> aliasMap = dbAliasMap.get(database);
+		Map<SqlType, String> aliasMap = dbSqlTypeToAliasMap.get(database);
 
 		return aliasMap.get(this);
 	}
@@ -360,6 +361,12 @@ public class SqlType implements Serializable {
 	}
 
 	public static void main(String[] args) {
+		String targetDb = null;
+		targetDb = DB2DBManager.ID;
+
+		boolean zerofill = false;
+		int testIntValue = 5;
+		
 		int maxIdLength = 37;
 
 		StringBuilder msg = new StringBuilder();
@@ -369,157 +376,197 @@ public class SqlType implements Serializable {
 		List<SqlType> list = getAllSqlType();
 
 		List<String> dbList = DBManagerFactory.getAllDBList();
-
-		String str = "ID";
-		msg.append(str);
-
-		for (String db : dbList) {
-			int spaceLength = maxIdLength - str.length();
-			if (spaceLength < 4) {
-				spaceLength = 4;
-			}
-
-			for (int i = 0; i < spaceLength; i++) {
-				msg.append(" ");
-			}
-
-			str = db;
-			msg.append(db);
-		}
-
-		msg.append("\n");
-		msg.append("\n");
-
-		StringBuilder builder = new StringBuilder();
 		int errorCount = 0;
 
-		for (SqlType type : list) {
-			builder.append(type.name);
-			int spaceLength = maxIdLength - type.name.length();
-			if (spaceLength < 4) {
-				spaceLength = 4;
-			}
+		String str = "ID";
+
+		if (targetDb == null) {
+			msg.append(str);
 
 			for (String db : dbList) {
+				int spaceLength = maxIdLength - str.length();
+				if (spaceLength < 4) {
+					spaceLength = 4;
+				}
+
 				for (int i = 0; i < spaceLength; i++) {
-					builder.append(" ");
+					msg.append(" ");
 				}
 
-				String alias = type.getAlias(db);
-
-				if (alias != null) {
-					builder.append(type.getAlias(db));
-					spaceLength = maxIdLength - type.getAlias(db).length();
-					if (spaceLength < 4) {
-						spaceLength = 4;
-					}
-
-				} else {
-					if (type.isUnsupported(db)) {
-						builder.append("□□□□□□");
-					} else {
-						builder.append("■■■■■■");
-						errorCount++;
-					}
-
-					spaceLength = maxIdLength - "□□□□□□".length();
-					if (spaceLength < 4) {
-						spaceLength = 4;
-					}
-				}
+				str = db;
+				msg.append(db);
 			}
 
-			builder.append("\r\n");
-		}
+			msg.append("\n");
+			msg.append("\n");
 
-		String allColumn = builder.toString();
-		msg.append(allColumn + "\n");
+			StringBuilder builder = new StringBuilder();
+
+			for (SqlType type : list) {
+				builder.append(type.name);
+				int spaceLength = maxIdLength - type.name.length();
+				if (spaceLength < 4) {
+					spaceLength = 4;
+				}
+
+				for (String db : dbList) {
+					for (int i = 0; i < spaceLength; i++) {
+						builder.append(" ");
+					}
+
+					String alias = type.getAlias(db);
+
+					if (alias != null) {
+						builder.append(type.getAlias(db));
+						spaceLength = maxIdLength - type.getAlias(db).length();
+						if (spaceLength < 4) {
+							spaceLength = 4;
+						}
+
+					} else {
+						if (type.isUnsupported(db)) {
+							builder.append("□□□□□□");
+						} else {
+							builder.append("■■■■■■");
+							errorCount++;
+						}
+
+						spaceLength = maxIdLength - "□□□□□□".length();
+						if (spaceLength < 4) {
+							spaceLength = 4;
+						}
+					}
+				}
+
+				builder.append("\r\n");
+			}
+
+			String allColumn = builder.toString();
+			msg.append(allColumn + "\n");
+		}
 
 		int errorCount2 = 0;
 		int errorCount3 = 0;
 
 		for (String db : dbList) {
-			msg.append("-- for " + db + "\n");
-			msg.append("CREATE TABLE TYPE_TEST (\n");
-
-			int count = 0;
-
-			for (SqlType type : list) {
-				String alias = type.getAlias(db);
-				if (alias == null) {
-					continue;
+			if (targetDb == null || db.equals(targetDb)) {
+				if (targetDb == null) {
+					msg.append("-- for " + db + "\n");
 				}
+				msg.append("CREATE TABLE TYPE_TEST (\n");
 
-				if (count != 0) {
-					msg.append(",\n");
-				}
-				msg.append("\tCOL_" + count + " ");
+				int count = 0;
 
-				if (type.isNeedLength(db) && type.isNeedDecimal(db)) {
-					TypeData typeData = new TypeData(new Integer(1),
-							new Integer(1), false, null, false, false, false,
-							null);
-
-					str = Format.formatType(type, typeData, db, true);
-					if (str.equals(alias)) {
-						errorCount3++;
-						msg.append("×3");
+				for (SqlType type : list) {
+					String alias = type.getAlias(db);
+					if (alias == null) {
+						continue;
 					}
 
-				} else if (type.isNeedLength(db)) {
-					TypeData typeData = new TypeData(new Integer(1), null,
-							false, null, false, false, false, null);
+					if (count != 0) {
+						msg.append(",\n");
+					}
+					msg.append("\tCOL_" + count + " ");
 
-					str = Format.formatType(type, typeData, db, true);
+					if (type.isNeedLength(db) && type.isNeedDecimal(db)) {
+						TypeData typeData = new TypeData(Integer.valueOf(testIntValue),
+								Integer.valueOf(testIntValue), false, null, false, false,
+								false, null);
 
-					if (str.equals(alias)) {
-						errorCount3++;
-						msg.append("×3");
+						str = Format.formatType(type, typeData, db, true);
+
+						if (zerofill && db.equals(MySQLDBManager.ID)) {
+							if (type.isNumber()) {
+								str = str + " unsigned zerofill";
+							}
+						}
+
+						if (str.equals(alias)) {
+							errorCount3++;
+							msg.append("×3");
+						}
+
+					} else if (type.isNeedLength(db)) {
+						TypeData typeData = new TypeData(Integer.valueOf(testIntValue), null,
+								false, null, false, false, false, null);
+
+						str = Format.formatType(type, typeData, db, true);
+
+						if (zerofill && db.equals(MySQLDBManager.ID)) {
+							if (type.isNumber()) {
+								str = str + " unsigned zerofill";
+							}
+						}
+
+						if (str.equals(alias)) {
+							errorCount3++;
+							msg.append("×3");
+						}
+
+					} else if (type.isNeedDecimal(db)) {
+						TypeData typeData = new TypeData(null, Integer.valueOf(testIntValue),
+								false, null, false, false, false, null);
+
+						str = Format.formatType(type, typeData, db, true);
+
+						if (zerofill && db.equals(MySQLDBManager.ID)) {
+							if (type.isNumber()) {
+								str = str + " unsigned zerofill";
+							}
+						}
+
+						if (str.equals(alias)) {
+							errorCount3++;
+							msg.append("×3");
+						}
+
+					} else if (type.doesNeedArgs()) {
+						str = alias + "('1')";
+
+					} else {
+						str = alias;
+
+						if (zerofill && db.equals(MySQLDBManager.ID)) {
+							if (type.isNumber()) {
+								str = str + " unsigned zerofill";
+							}
+						}
+
+						if (str.equals("uniqueidentifier rowguidcol")) {
+							str += " not null unique";
+						}
 					}
 
-				} else if (type.isNeedDecimal(db)) {
-					TypeData typeData = new TypeData(null, new Integer(1),
-							false, null, false, false, false, null);
+					if (str != null) {
 
-					str = Format.formatType(type, typeData, db, true);
+						Matcher m1 = NEED_LENGTH_PATTERN.matcher(str);
+						Matcher m2 = NEED_DECIMAL_PATTERN1.matcher(str);
+						Matcher m3 = NEED_DECIMAL_PATTERN2.matcher(str);
 
-					if (str.equals(alias)) {
-						errorCount3++;
-						msg.append("×3");
+						if (m1.matches() || m2.matches() || m3.matches()) {
+							errorCount2++;
+							msg.append("×2");
+						}
 					}
-				} else if (type.doesNeedArgs()) {
-					str = alias + "('1')";
 
-				} else {
-					str = alias;
+					msg.append(str);
+
+					count++;
 				}
-
-				if (str != null) {
-
-					Matcher m1 = NEED_LENGTH_PATTERN.matcher(str);
-					Matcher m2 = NEED_DECIMAL_PATTERN1.matcher(str);
-					Matcher m3 = NEED_DECIMAL_PATTERN2.matcher(str);
-
-					if (m1.matches() || m2.matches() || m3.matches()) {
-						errorCount2++;
-						msg.append("×2");
-					}
-				}
-
-				msg.append(str);
-
-				count++;
+				msg.append("\n");
+				msg.append(");\n");
+				msg.append("\n");
 			}
-			msg.append("\n");
-			msg.append(");\n");
-			msg.append("\n");
 		}
 
 		msg.append("\n");
-		msg.append(errorCount + " 個の型が変換できませんでした。\n");
-		msg.append(errorCount2 + " 個の数字型の指定が不足しています。\n");
-		msg.append(errorCount3 + " 個の数字型の指定が余分です。\n");
 
-		logger.info(msg.toString());
+		if (targetDb == null) {
+			msg.append(errorCount + " 個の型が変換できませんでした。\n");
+			msg.append(errorCount2 + " 個の数字型の指定が不足しています。\n");
+			msg.append(errorCount3 + " 個の数字型の指定が余分です。\n");
+		}
+
+		System.out.println(msg.toString());
 	}
 }

@@ -25,19 +25,21 @@ public class SqlTypeFactory {
 
 			HSSFSheet sheet = workBook.getSheetAt(0);
 
-			Map<String, Map<SqlType, String>> dbAliasMap = new HashMap<String, Map<SqlType, String>>();
+			Map<String, Map<SqlType, String>> dbSqlTypeToAliasMap = new HashMap<String, Map<SqlType, String>>();
+			Map<String, Map<String, SqlType>> dbAliasToSqlTypeMap = new HashMap<String, Map<String, SqlType>>();
 			Map<String, Map<TypeKey, SqlType>> dbSqlTypeMap = new HashMap<String, Map<TypeKey, SqlType>>();
 
 			HSSFRow headerRow = sheet.getRow(0);
 
-			for (int colNum = 4; colNum < headerRow.getLastCellNum(); colNum += 2) {
+			for (int colNum = 4; colNum < headerRow.getLastCellNum(); colNum += 6) {
 				String dbId = POIUtils.getCellValue(sheet, 0, colNum);
 
-				dbAliasMap.put(dbId, new LinkedHashMap<SqlType, String>());
+				dbSqlTypeToAliasMap.put(dbId, new LinkedHashMap<SqlType, String>());
+				dbAliasToSqlTypeMap.put(dbId, new LinkedHashMap<String, SqlType>());
 				dbSqlTypeMap.put(dbId, new LinkedHashMap<TypeKey, SqlType>());
 			}
 
-			SqlType.setDBAliasMap(dbAliasMap, dbSqlTypeMap);
+			SqlType.setDBAliasMap(dbSqlTypeToAliasMap, dbAliasToSqlTypeMap, dbSqlTypeMap);
 
 			for (int rowNum = 1; rowNum <= sheet.getLastRowNum(); rowNum++) {
 				HSSFRow row = sheet.getRow(rowNum);
@@ -56,33 +58,44 @@ public class SqlTypeFactory {
 				SqlType sqlType = new SqlType(sqlTypeId, javaClass, needArgs,
 						fullTextIndexable);
 
-				for (int colNum = 4; colNum < row.getLastCellNum(); colNum += 2) {
+				for (int colNum = 4; colNum < row.getLastCellNum(); colNum += 6) {
 
 					String dbId = POIUtils.getCellValue(sheet, 0, colNum);
 
-					Map<SqlType, String> aliasMap = dbAliasMap.get(dbId);
+					Map<SqlType, String> sqlTypeToAliasMap = dbSqlTypeToAliasMap.get(dbId);
+					Map<String, SqlType> aliasToSqlTypeMap = dbAliasToSqlTypeMap.get(dbId);
 
-					if (POIUtils.getCellColor(sheet, rowNum, colNum) != HSSFColor.RED.index) {
+					if (POIUtils.getCellColor(sheet, rowNum, colNum) != HSSFColor.GREY_50_PERCENT.index) {
+						
 						String alias = POIUtils.getCellValue(sheet, rowNum,
-								colNum);
+								colNum + 1);
 
-						if (Check.isEmpty(alias)) {
-							alias = sqlTypeId;
-						}
+						if (!Check.isEmpty(alias)) {
+							aliasToSqlTypeMap.put(alias, sqlType);
+							sqlTypeToAliasMap.put(sqlType, alias);							
+							
+						} else {
+							String aliasForConvert = POIUtils.getCellValue(sheet, rowNum,
+									colNum + 2);
 
-						aliasMap.put(sqlType, alias);
-
-						if (POIUtils.getCellColor(sheet, rowNum, colNum) == HSSFColor.SKY_BLUE.index) {
-							sqlType.addToSqlTypeMap(alias, dbId);
+							if (!Check.isEmpty(aliasForConvert)) {
+								sqlTypeToAliasMap.put(sqlType, aliasForConvert);							
+							}							
 						}
 					}
 
 					String key = POIUtils.getCellValue(sheet, rowNum,
-							colNum + 1);
+							colNum + 3);
+					
 					if (!Check.isEmpty(key)) {
-						sqlType.addToSqlTypeMap(key, dbId);
+						int keySize = POIUtils.getIntCellValue(sheet, rowNum,
+								colNum + 4);
+						int keyDecimal = POIUtils.getIntCellValue(sheet, rowNum,
+								colNum + 5);
+						
+						TypeKey typeKey = new TypeKey(key, keySize, keyDecimal);
+						sqlType.addToSqlTypeMap(typeKey, dbId);
 					}
-
 				}
 			}
 

@@ -225,7 +225,7 @@ public abstract class PreTableExportManager {
 		return sql;
 	}
 
-	private String dropTables() throws SQLException, InterruptedException {
+	protected String dropTables() throws SQLException, InterruptedException {
 		StringBuilder ddl = new StringBuilder();
 
 		ResultSet tableSet = null;
@@ -245,8 +245,6 @@ public abstract class PreTableExportManager {
 					try {
 						this.checkTableExist(con, tableName);
 					} catch (SQLException e) {
-						// ƒe[ƒuƒ‹î•ñ‚ªæ“¾‚Å‚«‚È‚¢ê‡i‘¼‚Ìƒ†[ƒU‚ÌŠ—L•¨‚È‚Ç‚Ìê‡jA
-						// ‚±‚Ìƒe[ƒuƒ‹‚Íg—p‚µ‚È‚¢B
 						continue;
 					}
 
@@ -287,7 +285,7 @@ public abstract class PreTableExportManager {
 	}
 
 	/**
-	 * errorSql ‚ğæ“¾‚µ‚Ü‚·.
+	 * errorSql ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½Ü‚ï¿½.
 	 * 
 	 * @return errorSql
 	 */
@@ -296,7 +294,7 @@ public abstract class PreTableExportManager {
 	}
 
 	/**
-	 * ddl ‚ğæ“¾‚µ‚Ü‚·.
+	 * ddl ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½Ü‚ï¿½.
 	 * 
 	 * @return ddl
 	 */

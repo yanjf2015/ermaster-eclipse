@@ -107,6 +107,8 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 
 		this.saveFilePath = saveFilePath;
 		this.diagram = diagram;
+		this.diagram.getDiagramContents().sort();
+		
 		this.template = template;
 		this.useLogicalNameAsSheetName = useLogicalNameAsSheetName;
 		this.imageBuffer = imageBuffer;

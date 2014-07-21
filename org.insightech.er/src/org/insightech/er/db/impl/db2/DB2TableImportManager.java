@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 
-public class DB2TableImportManager extends ImportFromDBManagerBase {
+public class DB2TableImportManager extends ImportFromDBManagerEclipseBase {
 
 	/**
 	 * {@inheritDoc}
@@ -24,31 +24,8 @@ public class DB2TableImportManager extends ImportFromDBManagerBase {
 		ColumnData columnData = super.createColumnData(columnSet);
 		String type = columnData.type.toLowerCase();
 
-		if (type.equals("decimal")) {
-			if (columnData.size == 5 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.equals("clob")) {
-			if (columnData.size == 1048576) {
-				columnData.size = 0;
-			}
-
-		} else if (type.equals("blob")) {
-			if (columnData.size == 1048576) {
-				columnData.size = 0;
-			}
-
-		} else if (type.equals("dbclob")) {
-			if (columnData.size == 2097152) {
-				columnData.size = 0;
-			}
-
-		} else if (type.equals("decfloat")) {
-			if (columnData.size == 34) {
-				columnData.size = 0;
-			}
-
+		if (type.indexOf("graphic") != -1 || type.indexOf("dbclob") != -1) {
+			columnData.size = columnData.size / 2;
 		}
 
 		return columnData;
@@ -111,13 +88,13 @@ public class DB2TableImportManager extends ImportFromDBManagerBase {
 
 				sequence.setMaxValue(maxValue);
 				sequence.setStart(rs.getLong("START"));
-				
+
 				int cache = rs.getInt("CACHE");
-				
+
 				if (cache <= 1) {
 					sequence.setNocache(true);
 				} else {
-					sequence.setCache(cache);					
+					sequence.setCache(cache);
 				}
 
 				boolean cycle = false;

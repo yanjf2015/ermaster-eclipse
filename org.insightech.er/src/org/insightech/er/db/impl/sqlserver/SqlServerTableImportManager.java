@@ -1,11 +1,12 @@
 package org.insightech.er.db.impl.sqlserver;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 
-public class SqlServerTableImportManager extends ImportFromDBManagerBase {
+public class SqlServerTableImportManager extends ImportFromDBManagerEclipseBase {
 
 	/**
 	 * {@inheritDoc}
@@ -21,28 +22,55 @@ public class SqlServerTableImportManager extends ImportFromDBManagerBase {
 		ColumnData columnData = super.createColumnData(columnSet);
 		String type = columnData.type.toLowerCase();
 
-		if (type.startsWith("decimal")) {
-			if (columnData.size == 18 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("numeric")) {
-			if (columnData.size == 18 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("time")) {
-			columnData.size = columnData.size - 9;
-
-			if (columnData.size == 7) {
-				columnData.size = 0;
-			}
+		if (type.startsWith("time")) {
+			columnData.size = columnData.decimalDegits;
 
 		} else if (type.startsWith("datetime2")) {
-			columnData.size = columnData.size - 20;
+			columnData.size = columnData.decimalDegits;
 
 		}
 
 		return columnData;
 	}
+
+	@Override
+	protected void cacheOtherColumnData(String tableName, String schema,
+			ColumnData columnData) throws SQLException {
+
+		if (columnData.type.equals("uniqueidentifier")) {
+
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+
+			try {
+				ps = con.prepareStatement("SELECT IS_ROWGUIDCOL "
+						+ "FROM SYS.COLUMNS C " + "INNER JOIN SYS.TABLES T "
+						+ "ON T.OBJECT_ID = C.OBJECT_ID "
+						+ "INNER JOIN SYS.SCHEMAS S "
+						+ "ON S.SCHEMA_ID = T.SCHEMA_ID " + "WHERE T.NAME = ? "
+						+ "AND S.NAME = ? " + "AND C.NAME = ? ");
+
+				ps.setString(1, tableName);
+				ps.setString(2, schema);
+				ps.setString(3, columnData.columnName);
+				rs = ps.executeQuery();
+
+				if (rs.next()) {
+					if (rs.getInt("IS_ROWGUIDCOL") == 1) {
+						columnData.type += " rowguidcol";
+
+					}
+				}
+
+			} finally {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+			}
+		}
+	}
+
 }

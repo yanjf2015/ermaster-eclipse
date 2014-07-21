@@ -118,6 +118,9 @@ public class SqlServerDBManager extends DBManagerBase {
 		list.add("db_denydatawriter");
 		list.add("db_owner");
 		list.add("db_securityadmin");
+		list.add("guest");
+		list.add("information_schema");
+		list.add("sys");
 		
 		return list;
 	}

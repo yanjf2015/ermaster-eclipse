@@ -12,15 +12,14 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.dbimport.DBObject;
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
 
-public class OracleTableImportManager extends ImportFromDBManagerBase {
+public class OracleTableImportManager extends ImportFromDBManagerEclipseBase {
 
 	private static Logger logger = Logger
 			.getLogger(OracleTableImportManager.class.getName());
@@ -39,7 +38,7 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	 */
 	@Override
 	protected void cacheColumnData(List<DBObject> dbObjectList,
-			IProgressMonitor monitor) throws SQLException, InterruptedException {
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
 		super.cacheColumnData(dbObjectList, monitor);
 
 		PreparedStatement stmt = null;
@@ -80,7 +79,7 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void cacheTableComment(IProgressMonitor monitor)
+	protected void cacheTableComment(ProgressMonitor monitor)
 			throws SQLException, InterruptedException {
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -159,14 +158,14 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 				sequence.setMaxValue(maxValue);
 				BigDecimal lastNumber = rs.getBigDecimal("LAST_NUMBER");
 				sequence.setStart(lastNumber.longValue());
-				
+
 				int cache = rs.getInt("CACHE_SIZE");
 				if (cache <= 1) {
 					sequence.setNocache(true);
 				} else {
-					sequence.setCache(cache);					
+					sequence.setCache(cache);
 				}
-				
+
 				String cycle = rs.getString("CYCLE_FLAG").toLowerCase();
 				if ("y".equals(cycle)) {
 					sequence.setCycle(true);
@@ -240,9 +239,7 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	protected List<Index> getIndexes(ERTable table, DatabaseMetaData metaData,
 			List<PrimaryKeyData> primaryKeys) throws SQLException {
 		if (!isValidObjectName(table.getPhysicalName())) {
-			logger
-					.info("is not valid object name : "
-							+ table.getPhysicalName());
+			logger.info("is not valid object name : " + table.getPhysicalName());
 			return new ArrayList<Index>();
 		}
 
@@ -257,24 +254,6 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 
 			throw e;
 		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected int getLength(String type, int size) {
-		int startIndex = type.indexOf("(");
-
-		if (startIndex > 0) {
-			int endIndex = type.indexOf(")", startIndex + 1);
-			if (endIndex != -1) {
-				String str = type.substring(startIndex + 1, endIndex);
-				return Integer.parseInt(str);
-			}
-		}
-
-		return size;
 	}
 
 	/**
@@ -327,63 +306,45 @@ public class OracleTableImportManager extends ImportFromDBManagerBase {
 	protected ColumnData createColumnData(ResultSet columnSet)
 			throws SQLException {
 		ColumnData columnData = super.createColumnData(columnSet);
-		String type = columnData.type.toLowerCase();
 
-		if (type.equals("number")) {
-			if (columnData.size == 22 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
+		Matcher yearToMonthMatcber = INTERVAL_YEAR_TO_MONTH_PATTERN
+				.matcher(columnData.type);
+		Matcher dayToSecondMatcber = INTERVAL_DAY_TO_SECCOND_PATTERN
+				.matcher(columnData.type);
+		Matcher timestampMatcber = TIMESTAMP_PATTERN.matcher(columnData.type);
 
-		} else if (type.equals("float")) {
-			if (columnData.size == 126 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
+		if (yearToMonthMatcber.matches()) {
+			columnData.type = "interval year to month";
 
-		} else if (type.equals("urowid")) {
-			if (columnData.size == 4000) {
-				columnData.size = 0;
-			}
-
-		} else if (type.equals("anydata")) {
-			columnData.size = 0;
-
-		} else {
-			Matcher yearToMonthMatcber = INTERVAL_YEAR_TO_MONTH_PATTERN
-					.matcher(columnData.type);
-			Matcher dayToSecondMatcber = INTERVAL_DAY_TO_SECCOND_PATTERN
-					.matcher(columnData.type);
-			Matcher timestampMatcber = TIMESTAMP_PATTERN
-					.matcher(columnData.type);
-
-			if (yearToMonthMatcber.matches()) {
+			if (columnData.size == 2) {
 				columnData.type = "interval year to month";
 
-				if (columnData.size == 2) {
-					columnData.size = 0;
-				}
+			} else {
+				columnData.type = "interval year(p) to month";
+			}
 
-			} else if (dayToSecondMatcber.matches()) {
-				columnData.type = "interval day to second";
+		} else if (dayToSecondMatcber.matches()) {
 
-				if (columnData.size == 2 && columnData.decimalDegits == 6) {
-					columnData.size = 0;
+			if (columnData.size == 2) {
+				if (columnData.decimalDegits == 6) {
+					columnData.type = "interval day to second";
+
+				} else {
+					columnData.type = "interval day to second(p)";
+					columnData.size = columnData.decimalDegits;
 					columnData.decimalDegits = 0;
 				}
 
-			} else if (timestampMatcber.matches()) {
-				columnData.type = columnData.type.replaceAll("\\(.\\)", "");
-				columnData.size = 0;
+			} else if (columnData.decimalDegits == 6) {
+				columnData.type = "interval day(p) to second";
 
-				if (columnData.decimalDegits == 6) {
-					columnData.size = 0;
-
-				} else {
-					columnData.size = columnData.decimalDegits;
-				}
-
-				columnData.decimalDegits = 0;
+			} else {
+				columnData.type = "interval day(p) to second(p)";
 			}
 
+		} else if (timestampMatcber.matches()) {
+			columnData.type = columnData.type.replaceAll("\\(.\\)", "");
+			columnData.size = columnData.decimalDegits;
 		}
 
 		return columnData;

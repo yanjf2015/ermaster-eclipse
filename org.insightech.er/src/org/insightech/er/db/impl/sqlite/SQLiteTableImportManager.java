@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.DBObject;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 
-public class SQLiteTableImportManager extends ImportFromDBManagerBase {
+public class SQLiteTableImportManager extends ImportFromDBManagerEclipseBase {
 
 	/**
 	 * {@inheritDoc}
@@ -50,6 +51,12 @@ public class SQLiteTableImportManager extends ImportFromDBManagerBase {
 		this.cacheColumnDataX(schema, tableName, null, null);
 
 		return super.getColumnDataMap(tableNameWithSchema, tableName, schema);
+	}
+
+	@Override
+	protected void cacheColumnData(List<DBObject> dbObjectList,
+			ProgressMonitor monitor) throws SQLException, InterruptedException {
+		// can not cache
 	}
 
 }

@@ -99,6 +99,7 @@ public class WordDialog extends AbstractWordDialog {
 		if (this.argsText != null) {
 			args = this.argsText.getText();
 		}
+		
 		TypeData typeData = new TypeData(length, decimal, array,
 				arrayDimension, unsigned, zerofill, binary, args);
 

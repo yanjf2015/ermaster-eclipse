@@ -171,10 +171,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 					"");
 		}
 
-		store
-				.setValue(
-						PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM,
-						0);
+		store.setValue(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM, 0);
 	}
 
 	public static String getJDBCDriverPath(String db, String driverClassName) {
@@ -186,10 +183,14 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
 
 		for (int i = 0; i < listSize; i++) {
-			if (driverClassName
+			if (db
 					.equals(store
-							.getString(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_PREFIX
-									+ i))) {
+							.getString(PreferenceInitializer.JDBC_DRIVER_DB_NAME_PREFIX
+									+ i))
+					&& driverClassName
+							.equals(store
+									.getString(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_PREFIX
+											+ i))) {
 				path = store
 						.getString(PreferenceInitializer.JDBC_DRIVER_PATH_PREFIX
 								+ i);
@@ -237,23 +238,23 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static void saveSetting(int no, DBSetting dbSetting) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		store.setValue(PreferenceInitializer.DB_SETTING_DBSYSTEM + no, Format
-				.null2blank(dbSetting.getDbsystem()));
-		store.setValue(PreferenceInitializer.DB_SETTING_SERVER + no, Format
-				.null2blank(dbSetting.getServer()));
-		store.setValue(PreferenceInitializer.DB_SETTING_PORT + no, dbSetting
-				.getPort());
-		store.setValue(PreferenceInitializer.DB_SETTING_DATABASE + no, Format
-				.null2blank(dbSetting.getDatabase()));
-		store.setValue(PreferenceInitializer.DB_SETTING_USER + no, Format
-				.null2blank(dbSetting.getUser()));
-		store.setValue(PreferenceInitializer.DB_SETTING_PASSWORD + no, Format
-				.null2blank(dbSetting.getPassword()));
+		store.setValue(PreferenceInitializer.DB_SETTING_DBSYSTEM + no,
+				Format.null2blank(dbSetting.getDbsystem()));
+		store.setValue(PreferenceInitializer.DB_SETTING_SERVER + no,
+				Format.null2blank(dbSetting.getServer()));
+		store.setValue(PreferenceInitializer.DB_SETTING_PORT + no,
+				dbSetting.getPort());
+		store.setValue(PreferenceInitializer.DB_SETTING_DATABASE + no,
+				Format.null2blank(dbSetting.getDatabase()));
+		store.setValue(PreferenceInitializer.DB_SETTING_USER + no,
+				Format.null2blank(dbSetting.getUser()));
+		store.setValue(PreferenceInitializer.DB_SETTING_PASSWORD + no,
+				Format.null2blank(dbSetting.getPassword()));
 		store.setValue(
 				PreferenceInitializer.DB_SETTING_USE_DEFAULT_DRIVER + no,
 				dbSetting.isUseDefaultDriver());
-		store.setValue(PreferenceInitializer.DB_SETTING_URL + no, Format
-				.null2blank(dbSetting.getUrl()));
+		store.setValue(PreferenceInitializer.DB_SETTING_URL + no,
+				Format.null2blank(dbSetting.getUrl()));
 		store.setValue(PreferenceInitializer.DB_SETTING_DRIVER_CLASS_NAME + no,
 				Format.null2blank(dbSetting.getDriverClassName()));
 	}
@@ -261,8 +262,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static void saveSetting(List<DBSetting> dbSettingList) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
-		store.setValue(PreferenceInitializer.DB_SETTING_LIST_NUM, dbSettingList
-				.size());
+		store.setValue(PreferenceInitializer.DB_SETTING_LIST_NUM,
+				dbSettingList.size());
 
 		for (int i = 0; i < dbSettingList.size(); i++) {
 			DBSetting dbSetting = dbSettingList.get(i);
@@ -301,13 +302,13 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	/**
-	 * allTranslations ‚ðŽæ“¾‚µ‚Ü‚·.
+	 * allTranslations ï¿½ï¿½ï¿½æ“¾ï¿½ï¿½ï¿½Ü‚ï¿½.
 	 * 
 	 * @return allTranslations
 	 */
 	public static List<String> getAllUserTranslations() {
-		String str = Activator.getDefault().getPreferenceStore().getString(
-				PreferenceInitializer.TRANSLATION_FILE_LIST);
+		String str = Activator.getDefault().getPreferenceStore()
+				.getString(PreferenceInitializer.TRANSLATION_FILE_LIST);
 
 		StringTokenizer st = new StringTokenizer(str, "/");
 		List<String> list = new ArrayList<String>();
@@ -316,8 +317,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		while (st.hasMoreElements()) {
 			String fileName = st.nextToken();
 
-			File file = new File(PreferenceInitializer
-					.getTranslationPath(fileName));
+			File file = new File(
+					PreferenceInitializer.getTranslationPath(fileName));
 			if (file.exists() && !names.contains(fileName)) {
 				list.add(fileName);
 				names.add(fileName);
@@ -326,7 +327,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 		return list;
 	}
-	
+
 	public static void addPreferenceValue(String value) {
 		IPreferenceStore preferenceStore = Activator.getDefault()
 				.getPreferenceStore();

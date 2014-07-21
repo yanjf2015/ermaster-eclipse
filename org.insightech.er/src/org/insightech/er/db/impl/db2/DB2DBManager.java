@@ -121,6 +121,7 @@ public class DB2DBManager extends DBManagerBase {
 		list.add("syspublic");
 		list.add("sysstat");
 		list.add("systools");
+		list.add("db2admin");
 
 		return list;
 	}

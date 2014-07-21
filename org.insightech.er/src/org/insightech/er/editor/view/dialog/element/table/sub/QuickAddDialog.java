@@ -111,7 +111,7 @@ public class QuickAddDialog extends AbstractDialog {
 			}
 
 			SqlType sqlType = SqlType.valueOf(this.diagram.getDatabase(), type,
-					length);
+					length, decimal);
 
 			TypeData typeData = new TypeData(length, decimal, false, null,
 					false, false, false, null);

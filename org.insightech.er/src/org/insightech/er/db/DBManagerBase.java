@@ -40,13 +40,13 @@ public abstract class DBManagerBase implements DBManager {
 	}
 
 	public String getURL(String serverName, String dbName, int port) {
-		String temp = serverName.replaceAll("\\\\", "\\\\\\\\");
+//		String temp = serverName.replaceAll("\\\\", "\\\\\\\\");
 		String url = this.getURL().replaceAll("<SERVER NAME>",
-				Matcher.quoteReplacement(temp));
+				Matcher.quoteReplacement(serverName));
 		url = url.replaceAll("<PORT>", String.valueOf(port));
 
-		temp = dbName.replaceAll("\\\\", "\\\\\\\\");
-		url = url.replaceAll("<DB NAME>", Matcher.quoteReplacement(temp));
+		//temp = dbName.replaceAll("\\\\", "\\\\\\\\");
+		url = url.replaceAll("<DB NAME>", Matcher.quoteReplacement(dbName));
 
 		return url;
 	}

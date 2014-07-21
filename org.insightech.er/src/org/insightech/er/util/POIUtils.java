@@ -172,17 +172,17 @@ public class POIUtils {
 
 	public static String getCellValue(HSSFSheet sheet, int r, int c) {
 		HSSFRow row = sheet.getRow(r);
-		
+
 		if (row == null) {
 			return null;
 		}
-		
+
 		HSSFCell cell = row.getCell(c);
-		
+
 		if (cell == null) {
 			return null;
 		}
-		
+
 		HSSFRichTextString cellValue = cell.getRichStringCellValue();
 
 		return cellValue.toString();
@@ -195,8 +195,14 @@ public class POIUtils {
 		}
 		HSSFCell cell = row.getCell(c);
 
-		if (cell.getCellType() != HSSFCell.CELL_TYPE_NUMERIC) {
-			return 0;
+		try {
+			if (cell.getCellType() != HSSFCell.CELL_TYPE_NUMERIC) {
+				return 0;
+			}
+		} catch (RuntimeException e) {
+			System.err.println("Exception at sheet name:"
+					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:" + (c + 1));
+			throw e;
 		}
 
 		return (int) cell.getNumericCellValue();
@@ -204,18 +210,24 @@ public class POIUtils {
 
 	public static boolean getBooleanCellValue(HSSFSheet sheet, int r, int c) {
 		HSSFRow row = sheet.getRow(r);
-		
+
 		if (row == null) {
 			return false;
 		}
-		
+
 		HSSFCell cell = row.getCell(c);
-		
+
 		if (cell == null) {
 			return false;
 		}
-		
-		return cell.getBooleanCellValue();
+
+		try {
+			return cell.getBooleanCellValue();
+		} catch (RuntimeException e) {
+			System.err.println("Exception at sheet name:"
+					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:" + (c + 1));
+			throw e;
+		}
 	}
 
 	public static short getCellColor(HSSFSheet sheet, int r, int c) {
@@ -392,8 +404,8 @@ public class POIUtils {
 			}
 		}
 
-		POIUtils.copyMergedRegion(newSheet, getMergedRegionList(oldSheet,
-				oldRowNum), newRowNum);
+		POIUtils.copyMergedRegion(newSheet,
+				getMergedRegionList(oldSheet, oldRowNum), newRowNum);
 	}
 
 	public static void copyMergedRegion(HSSFSheet sheet,

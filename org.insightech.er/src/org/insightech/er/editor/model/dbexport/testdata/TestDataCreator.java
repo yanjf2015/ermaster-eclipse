@@ -225,6 +225,7 @@ public abstract class TestDataCreator {
 			ERDiagram diagram) throws IOException {
 		this.exportTestDataSetting = exportTestDataSetting;
 		this.diagram = diagram;
+		this.diagram.getDiagramContents().sort();
 
 		try {
 			this.openFile();

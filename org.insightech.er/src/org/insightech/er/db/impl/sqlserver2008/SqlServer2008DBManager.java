@@ -3,6 +3,7 @@ package org.insightech.er.db.impl.sqlserver2008;
 import org.insightech.er.db.impl.sqlserver.SqlServerDBManager;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManager;
 
 public class SqlServer2008DBManager extends SqlServerDBManager {
 
@@ -16,6 +17,11 @@ public class SqlServer2008DBManager extends SqlServerDBManager {
 	@Override
 	public DDLCreator getDDLCreator(ERDiagram diagram, boolean semicolon) {
 		return new SqlServer2008DDLCreator(diagram, semicolon);
+	}
+
+	@Override
+	public ImportFromDBManager getTableImportManager() {
+		return new SqlServer2008TableImportManager();
 	}
 
 }

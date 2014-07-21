@@ -4,10 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.insightech.er.editor.model.dbimport.ImportFromDBManagerBase;
+import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 
-public class H2TableImportManager extends ImportFromDBManagerBase {
+public class H2TableImportManager extends ImportFromDBManagerEclipseBase {
 
 	/**
 	 * {@inheritDoc}
@@ -23,66 +23,53 @@ public class H2TableImportManager extends ImportFromDBManagerBase {
 		ColumnData columnData = super.createColumnData(columnSet);
 		String type = columnData.type.toLowerCase();
 
-		if (type.startsWith("decimal")) {
-			if (columnData.size == 128 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-
-			} else if (columnData.size == 646456993
-					&& columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("numeric")) {
-			if (columnData.size == 128 && columnData.decimalDegits == 0) {
-				columnData.size = 0;
-
-			} else if (columnData.size == 646456993
-					&& columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("float")) {
-			if (columnData.size == 17) {
-				columnData.size = 0;
-
-			} else if (columnData.size == 646456993
-					&& columnData.decimalDegits == 0) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("clob")) {
-			if (columnData.size == 16777216) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("blob")) {
-			if (columnData.size == 16777216) {
-				columnData.size = 0;
-			}
-
-		} else if (type.startsWith("varchar")) {
-			if (columnData.size == 16777216) {
-				columnData.size = 0;
-				columnData.type = "longvarchar";
-			}
-
-		} else if (type.startsWith("varbinary")) {
-			if (columnData.size == 16777216) {
-				columnData.size = 0;
-				columnData.type = "longvarbinary";
-			}
-
+		if ("bigint".equals(type)) {
+			
 		} else if (type.startsWith("timestamp")) {
-			columnData.size = columnData.size - 20;
-
-			if (columnData.size == 6) {
-				columnData.size = 0;
-			}
-
+			columnData.size = columnData.decimalDegits;
 		}
 
 		return columnData;
 	}
+
+	// TODO for identity column
+	// private String getRestrictType(String tableName, String schema,
+	// ColumnData columnData) throws SQLException {
+	// String type = null;
+	//
+	// PreparedStatement ps = null;
+	// ResultSet rs = null;
+	//
+	// try {
+	// ps =
+	// con.prepareStatement("select sequence_name from INFORMATION_SCHEMA.COLUMNS "
+	// + " where table_name = ? "
+	// + " and table_schema = ? "
+	// + " and column_name = ?");
+	//
+	// ps.setString(1, tableName);
+	// ps.setString(2, schema);
+	// ps.setString(3, columnData.columnName);
+	//
+	// rs = ps.executeQuery();
+	//
+	// if (rs.next()) {
+	// if (!Check.isEmpty(rs.getString("sequence_name"))) {
+	// type = "identity";
+	// }
+	// }
+	//
+	// } finally {
+	// if (rs != null) {
+	// rs.close();
+	// }
+	// if (ps != null) {
+	// ps.close();
+	// }
+	// }
+	//
+	// return type;
+	// }
 
 	@Override
 	protected Sequence importSequence(String schema, String sequenceName)
