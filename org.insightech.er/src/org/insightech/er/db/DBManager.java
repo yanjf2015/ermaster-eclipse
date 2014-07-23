@@ -77,4 +77,5 @@ public interface DBManager {
 
 	public BigDecimal getSequenceMaxValue();
 
+	public List<String> getForeignKeyRuleList();
 }

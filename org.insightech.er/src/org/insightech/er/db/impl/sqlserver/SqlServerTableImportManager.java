@@ -73,4 +73,9 @@ public class SqlServerTableImportManager extends ImportFromDBManagerEclipseBase 
 		}
 	}
 
+	@Override
+	protected String getTableNameWithSchema(String schema, String tableName) {
+		return "[" + super.getTableNameWithSchema(schema, tableName) + "]";
+	}
+
 }

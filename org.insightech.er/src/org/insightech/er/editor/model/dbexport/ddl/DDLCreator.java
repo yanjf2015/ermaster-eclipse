@@ -53,7 +53,7 @@ public abstract class DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		diagram.getDiagramContents().sort();
-		
+
 		if (this.ddlTarget.dropIndex) {
 			ddl.append(this.getDropIndexes(diagram));
 		}
@@ -236,7 +236,7 @@ public abstract class DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		diagram.getDiagramContents().sort();
-		
+
 		if (this.ddlTarget.createTablespace) {
 			ddl.append(this.getCreateTablespaces(diagram));
 		}
@@ -514,7 +514,7 @@ public abstract class DDLCreator {
 			ddl.append("\r\n");
 		}
 		ddl.append("CREATE TABLE ");
-		ddl.append(filter(table.getNameWithSchema(diagram.getDatabase())));
+		ddl.append(filterName(table.getNameWithSchema(diagram.getDatabase())));
 		ddl.append("\r\n(\r\n");
 
 		boolean first = true;
@@ -566,7 +566,7 @@ public abstract class DDLCreator {
 				if (!first) {
 					ddl.append(", ");
 				}
-				ddl.append(filter(column.getPhysicalName()));
+				ddl.append(filterName(column.getPhysicalName()));
 				first = false;
 			}
 
@@ -620,7 +620,7 @@ public abstract class DDLCreator {
 				if (!first) {
 					ddl.append(", ");
 				}
-				ddl.append(filter(primaryKey.getPhysicalName()));
+				ddl.append(filterName(primaryKey.getPhysicalName()));
 				ddl.append(this.getPrimaryKeyLength(table, primaryKey));
 				first = false;
 			}
@@ -651,7 +651,7 @@ public abstract class DDLCreator {
 		}
 
 		ddl.append("\t");
-		ddl.append(filter(normalColumn.getPhysicalName()));
+		ddl.append(filterName(normalColumn.getPhysicalName()));
 		ddl.append(" ");
 
 		ddl.append(filter(Format.formatType(normalColumn.getType(),
@@ -663,8 +663,8 @@ public abstract class DDLCreator {
 					.equals(defaultValue)) {
 				defaultValue = this.getDBManager().getCurrentTimeValue()[0];
 
-			} else if (ResourceString.getResourceString(
-					"label.empty.string").equals(defaultValue)) {
+			} else if (ResourceString.getResourceString("label.empty.string")
+					.equals(defaultValue)) {
 				defaultValue = "";
 			}
 
@@ -768,9 +768,9 @@ public abstract class DDLCreator {
 			ddl.append("UNIQUE ");
 		}
 		ddl.append("INDEX ");
-		ddl.append(filter(index.getName()));
+		ddl.append(filterName(index.getName()));
 		ddl.append(" ON ");
-		ddl.append(filter(table.getNameWithSchema(diagram.getDatabase())));
+		ddl.append(filterName(table.getNameWithSchema(diagram.getDatabase())));
 
 		if (index.getType() != null && !index.getType().trim().equals("")) {
 			ddl.append(" USING ");
@@ -789,7 +789,7 @@ public abstract class DDLCreator {
 
 			}
 
-			ddl.append(filter(column.getPhysicalName()));
+			ddl.append(filterName(column.getPhysicalName()));
 
 			if (this.getDBManager().isSupported(DBManager.SUPPORT_DESC_INDEX)) {
 				if (descs.size() > i) {
@@ -819,13 +819,13 @@ public abstract class DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("ALTER TABLE ");
-		ddl.append(filter(relation.getTargetTableView().getNameWithSchema(
+		ddl.append(filterName(relation.getTargetTableView().getNameWithSchema(
 				diagram.getDatabase())));
 		ddl.append("\r\n");
 		ddl.append("\tADD ");
 		if (relation.getName() != null && !relation.getName().trim().equals("")) {
 			ddl.append("CONSTRAINT ");
-			ddl.append(filter(relation.getName()));
+			ddl.append(filterName(relation.getName()));
 			ddl.append(" ");
 		}
 		ddl.append("FOREIGN KEY (");
@@ -837,13 +837,13 @@ public abstract class DDLCreator {
 				ddl.append(", ");
 
 			}
-			ddl.append(filter(column.getPhysicalName()));
+			ddl.append(filterName(column.getPhysicalName()));
 			first = false;
 		}
 
 		ddl.append(")\r\n");
 		ddl.append("\tREFERENCES ");
-		ddl.append(filter(relation.getSourceTableView().getNameWithSchema(
+		ddl.append(filterName(relation.getSourceTableView().getNameWithSchema(
 				diagram.getDatabase())));
 		ddl.append(" (");
 
@@ -855,17 +855,17 @@ public abstract class DDLCreator {
 
 			}
 
-			ddl.append(filter(foreignKeyColumn.getReferencedColumn(relation)
-					.getPhysicalName()));
+			ddl.append(filterName(foreignKeyColumn
+					.getReferencedColumn(relation).getPhysicalName()));
 			first = false;
 		}
 
 		ddl.append(")\r\n");
 		ddl.append("\tON UPDATE ");
-		ddl.append(filter(relation.getOnUpdateAction()));
+		ddl.append(filterName(relation.getOnUpdateAction()));
 		ddl.append("\r\n");
 		ddl.append("\tON DELETE ");
-		ddl.append(filter(relation.getOnDeleteAction()));
+		ddl.append(filterName(relation.getOnDeleteAction()));
 		ddl.append("\r\n");
 
 		if (this.semicolon) {
@@ -887,10 +887,10 @@ public abstract class DDLCreator {
 		}
 
 		ddl.append(this.getCreateOrReplacePrefix() + " VIEW ");
-		ddl.append(filter(this.getNameWithSchema(view.getTableViewProperties()
-				.getSchema(), view.getPhysicalName())));
+		ddl.append(filterName(this.getNameWithSchema(view
+				.getTableViewProperties().getSchema(), view.getPhysicalName())));
 		ddl.append(" AS ");
-		String sql = filter(view.getSql());
+		String sql = filterName(view.getSql());
 		if (sql.endsWith(";")) {
 			sql = sql.substring(0, sql.length() - 1);
 		}
@@ -915,10 +915,10 @@ public abstract class DDLCreator {
 		}
 
 		ddl.append(this.getCreateOrReplacePrefix() + " TRIGGER ");
-		ddl.append(filter(this.getNameWithSchema(trigger.getSchema(),
+		ddl.append(filterName(this.getNameWithSchema(trigger.getSchema(),
 				trigger.getName())));
 		ddl.append(" ");
-		ddl.append(filter(trigger.getSql()));
+		ddl.append(filterName(trigger.getSql()));
 
 		if (this.semicolon) {
 			ddl.append(";");
@@ -940,7 +940,7 @@ public abstract class DDLCreator {
 
 		ddl.append("CREATE ");
 		ddl.append("SEQUENCE ");
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(),
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(),
 				sequence.getName())));
 		if (sequence.getIncrement() != null) {
 			ddl.append(" INCREMENT ");
@@ -978,7 +978,7 @@ public abstract class DDLCreator {
 
 		ddl.append("DROP INDEX ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(index.getName()));
+		ddl.append(filterName(index.getName()));
 		if (this.semicolon) {
 			ddl.append(";");
 		}
@@ -986,25 +986,27 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
-	protected String getDropDDL(TableView table, Set<TableView> doneTables) {
+	protected String getDropDDL(ERTable table, Set<TableView> doneTables) {
 		StringBuilder ddl = new StringBuilder();
 
 		doneTables.add(table);
 
 		for (Relation relation : table.getOutgoingRelations()) {
 			TableView targetTableView = relation.getTargetTableView();
+
 			if (!doneTables.contains(targetTableView)) {
 				doneTables.add(targetTableView);
-				String targetTableDDL = this.getDropDDL(targetTableView,
-						doneTables);
-				ddl.append(targetTableDDL);
+
+				if (targetTableView instanceof ERTable) {
+					String targetTableDDL = this.getDropDDL(
+							(ERTable) targetTableView, doneTables);
+					ddl.append(targetTableDDL);
+				}
 			}
 		}
 
-		ddl.append("DROP TABLE ");
-		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(table.getNameWithSchema(diagram.getDatabase())));
-
+		ddl.append(this.getDropTableDDL(filterName(table
+				.getNameWithSchema(diagram.getDatabase()))));
 		ddl.append(this.getPostDropDDL(table));
 
 		if (this.semicolon) {
@@ -1016,6 +1018,12 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
+	protected String getDropTableDDL(String name) {
+		String ddl = "DROP TABLE " + this.getIfExistsOption() + name;
+
+		return ddl;
+	}
+
 	protected String getPostDropDDL(TableView table) {
 		return "";
 	}
@@ -1025,8 +1033,8 @@ public abstract class DDLCreator {
 
 		ddl.append("DROP VIEW ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(this.getNameWithSchema(view.getTableViewProperties()
-				.getSchema(), view.getPhysicalName())));
+		ddl.append(filterName(this.getNameWithSchema(view
+				.getTableViewProperties().getSchema(), view.getPhysicalName())));
 		if (this.semicolon) {
 			ddl.append(";");
 		}
@@ -1039,7 +1047,7 @@ public abstract class DDLCreator {
 
 		ddl.append("DROP TRIGGER ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(trigger.getName()));
+		ddl.append(filterName(trigger.getName()));
 		if (this.semicolon) {
 			ddl.append(";");
 		}
@@ -1053,7 +1061,7 @@ public abstract class DDLCreator {
 		ddl.append("DROP ");
 		ddl.append("TABLESPACE ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(tablespace.getName()));
+		ddl.append(filterName(tablespace.getName()));
 		if (this.semicolon) {
 			ddl.append(";");
 		}
@@ -1067,13 +1075,17 @@ public abstract class DDLCreator {
 		ddl.append("DROP ");
 		ddl.append("SEQUENCE ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(),
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(),
 				sequence.getName())));
 		if (this.semicolon) {
 			ddl.append(";");
 		}
 
 		return ddl.toString();
+	}
+
+	protected String filterName(String str) {
+		return this.filter(str);
 	}
 
 	protected String filter(String str) {

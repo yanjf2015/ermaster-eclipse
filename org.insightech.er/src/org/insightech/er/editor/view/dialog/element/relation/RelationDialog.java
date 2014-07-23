@@ -15,6 +15,9 @@ import org.eclipse.swt.widgets.Text;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
+import org.insightech.er.db.DBManager;
+import org.insightech.er.db.DBManagerFactory;
+import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
@@ -92,14 +95,15 @@ public class RelationDialog extends AbstractDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
 
-		onUpdateCombo = new Combo(group, SWT.NONE);
-		onUpdateCombo.setLayoutData(gridData);
+		this.onUpdateCombo = new Combo(group, SWT.NONE);
+		this.onUpdateCombo.setLayoutData(gridData);
 
-		onUpdateCombo.add("RESTRICT");
-		onUpdateCombo.add("CASCADE");
-		onUpdateCombo.add("NO ACTION");
-		onUpdateCombo.add("SET NULL");
-		onUpdateCombo.add("SET DEFAULT");
+		ERDiagram diagram = this.relation.getSource().getDiagram();
+		DBManager dbManager = DBManagerFactory.getDBManager(diagram);
+
+		for (String rule : dbManager.getForeignKeyRuleList()) {
+			this.onUpdateCombo.add(rule);
+		}
 	}
 
 	private void createOnDeleteCombo(Group group) {
@@ -107,14 +111,15 @@ public class RelationDialog extends AbstractDialog {
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
 
-		onDeleteCombo = new Combo(group, SWT.NONE);
-		onDeleteCombo.setLayoutData(gridData);
+		this.onDeleteCombo = new Combo(group, SWT.NONE);
+		this.onDeleteCombo.setLayoutData(gridData);
 
-		onDeleteCombo.add("RESTRICT");
-		onDeleteCombo.add("CASCADE");
-		onDeleteCombo.add("NO ACTION");
-		onDeleteCombo.add("SET NULL");
-		onDeleteCombo.add("SET DEFAULT");
+		ERDiagram diagram = this.relation.getSource().getDiagram();
+		DBManager dbManager = DBManagerFactory.getDBManager(diagram);
+
+		for (String rule : dbManager.getForeignKeyRuleList()) {
+			this.onDeleteCombo.add(rule);
+		}
 	}
 
 	private int createParentGroup(Composite composite) {

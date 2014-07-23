@@ -96,7 +96,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		}
 
 		ddl.append("\t");
-		ddl.append(filter(normalColumn.getPhysicalName()));
+		ddl.append(filterName(normalColumn.getPhysicalName()));
 		ddl.append(" ");
 
 		ddl.append(filter(Format.formatType(normalColumn.getType(),
@@ -197,7 +197,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("CREATE TABLESPACE ");
-		ddl.append(filter(tablespace.getName()));
+		ddl.append(filterName(tablespace.getName()));
 		ddl.append("\r\n");
 		ddl.append(" ADD DATAFILE '");
 		ddl.append(tablespaceProperties.getDataFile());
@@ -286,7 +286,7 @@ public class MySQLDDLCreator extends DDLCreator {
 			ddl.append("UNIQUE ");
 		}
 		ddl.append("INDEX ");
-		ddl.append(filter(index.getName()));
+		ddl.append(filterName(index.getName()));
 
 		if (index.getType() != null && !index.getType().trim().equals("")) {
 			ddl.append(" USING ");
@@ -294,7 +294,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		}
 
 		ddl.append(" ON ");
-		ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+		ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 				.getDatabase())));
 
 		ddl.append(" (");
@@ -309,7 +309,7 @@ public class MySQLDDLCreator extends DDLCreator {
 
 			}
 
-			ddl.append(filter(column.getPhysicalName()));
+			ddl.append(filterName(column.getPhysicalName()));
 
 			if (this.getDBManager().isSupported(DBManager.SUPPORT_DESC_INDEX)) {
 				if (descs.size() > i) {
@@ -355,9 +355,9 @@ public class MySQLDDLCreator extends DDLCreator {
 
 		ddl.append("DROP INDEX ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(index.getName()));
+		ddl.append(filterName(index.getName()));
 		ddl.append(" ON ");
-		ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+		ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 				.getDatabase())));
 
 		if (this.semicolon) {
@@ -392,6 +392,11 @@ public class MySQLDDLCreator extends DDLCreator {
 		}
 
 		return "";
+	}
+
+	@Override
+	public String getIfExistsOption() {
+		return "IF EXISTS ";
 	}
 
 }

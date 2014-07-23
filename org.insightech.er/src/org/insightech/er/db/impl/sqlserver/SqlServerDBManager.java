@@ -72,7 +72,8 @@ public class SqlServerDBManager extends DBManagerBase {
 	@Override
 	protected int[] getSupportItems() {
 		return new int[] { SUPPORT_AUTO_INCREMENT,
-				SUPPORT_AUTO_INCREMENT_SETTING, SUPPORT_SCHEMA, SUPPORT_SEQUENCE, SUPPORT_SEQUENCE_NOCACHE };
+				SUPPORT_AUTO_INCREMENT_SETTING, SUPPORT_SCHEMA,
+				SUPPORT_SEQUENCE, SUPPORT_SEQUENCE_NOCACHE };
 	}
 
 	public ImportFromDBManager getTableImportManager() {
@@ -104,11 +105,11 @@ public class SqlServerDBManager extends DBManagerBase {
 	public String[] getCurrentTimeValue() {
 		return new String[] { "GETDATE()", "CURRENT_TIMESTAMP" };
 	}
-	
+
 	@Override
 	public List<String> getSystemSchemaList() {
 		List<String> list = new ArrayList<String>();
-		
+
 		list.add("db_accessadmin");
 		list.add("db_backupoperator");
 		list.add("db_datareader");
@@ -121,11 +122,23 @@ public class SqlServerDBManager extends DBManagerBase {
 		list.add("guest");
 		list.add("information_schema");
 		list.add("sys");
-		
+
 		return list;
 	}
 
 	public BigDecimal getSequenceMaxValue() {
 		return null;
+	}
+
+	@Override
+	public List<String> getForeignKeyRuleList() {
+		List<String> list = new ArrayList<String>();
+
+		list.add("CASCADE");
+		list.add("NO ACTION");
+		list.add("SET NULL");
+		list.add("SET DEFAULT");
+
+		return list;
 	}
 }

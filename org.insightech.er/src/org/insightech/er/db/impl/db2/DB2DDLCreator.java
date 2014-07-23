@@ -64,7 +64,7 @@ public class DB2DDLCreator extends DDLCreator {
 		}
 
 		ddl.append("TABLESPACE ");
-		ddl.append(filter(tablespace.getName()));
+		ddl.append(filterName(tablespace.getName()));
 		ddl.append("\r\n");
 
 		if (!Check.isEmpty(tablespaceProperties.getPageSize())) {
@@ -118,7 +118,7 @@ public class DB2DDLCreator extends DDLCreator {
 
 		ddl.append("CREATE ");
 		ddl.append("SEQUENCE ");
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(),
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(),
 				sequence.getName())));
 		if (!Check.isEmpty(sequence.getDataType())) {
 			ddl.append(" AS ");

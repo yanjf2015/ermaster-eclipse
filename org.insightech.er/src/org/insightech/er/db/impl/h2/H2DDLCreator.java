@@ -31,7 +31,7 @@ public class H2DDLCreator extends DDLCreator {
 
 		ddl.append("CREATE ");
 		ddl.append("SEQUENCE IF NOT EXISTS ");
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(), sequence
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(), sequence
 				.getName())));
 		if (sequence.getStart() != null) {
 			ddl.append(" START WITH ");

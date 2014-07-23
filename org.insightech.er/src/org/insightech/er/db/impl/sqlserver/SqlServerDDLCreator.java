@@ -63,7 +63,7 @@ public class SqlServerDDLCreator extends DDLCreator {
 		}
 
 		ddl.append("TABLESPACE ");
-		ddl.append(filter(tablespace.getName()));
+		ddl.append(filterName(tablespace.getName()));
 		ddl.append("\r\n");
 
 		if (!Check.isEmpty(tablespaceProperties.getPageSize())) {
@@ -102,7 +102,7 @@ public class SqlServerDDLCreator extends DDLCreator {
 
 		return ddl.toString();
 	}
-	
+
 	@Override
 	public String getDDL(Sequence sequence) {
 		StringBuilder ddl = new StringBuilder();
@@ -117,7 +117,7 @@ public class SqlServerDDLCreator extends DDLCreator {
 
 		ddl.append("CREATE ");
 		ddl.append("SEQUENCE ");
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(),
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(),
 				sequence.getName())));
 		if (sequence.getIncrement() != null) {
 			ddl.append(" INCREMENT BY ");
@@ -151,6 +151,19 @@ public class SqlServerDDLCreator extends DDLCreator {
 		}
 
 		return ddl.toString();
+	}
+
+	@Override
+	protected String getDropTableDDL(String name) {
+		String ddl = "IF ObJECt_ID('" + name + "') IS NOT NULL DROP TABLE "
+				+ name;
+
+		return ddl;
+	}
+
+	@Override
+	protected String filterName(String name) {
+		return "[" + super.filterName(name) + "]";
 	}
 
 }

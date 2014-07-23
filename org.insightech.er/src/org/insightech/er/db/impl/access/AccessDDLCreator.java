@@ -18,9 +18,9 @@ public class AccessDDLCreator extends DDLCreator {
 
 		ddl.append("DROP INDEX ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(index.getName()));
+		ddl.append(filterName(index.getName()));
 		ddl.append(" ON ");
-		ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+		ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 				.getDatabase())));
 
 		if (this.semicolon) {

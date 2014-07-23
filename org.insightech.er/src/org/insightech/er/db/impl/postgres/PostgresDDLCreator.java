@@ -69,7 +69,7 @@ public class PostgresDDLCreator extends DDLCreator {
 			StringBuilder ddl = new StringBuilder();
 
 			ddl.append("COMMENT ON TABLE ");
-			ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+			ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 					.getDatabase())));
 			ddl.append(" IS '");
 			ddl.append(tableComment.replaceAll("'", "''"));
@@ -92,10 +92,10 @@ public class PostgresDDLCreator extends DDLCreator {
 					StringBuilder ddl = new StringBuilder();
 
 					ddl.append("COMMENT ON COLUMN ");
-					ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+					ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 							.getDatabase())));
 					ddl.append(".");
-					ddl.append(filter(normalColumn.getPhysicalName()));
+					ddl.append(filterName(normalColumn.getPhysicalName()));
 					ddl.append(" IS '");
 					ddl.append(comment.replaceAll("'", "''"));
 					ddl.append("'");
@@ -118,10 +118,10 @@ public class PostgresDDLCreator extends DDLCreator {
 						StringBuilder ddl = new StringBuilder();
 
 						ddl.append("COMMENT ON COLUMN ");
-						ddl.append(filter(table.getNameWithSchema(this
+						ddl.append(filterName(table.getNameWithSchema(this
 								.getDiagram().getDatabase())));
 						ddl.append(".");
-						ddl.append(filter(normalColumn.getPhysicalName()));
+						ddl.append(filterName(normalColumn.getPhysicalName()));
 						ddl.append(" IS '");
 						ddl.append(comment.replaceAll("'", "''"));
 						ddl.append("'");
@@ -146,7 +146,7 @@ public class PostgresDDLCreator extends DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("CREATE TABLESPACE ");
-		ddl.append(filter(tablespace.getName()));
+		ddl.append(filterName(tablespace.getName()));
 		ddl.append("\r\n");
 
 		if (!Check.isEmpty(tablespaceProperties.getOwner())) {
@@ -177,7 +177,7 @@ public class PostgresDDLCreator extends DDLCreator {
 				|| sequence.isCycle()) {
 
 			ddl.append("ALTER SEQUENCE ");
-			ddl.append(filter(table.getNameWithSchema(this.getDiagram()
+			ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
 					.getDatabase())
 					+ "_" + column.getPhysicalName() + "_SEQ"));
 
@@ -248,7 +248,7 @@ public class PostgresDDLCreator extends DDLCreator {
 
 		ddl.append("DROP TRIGGER ");
 		ddl.append(this.getIfExistsOption());
-		ddl.append(filter(trigger.getName()));
+		ddl.append(filterName(trigger.getName()));
 		ddl.append(" ON ");
 
 		Matcher matcher = DROP_TRIGGER_TABLE_PATTERN.matcher(trigger.getSql());

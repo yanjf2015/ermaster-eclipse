@@ -31,7 +31,7 @@ public class HSQLDBDDLCreator extends DDLCreator {
 
 		ddl.append("CREATE ");
 		ddl.append("SEQUENCE ");
-		ddl.append(filter(this.getNameWithSchema(sequence.getSchema(), sequence
+		ddl.append(filterName(this.getNameWithSchema(sequence.getSchema(), sequence
 				.getName())));
 		if (!Check.isEmpty(sequence.getDataType())) {
 			ddl.append(" AS ");

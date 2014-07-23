@@ -40,12 +40,12 @@ public abstract class DBManagerBase implements DBManager {
 	}
 
 	public String getURL(String serverName, String dbName, int port) {
-//		String temp = serverName.replaceAll("\\\\", "\\\\\\\\");
+		// String temp = serverName.replaceAll("\\\\", "\\\\\\\\");
 		String url = this.getURL().replaceAll("<SERVER NAME>",
 				Matcher.quoteReplacement(serverName));
 		url = url.replaceAll("<PORT>", String.valueOf(port));
 
-		//temp = dbName.replaceAll("\\\\", "\\\\\\\\");
+		// temp = dbName.replaceAll("\\\\", "\\\\\\\\");
 		url = url.replaceAll("<DB NAME>", Matcher.quoteReplacement(dbName));
 
 		return url;
@@ -205,4 +205,15 @@ public abstract class DBManagerBase implements DBManager {
 		return list;
 	}
 
+	public List<String> getForeignKeyRuleList() {
+		List<String> list = new ArrayList<String>();
+
+		list.add("RESTRICT");
+		list.add("CASCADE");
+		list.add("NO ACTION");
+		list.add("SET NULL");
+		list.add("SET DEFAULT");
+
+		return list;
+	}
 }

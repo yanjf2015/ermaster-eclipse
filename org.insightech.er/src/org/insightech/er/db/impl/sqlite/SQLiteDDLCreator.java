@@ -48,13 +48,13 @@ public class SQLiteDDLCreator extends DDLCreator {
 					ddl.append(", ");
 
 				}
-				ddl.append(filter(column.getPhysicalName()));
+				ddl.append(filterName(column.getPhysicalName()));
 				first = false;
 			}
 
 			ddl.append(")\r\n");
 			ddl.append("\tREFERENCES ");
-			ddl.append(filter(relation.getSourceTableView().getNameWithSchema(
+			ddl.append(filterName(relation.getSourceTableView().getNameWithSchema(
 					this.getDiagram().getDatabase())));
 			ddl.append(" (");
 
@@ -67,7 +67,7 @@ public class SQLiteDDLCreator extends DDLCreator {
 
 				}
 
-				ddl.append(filter(foreignKeyColumn
+				ddl.append(filterName(foreignKeyColumn
 						.getReferencedColumn(relation).getPhysicalName()));
 				first = false;
 			}
@@ -112,6 +112,10 @@ public class SQLiteDDLCreator extends DDLCreator {
 	protected String getCreateForeignKeys(ERDiagram diagram) {
 		return "";
 	}
-	
-	
+
+	@Override
+	protected String filterName(String name) {
+		return "[" + super.filterName(name) + "]";
+	}
+
 }
