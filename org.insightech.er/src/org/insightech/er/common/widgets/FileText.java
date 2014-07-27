@@ -57,9 +57,6 @@ public class FileText {
 						String canonicalProjectPath = projectFile
 								.getCanonicalPath();
 
-						System.out.println(saveFilePath);
-						System.out.println(canonicalProjectPath);
-
 						if (saveFilePath.startsWith(canonicalProjectPath)) {
 							saveFilePath = saveFilePath
 									.substring(canonicalProjectPath.length() + 1);

@@ -24,8 +24,7 @@ import org.insightech.er.editor.model.dbexport.html.page_generator.impl.Tablespa
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.TriggerHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.ViewHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.WordHtmlReportPageGenerator;
-import org.insightech.er.editor.model.diagram_contents.element.node.Location;
-import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 import org.insightech.er.util.io.FileUtils;
 import org.insightech.er.util.io.IOUtils;
 
@@ -50,15 +49,15 @@ public class ExportToHtmlManager {
 
 	protected ERDiagram diagram;
 
-	private Map<TableView, Location> tableLocationMap;
+	private ImageInfoSet imageInfoSet;
 
 	public ExportToHtmlManager(String outputDir, ERDiagram diagram,
-			Map<TableView, Location> tableLocationMap) {
+			ImageInfoSet imageInfoSet) {
 		this.outputDir = outputDir;
+		this.imageInfoSet = imageInfoSet;
+
 		this.diagram = diagram;
 		this.diagram.getDiagramContents().sort();
-		
-		this.tableLocationMap = tableLocationMap;
 
 		Map<Object, Integer> idMap = new HashMap<Object, Integer>();
 
@@ -78,7 +77,7 @@ public class ExportToHtmlManager {
 				idMap));
 		htmlReportPageGeneratorList.add(new WordHtmlReportPageGenerator(idMap));
 		htmlReportPageGeneratorList.add(new CategoryHtmlReportPageGenerator(
-				idMap));
+				idMap, this.imageInfoSet));
 	}
 
 	protected void doPreTask(HtmlReportPageGenerator pageGenerator,
@@ -96,22 +95,21 @@ public class ExportToHtmlManager {
 
 		String template = null;
 
-		String imageSrc = "image/er.png";
-
 		for (String iconFile : ICON_FILES) {
 			this.copyOutResource("image/" + iconFile, iconFile);
 		}
 
-		String allclasses = overviewPageGenerator.generateAllClasses(diagram,
-				htmlReportPageGeneratorList);
+		String allclasses = this.overviewPageGenerator.generateAllClasses(this.diagram,
+				this.htmlReportPageGeneratorList);
 		this.writeOut("allclasses.html", allclasses);
 
-		String overviewFrame = overviewPageGenerator
+		String overviewFrame = this.overviewPageGenerator
 				.generateFrame(htmlReportPageGeneratorList);
 		this.writeOut("overview-frame.html", overviewFrame);
 
-		String overviewSummary = overviewPageGenerator.generateSummary(
-				imageSrc, tableLocationMap, htmlReportPageGeneratorList);
+		String overviewSummary = overviewPageGenerator
+				.generateSummary(this.imageInfoSet.getDiagramImageInfo(),
+						htmlReportPageGeneratorList);
 		this.writeOut("overview-summary.html", overviewSummary);
 
 		for (int i = 0; i < htmlReportPageGeneratorList.size(); i++) {

@@ -30,11 +30,14 @@ public class ExportToImageManager {
 	}
 
 	public void doProcess() throws IOException, InterruptedException {
-		if (format == SWT.IMAGE_JPEG || format == SWT.IMAGE_BMP) {
-			writeJPGorBMP(img, saveFilePath, format);
+		File file = new File(this.saveFilePath);
+		file.getParentFile().mkdirs();
 
-		} else if (format == SWT.IMAGE_PNG || format == SWT.IMAGE_GIF) {
-			writePNGorGIF(img, saveFilePath, formatName);
+		if (format == SWT.IMAGE_JPEG || format == SWT.IMAGE_BMP) {
+			writeJPGorBMP(this.img, this.saveFilePath, this.format);
+
+		} else if (this.format == SWT.IMAGE_PNG || this.format == SWT.IMAGE_GIF) {
+			writePNGorGIF(this.img, this.saveFilePath, this.formatName);
 		}
 	}
 

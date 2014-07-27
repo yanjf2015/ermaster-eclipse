@@ -1,15 +1,13 @@
 package org.insightech.er.editor.model.dbexport.html;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.page_generator.HtmlReportPageGenerator;
-import org.insightech.er.editor.model.diagram_contents.element.node.Location;
-import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 
 public class ExportToHtmlWithProgressManager extends ExportToHtmlManager
 		implements IRunnableWithProgress {
@@ -19,15 +17,10 @@ public class ExportToHtmlWithProgressManager extends ExportToHtmlManager
 	private IProgressMonitor monitor;
 
 	public ExportToHtmlWithProgressManager(String outputDir, ERDiagram diagram,
-			Map<TableView, Location> tableLocationMap) {
-		super(outputDir, diagram, tableLocationMap);
+			ImageInfoSet imageInfoSet) {
+		super(outputDir, diagram, imageInfoSet);
 	}
 
-	/**
-	 * exception ‚ðŽæ“¾‚µ‚Ü‚·.
-	 * 
-	 * @return exception
-	 */
 	public Exception getException() {
 		return exception;
 	}
@@ -38,8 +31,9 @@ public class ExportToHtmlWithProgressManager extends ExportToHtmlManager
 		int count = overviewPageGenerator.countAllClasses(diagram,
 				htmlReportPageGeneratorList);
 
-		monitor.beginTask(ResourceString
-				.getResourceString("dialog.message.export.html"), count);
+		monitor.beginTask(
+				ResourceString.getResourceString("dialog.message.export.html"),
+				count);
 
 		try {
 			this.monitor = monitor;

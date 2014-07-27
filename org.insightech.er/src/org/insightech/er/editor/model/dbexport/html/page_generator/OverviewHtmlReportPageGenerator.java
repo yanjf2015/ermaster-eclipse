@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.ExportToHtmlManager;
-import org.insightech.er.editor.model.diagram_contents.element.node.Location;
-import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
+import org.insightech.er.editor.model.dbexport.html.part_generator.ImagePartGenerator;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
 
 public class OverviewHtmlReportPageGenerator {
 
@@ -58,59 +58,26 @@ public class OverviewHtmlReportPageGenerator {
 		return sb.toString();
 	}
 
-	public String generateSummary(String imageSrc,
-			Map<TableView, Location> tableLocationMap,
+	public String generateSummary(ImageInfo imageInfo,
 			List<HtmlReportPageGenerator> htmlReportPageGeneratorList)
 			throws IOException {
 
 		String template = ExportToHtmlManager
 				.getTemplate("overview/overview-summary_template.html");
 
-		Object[] args = { this.generateImage(imageSrc, tableLocationMap),
+		String imagePart = "";
+
+		if (imageInfo != null) {
+			ImagePartGenerator imagePartGenerator = new ImagePartGenerator(
+					this.idMap);
+
+			imagePart = imagePartGenerator.generateImage(imageInfo, "");
+		}
+
+		Object[] args = { imagePart,
 				this.generateSummaryTable(htmlReportPageGeneratorList) };
 
 		return MessageFormat.format(template, args);
-	}
-
-	private String generateImage(String imageSrc,
-			Map<TableView, Location> tableLocationMap) throws IOException {
-		if (imageSrc == null) {
-			return "";
-		}
-
-		String template = ExportToHtmlManager
-				.getTemplate("overview/overview-summary_image_template.html");
-
-		Object[] args = { imageSrc, this.generateImageMap(tableLocationMap) };
-
-		return MessageFormat.format(template, args);
-	}
-
-	private String generateImageMap(Map<TableView, Location> tableLocationMap)
-			throws IOException {
-		StringBuilder sb = new StringBuilder();
-
-		if (tableLocationMap != null) {
-			String template = ExportToHtmlManager
-					.getTemplate("overview/overview-summary_image_map_template.html");
-
-			for (Map.Entry<TableView, Location> entry : tableLocationMap
-					.entrySet()) {
-				Location location = entry.getValue();
-
-				Object[] args = { String.valueOf(location.x),
-						String.valueOf(location.y),
-						String.valueOf(location.x + location.width),
-						String.valueOf(location.y + location.height),
-						entry.getKey().getObjectType(),
-						this.getObjectId(entry.getKey()) };
-				String row = MessageFormat.format(template, args);
-
-				sb.append(row);
-			}
-		}
-
-		return sb.toString();
 	}
 
 	private String generateSummaryTable(

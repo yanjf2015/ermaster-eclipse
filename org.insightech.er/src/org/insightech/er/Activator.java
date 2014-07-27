@@ -5,24 +5,15 @@ import java.io.File;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.SWTGraphics;
-import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -33,6 +24,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
 import org.insightech.er.editor.controller.editpart.element.PagableFreeformRootEditPart;
 import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
 import org.insightech.er.editor.view.action.dbexport.ExportToImageAction;
 import org.insightech.er.util.Format;
 import org.osgi.framework.BundleContext;
@@ -109,9 +101,7 @@ public class Activator extends AbstractUIPlugin {
 				loadImageDescriptor("icons/alignbottom.gif"));
 		reg.put(ImageKey.ALIGN_CENTER,
 				loadImageDescriptor("icons/aligncenter.gif"));
-		reg
-				.put(ImageKey.ALIGN_LEFT,
-						loadImageDescriptor("icons/alignleft.gif"));
+		reg.put(ImageKey.ALIGN_LEFT, loadImageDescriptor("icons/alignleft.gif"));
 		reg.put(ImageKey.ALIGN_MIDDLE,
 				loadImageDescriptor("icons/alignmid.gif"));
 		reg.put(ImageKey.ALIGN_RIGHT,
@@ -238,15 +228,16 @@ public class Activator extends AbstractUIPlugin {
 	 *            例外
 	 */
 	public static void showExceptionDialog(Throwable e) {
-		IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e
-				.toString(), e);
+		IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
+				e.toString(), e);
 
 		Activator.log(e);
 
 		ErrorDialog.openError(PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getShell(), ResourceString
-				.getResourceString("dialog.title.error"), ResourceString
-				.getResourceString("error.plugin.error.message"), status);
+				.getActiveWorkbenchWindow().getShell(),
+				ResourceString.getResourceString("dialog.title.error"),
+				ResourceString.getResourceString("error.plugin.error.message"),
+				status);
 	}
 
 	/**
@@ -371,8 +362,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public static void log(Throwable e) {
 		e.printStackTrace();
-		Activator.getDefault().getLog().log(
-				new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e
+		Activator
+				.getDefault()
+				.getLog()
+				.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e
 						.getMessage(), e));
 	}
 
@@ -406,9 +399,8 @@ public class Activator extends AbstractUIPlugin {
 
 	}
 
-	public static GraphicalViewer createGraphicalViewer(final ERDiagram diagram) {
-		Display display = PlatformUI.getWorkbench().getDisplay();
-
+	public static GraphicalViewer createGraphicalViewer(Display display,
+			final ERDiagram diagram) {
 		GraphicalViewerCreator runnable = new GraphicalViewerCreator(display,
 				diagram);
 
@@ -421,79 +413,24 @@ public class Activator extends AbstractUIPlugin {
 
 		private GraphicalViewer viewer;
 
-		private Image img = null;
+		private ImageInfo imageInfo = null;
 
 		private ImageCreator(GraphicalViewer viewer) {
 			this.viewer = viewer;
 		}
 
 		public void run() {
-			GC figureCanvasGC = null;
-			GC imageGC = null;
-
-			try {
-				ScalableFreeformRootEditPart rootEditPart = (ScalableFreeformRootEditPart) viewer
-						.getRootEditPart();
-				rootEditPart.refresh();
-				IFigure rootFigure = ((LayerManager) rootEditPart)
-						.getLayer(LayerConstants.PRINTABLE_LAYERS);
-
-				EditPart editPart = viewer.getContents();
-
-				editPart.refresh();
-				ERDiagram diagram = (ERDiagram) editPart.getModel();
-
-				Rectangle rootFigureBounds = ExportToImageAction.getBounds(
-						diagram, rootEditPart, rootFigure.getBounds());
-
-				Control figureCanvas = viewer.getControl();
-
-				figureCanvasGC = new GC(figureCanvas);
-
-				img = new Image(Display.getCurrent(),
-						rootFigureBounds.width + 20,
-						rootFigureBounds.height + 20);
-				imageGC = new GC(img);
-
-				imageGC.setBackground(figureCanvasGC.getBackground());
-				imageGC.setForeground(figureCanvasGC.getForeground());
-				imageGC.setFont(figureCanvasGC.getFont());
-				imageGC.setLineStyle(figureCanvasGC.getLineStyle());
-				imageGC.setLineWidth(figureCanvasGC.getLineWidth());
-				imageGC.setAntialias(SWT.OFF);
-				// imageGC.setInterpolation(SWT.HIGH);
-
-				Graphics imgGraphics = new SWTGraphics(imageGC);
-				imgGraphics.setBackgroundColor(figureCanvas.getBackground());
-				imgGraphics.fillRectangle(0, 0, rootFigureBounds.width + 20,
-						rootFigureBounds.height + 20);
-
-				imgGraphics.translate(ExportToImageAction
-						.translateX(rootFigureBounds.x), ExportToImageAction
-						.translateY(rootFigureBounds.y));
-
-				rootFigure.paint(imgGraphics);
-
-			} finally {
-				if (figureCanvasGC != null) {
-					figureCanvasGC.dispose();
-				}
-				if (imageGC != null) {
-					imageGC.dispose();
-				}
-			}
+			this.imageInfo = ExportToImageAction.createImage(this.viewer);
 		}
 
 	}
 
-	public static Image createImage(GraphicalViewer viewer) {
-		Display display = PlatformUI.getWorkbench().getDisplay();
-
+	public static ImageInfo createImage(Display display, GraphicalViewer viewer)
+			throws InterruptedException {
 		ImageCreator runnable = new ImageCreator(viewer);
 
 		display.syncExec(runnable);
 
-		return runnable.img;
-
+		return runnable.imageInfo;
 	}
 }

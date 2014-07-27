@@ -6,14 +6,21 @@ import java.util.Map;
 
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.page_generator.AbstractHtmlReportPageGenerator;
+import org.insightech.er.editor.model.dbexport.html.part_generator.ImagePartGenerator;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 
 public class CategoryHtmlReportPageGenerator extends
 		AbstractHtmlReportPageGenerator {
 
-	public CategoryHtmlReportPageGenerator(Map<Object, Integer> idMap) {
+	private ImageInfoSet imageInfoSet;
+
+	public CategoryHtmlReportPageGenerator(Map<Object, Integer> idMap,
+			ImageInfoSet imageInfoSet) {
 		super(idMap);
+
+		this.imageInfoSet = imageInfoSet;
 	}
 
 	public String getType() {
@@ -44,7 +51,17 @@ public class CategoryHtmlReportPageGenerator extends
 
 		String usedTableTable = this.generateUsedTableTable(usedTableList);
 
-		return new String[] { usedTableTable };
+		String imagePart = "";
+
+		if (this.imageInfoSet != null) {
+			ImagePartGenerator imagePartGenerator = new ImagePartGenerator(
+					this.idMap);
+
+			imagePart = imagePartGenerator.generateImage(
+					this.imageInfoSet.getImageInfo(category), "../");
+		}
+
+		return new String[] { imagePart, usedTableTable };
 	}
 
 	public String getObjectName(Object object) {

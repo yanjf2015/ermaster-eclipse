@@ -230,8 +230,7 @@ public class PersistentXmlImpl extends Persistent {
 					.append("\t</page_setting>\n");
 		}
 
-		xml.append("\t<category_index>")
-				.append(diagram.getCurrentCategoryIndex())
+		xml.append("\t<category_index>").append(diagram.getPageIndex())
 				.append("</category_index>\n");
 		xml.append("\t<zoom>").append(diagram.getZoom()).append("</zoom>\n");
 		xml.append("\t<x>").append(diagram.getX()).append("</x>\n");

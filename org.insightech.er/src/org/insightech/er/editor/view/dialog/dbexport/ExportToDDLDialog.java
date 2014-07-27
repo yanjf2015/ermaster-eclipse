@@ -435,7 +435,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 		}
 
 		Category currentCategory = this.diagram.getCurrentCategory();
-		int currentCategoryIndex = this.diagram.getCurrentCategoryIndex();
+		int pageIndex = this.diagram.getPageIndex();
 
 		setCurrentCategory();
 
@@ -463,8 +463,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 			Activator.showMessageDialog(e.getMessage());
 
 		} finally {
-			this.diagram.setCurrentCategory(currentCategory,
-					currentCategoryIndex);
+			this.diagram.setCurrentCategory(currentCategory, pageIndex);
 
 			if (out != null) {
 				out.close();

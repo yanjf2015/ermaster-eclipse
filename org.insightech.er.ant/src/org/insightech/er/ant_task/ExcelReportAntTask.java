@@ -9,12 +9,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.tools.ant.BuildException;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager;
 import org.insightech.er.editor.model.dbexport.image.ExportToImageManager;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
 import org.insightech.er.editor.view.action.dbexport.ExportToImageAction;
 import org.insightech.er.preference.PreferenceInitializer;
 import org.insightech.er.preference.template.TemplatePreferencePage;
@@ -78,11 +79,13 @@ public class ExcelReportAntTask extends ERMasterAntTaskBase {
 			int excelPictureType = -1;
 
 			if (outputImage) {
-				Image img = null;
+				ImageInfo imageInfo = null;
 				GraphicalViewer viewer = null;
 
+				Display display = this.getDisplay();
+
 				try {
-					viewer = Activator.createGraphicalViewer(diagram);
+					viewer = Activator.createGraphicalViewer(display, diagram);
 
 					int format = ExportToImageAction
 							.getFormatType(outputImageFile);
@@ -100,10 +103,10 @@ public class ExcelReportAntTask extends ERMasterAntTaskBase {
 										+ " : " + outputImageFile);
 					}
 
-					img = Activator.createImage(viewer);
+					imageInfo = Activator.createImage(display, viewer);
 
 					ExportToImageManager exportToImageManager = new ExportToImageManager(
-							img, format, outputImageFile);
+							imageInfo.getImage(), format, outputImageFile);
 					exportToImageManager.doProcess();
 
 					imageBuffer = FileUtils.readFileToByteArray(new File(
@@ -113,8 +116,8 @@ public class ExcelReportAntTask extends ERMasterAntTaskBase {
 					if (viewer != null) {
 						viewer.getContents().deactivate();
 					}
-					if (img != null) {
-						img.dispose();
+					if (imageInfo != null) {
+						imageInfo.dispose();
 					}
 				}
 			}
@@ -158,19 +161,13 @@ public class ExcelReportAntTask extends ERMasterAntTaskBase {
 
 	@Override
 	protected void logUsage() {
-		this
-				.log("<ermaster.excelReport> have these attributes. (the attribute with '*' must be set.) ");
+		this.log("<ermaster.excelReport> have these attributes. (the attribute with '*' must be set.) ");
 		this.log("    * diagramFile     - The path of the input .erm file.");
 		this.log("    * outputFile      - The path of the output excel file.");
-		this
-				.log("    * template        - The template of the output excel file.");
-		this
-				.log("                      - The available values are \"default_en\", \"default_ja\", or the file names of custom templates.");
-		this
-				.log("      outputImageFile - The path of the output image file. The png/jpg/jpeg format are supported.");
-		this
-				.log("                        When not specified, the image is not used in excel.");
-		this
-				.log("      useLogicalNameAsSheetName - Boolean. Whether the logical name is used for the seat name or not.");
+		this.log("    * template        - The template of the output excel file.");
+		this.log("                      - The available values are \"default_en\", \"default_ja\", or the file names of custom templates.");
+		this.log("      outputImageFile - The path of the output image file. The png/jpg/jpeg format are supported.");
+		this.log("                        When not specified, the image is not used in excel.");
+		this.log("      useLogicalNameAsSheetName - Boolean. Whether the logical name is used for the seat name or not.");
 	}
 }

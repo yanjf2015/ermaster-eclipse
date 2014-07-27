@@ -9,12 +9,16 @@ import java.io.InputStream;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.persistent.Persistent;
 
 public abstract class ERMasterAntTaskBase extends Task {
+
+	private Display display;
 
 	private String diagramFile;
 
@@ -53,8 +57,8 @@ public abstract class ERMasterAntTaskBase extends Task {
 			this.log("Load the diagram file : " + this.diagramFile);
 
 			File file = new File(this.getLocation().getFileName());
-			in = new BufferedInputStream(new FileInputStream(new File(file
-					.getParent(), this.diagramFile)));
+			in = new BufferedInputStream(new FileInputStream(new File(
+					file.getParent(), this.diagramFile)));
 
 			ERDiagram diagram = persistent.load(in);
 
@@ -77,6 +81,10 @@ public abstract class ERMasterAntTaskBase extends Task {
 			throw new BuildException(e);
 
 		} finally {
+			if (this.display != null) {
+				this.display.dispose();
+			}
+
 			if (in != null) {
 				try {
 					in.close();
@@ -91,5 +99,18 @@ public abstract class ERMasterAntTaskBase extends Task {
 	protected abstract void logUsage();
 
 	protected abstract void doTask(ERDiagram diagram) throws Exception;
+
+	protected Display getDisplay() {
+		try {
+			return PlatformUI.getWorkbench().getDisplay();
+
+		} catch (IllegalStateException e) {
+			if (this.display == null) {
+				this.display = new Display();
+			}
+		}
+
+		return this.display;
+	}
 
 }

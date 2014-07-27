@@ -40,6 +40,7 @@ import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.FileText;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.settings.ExportSetting;
 import org.insightech.er.editor.model.settings.Settings;
@@ -201,7 +202,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 	@Override
 	protected void perfomeOK() throws InputException {
 		Category currentCategory = this.diagram.getCurrentCategory();
-		int currentCategoryIndex = this.diagram.getCurrentCategoryIndex();
+		int currentPageIndex = this.diagram.getPageIndex();
 
 		setCurrentCategory();
 
@@ -217,11 +218,12 @@ public class ExportToExcelDialog extends AbstractDialog {
 			String outputImageFilePath = this.outputImageFileText.getFilePath();
 
 			File outputExcelFile = new File(outputExcelFilePath);
-			
+
 			if (!outputExcelFile.isAbsolute()) {
-				outputExcelFile = new File(this.getProjectPath(), outputExcelFilePath);
+				outputExcelFile = new File(this.getProjectPath(),
+						outputExcelFilePath);
 			}
-			
+
 			File outputExcelDir = outputExcelFile.getParentFile();
 
 			if (!outputExcelDir.exists()) {
@@ -239,9 +241,10 @@ public class ExportToExcelDialog extends AbstractDialog {
 			}
 
 			File outputImageFile = new File(outputImageFilePath);
-			
+
 			if (!outputImageFile.isAbsolute()) {
-				outputImageFile = new File(this.getProjectPath(), outputImageFilePath);
+				outputImageFile = new File(this.getProjectPath(),
+						outputImageFilePath);
 			}
 
 			File outputImageDir = outputImageFile.getParentFile();
@@ -266,20 +269,20 @@ public class ExportToExcelDialog extends AbstractDialog {
 			boolean outputImage = this.outputImageButton.getSelection();
 
 			if (outputImage) {
-				int imageFormat = ExportToImageAction.outputImage(monitor,
-						this.viewer, outputImageFilePath);
+				ImageInfo imageInfo = ExportToImageAction.outputImage(monitor,
+						this.viewer, null, outputImageFilePath);
 
-				if (imageFormat == -1) {
+				if (imageInfo == null) {
 					throw new InputException(null);
 
 				} else {
 					imageBuffer = FileUtils.readFileToByteArray(new File(
 							outputImageFilePath));
 
-					if (imageFormat == SWT.IMAGE_JPEG) {
+					if (imageInfo.getFormat() == SWT.IMAGE_JPEG) {
 						excelPictureType = HSSFWorkbook.PICTURE_TYPE_JPEG;
 
-					} else if (imageFormat == SWT.IMAGE_PNG) {
+					} else if (imageInfo.getFormat() == SWT.IMAGE_PNG) {
 						excelPictureType = HSSFWorkbook.PICTURE_TYPE_PNG;
 
 					} else {
@@ -343,8 +346,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 			Activator.showExceptionDialog(e);
 
 		} finally {
-			this.diagram.setCurrentCategory(currentCategory,
-					currentCategoryIndex);
+			this.diagram.setCurrentCategory(currentCategory, currentPageIndex);
 
 			if (stream != null) {
 				try {

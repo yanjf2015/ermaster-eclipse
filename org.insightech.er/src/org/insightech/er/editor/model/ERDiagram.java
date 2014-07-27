@@ -35,7 +35,7 @@ public class ERDiagram extends ViewableModel {
 
 	private Category currentCategory;
 
-	private int currentCategoryIndex;
+	private int pageIndex;
 
 	private double zoom = 1.0d;
 
@@ -186,18 +186,17 @@ public class ERDiagram extends ViewableModel {
 		this.defaultColor[2] = blue;
 	}
 
-	public void setCurrentCategory(Category currentCategory,
-			int currentCategoryIndex) {
+	public void setCurrentCategory(Category currentCategory, int pageIndex) {
 		this.currentCategory = currentCategory;
-		this.currentCategoryIndex = currentCategoryIndex;
+		this.pageIndex = pageIndex;
 	}
 
 	public Category getCurrentCategory() {
 		return currentCategory;
 	}
 
-	public int getCurrentCategoryIndex() {
-		return currentCategoryIndex;
+	public int getPageIndex() {
+		return pageIndex;
 	}
 
 	public boolean isTooltip() {

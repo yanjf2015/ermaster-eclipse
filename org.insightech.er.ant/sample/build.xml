@@ -1,0 +1,22 @@
+<project default="ddl">
+
+	<target name="ddl">
+		<ermaster.ddl diagramFile="newfile5.erm" outputFile="ddl.sql" encoding="UTF-8" />
+	</target>
+	
+	<target name="image">
+		<ermaster.image diagramfile="newfile5.erm" outputfile="test.png" />
+	</target>
+
+	<target name="report_html">
+		<ermaster.reportHtml diagramFile="newfile5.erm" outputDir="." />
+	</target>
+
+	<target name="report_excel">
+		<ermaster.reportExcel diagramfile="newfile5.erm" outputfile="test.xls" 
+			template="default_ja" 
+			outputimagefile="test.png" 
+			uselogicalnameassheetname="true" />
+	</target>
+
+</project>

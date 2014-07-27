@@ -29,10 +29,14 @@ import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.image.ExportToImageWithProgressManager;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Bendpoint;
 import org.insightech.er.editor.model.diagram_contents.element.connection.ConnectionElement;
+import org.insightech.er.editor.model.diagram_contents.element.node.Location;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
+import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
+import org.insightech.er.util.Check;
 
 public class ExportToImageAction extends AbstractExportAction {
 
@@ -74,36 +78,46 @@ public class ExportToImageAction extends AbstractExportAction {
 	@Override
 	protected void save(IEditorPart editorPart, GraphicalViewer viewer,
 			String saveFilePath) {
-
 		ProgressMonitorDialog monitor = new ProgressMonitorDialog(PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow().getShell());
 
 		try {
-			if (outputImage(monitor, viewer, saveFilePath) != -1) {
+			if (outputImage(monitor, viewer, "", saveFilePath) != null) {
 				Activator.showMessageDialog("dialog.message.export.finish");
 			}
 		} catch (InterruptedException e) {
 		}
 	}
 
-	public static int outputImage(ProgressMonitorDialog monitor,
-			GraphicalViewer viewer, String saveFilePath)
+	public static ImageInfo outputImage(ProgressMonitorDialog monitor,
+			GraphicalViewer viewer, String saveDirPath, String fileName)
 			throws InterruptedException {
+
+		String saveFilePath = null;
+
+		if (Check.isEmpty(saveDirPath)) {
+			saveFilePath = fileName;
+		} else {
+			saveFilePath = saveDirPath + "/" + fileName;
+		}
+
+		ImageInfo imageInfo = null;
+
 		int format = getFormatType(saveFilePath);
 
 		if (format == -1) {
 			Activator
 					.showMessageDialog("dialog.message.export.image.not.supported");
-			return -1;
+			return imageInfo;
 		}
 
-		Image img = null;
-
 		try {
-			img = createImage(viewer);
+			imageInfo = createImage(viewer);
+			imageInfo.setFormat(format);
+			imageInfo.setPath(fileName);
 
 			ExportToImageWithProgressManager exportToImageManager = new ExportToImageWithProgressManager(
-					img, format, saveFilePath);
+					imageInfo.getImage(), format, saveFilePath);
 
 			monitor.run(true, true, exportToImageManager);
 
@@ -124,15 +138,15 @@ public class ExportToImageAction extends AbstractExportAction {
 				Activator.showExceptionDialog(e);
 			}
 
-			return -1;
+			return null;
 
 		} finally {
-			if (img != null) {
-				img.dispose();
+			if (imageInfo != null) {
+				imageInfo.dispose();
 			}
 		}
 
-		return format;
+		return imageInfo;
 	}
 
 	public static int getFormatType(String saveFilePath) {
@@ -160,15 +174,13 @@ public class ExportToImageAction extends AbstractExportAction {
 		return format;
 	}
 
-	public static Image createImage(GraphicalViewer viewer) {
-		Image img = null;
-
+	public static ImageInfo createImage(GraphicalViewer viewer) {
 		GC figureCanvasGC = null;
 		GC imageGC = null;
 
 		try {
 			ScalableFreeformRootEditPart rootEditPart = (ScalableFreeformRootEditPart) viewer
-					.getEditPartRegistry().get(LayerManager.ID);
+					.getRootEditPart();
 			rootEditPart.refresh();
 			IFigure rootFigure = ((LayerManager) rootEditPart)
 					.getLayer(LayerConstants.PRINTABLE_LAYERS);
@@ -183,7 +195,7 @@ public class ExportToImageAction extends AbstractExportAction {
 			Control figureCanvas = viewer.getControl();
 			figureCanvasGC = new GC(figureCanvas);
 
-			img = new Image(Display.getCurrent(), rootFigureBounds.width + 20,
+			Image img = new Image(Display.getCurrent(), rootFigureBounds.width + 20,
 					rootFigureBounds.height + 20);
 			imageGC = new GC(img);
 
@@ -200,12 +212,19 @@ public class ExportToImageAction extends AbstractExportAction {
 			imgGraphics.fillRectangle(0, 0, rootFigureBounds.width + 20,
 					rootFigureBounds.height + 20);
 
-			imgGraphics.translate(translateX(rootFigureBounds.x),
-					translateY(rootFigureBounds.y));
+			int translateX = translateX(rootFigureBounds.x);
+			int translateY = translateY(rootFigureBounds.y);
+
+			imgGraphics.translate(translateX, translateY);
 
 			rootFigure.paint(imgGraphics);
 
-			return img;
+			Map<TableView, Location> tableLoacationMap = getTableLocationMap(
+					rootEditPart, translateX, translateY, diagram);
+
+			ImageInfo imageInfo = new ImageInfo(img, tableLoacationMap);
+
+			return imageInfo;
 
 		} finally {
 			if (figureCanvasGC != null) {
@@ -215,6 +234,35 @@ public class ExportToImageAction extends AbstractExportAction {
 				imageGC.dispose();
 			}
 		}
+	}
+
+	private static Map<TableView, Location> getTableLocationMap(
+			ScalableFreeformRootEditPart rootEditPart, int translateX,
+			int translateY, ERDiagram diagram) {
+		Map<TableView, Location> tableLocationMap = new HashMap<TableView, Location>();
+
+		Category category = diagram.getCurrentCategory();
+
+		for (Object child : rootEditPart.getContents().getChildren()) {
+			NodeElementEditPart editPart = (NodeElementEditPart) child;
+			NodeElement nodeElement = (NodeElement) editPart.getModel();
+			if (!(nodeElement instanceof TableView)) {
+				continue;
+			}
+
+			if (category == null || category.isVisible(nodeElement, diagram)) {
+				IFigure figure = editPart.getFigure();
+				Rectangle figureRectangle = figure.getBounds();
+
+				Location location = new Location(
+						figureRectangle.x + translateX, figureRectangle.y
+								+ translateY, figureRectangle.width,
+						figureRectangle.height);
+				tableLocationMap.put((TableView) nodeElement, location);
+			}
+		}
+
+		return tableLocationMap;
 	}
 
 	public static int translateX(int x) {

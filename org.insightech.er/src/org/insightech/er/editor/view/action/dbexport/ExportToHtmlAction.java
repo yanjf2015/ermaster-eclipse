@@ -2,17 +2,11 @@ package org.insightech.er.editor.view.action.dbexport;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.editparts.LayerManager;
-import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -25,13 +19,11 @@ import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.controller.command.settings.ChangeSettingsCommand;
-import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.ExportToHtmlWithProgressManager;
-import org.insightech.er.editor.model.diagram_contents.element.node.Location;
-import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
-import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 import org.insightech.er.editor.model.settings.ExportSetting;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.util.Check;
@@ -83,11 +75,11 @@ public class ExportToHtmlAction extends AbstractExportAction {
 						.getSettings().clone();
 				newSettings.getExportSetting().setHtmlOutput(saveFilePath);
 
-				ChangeSettingsCommand command = new ChangeSettingsCommand(diagram,
-						newSettings, false);
+				ChangeSettingsCommand command = new ChangeSettingsCommand(
+						diagram, newSettings, false);
 				this.execute(command);
 			}
-			
+
 			saveFilePath = saveFilePath + OUTPUT_DIR;
 		}
 
@@ -104,12 +96,12 @@ public class ExportToHtmlAction extends AbstractExportAction {
 	 */
 	@Override
 	protected void save(IEditorPart editorPart, GraphicalViewer viewer,
-			String saveFilePath) throws Exception {
+			String saveDirPath) throws Exception {
 
 		ERDiagram diagram = this.getDiagram();
 
 		Category currentCategory = diagram.getCurrentCategory();
-		int currentCategoryIndex = diagram.getCurrentCategoryIndex();
+		int currentPageIndex = diagram.getPageIndex();
 
 		try {
 			ProgressMonitorDialog monitor = new ProgressMonitorDialog(
@@ -118,30 +110,49 @@ public class ExportToHtmlAction extends AbstractExportAction {
 
 			boolean outputImage = true;
 
-			File dir = new File(saveFilePath);
+			File dir = new File(saveDirPath);
 			FileUtils.deleteDirectory(dir);
 
-			dir = new File(saveFilePath + "/image");
-			dir.mkdirs();
-
-			String outputImageFilePath = saveFilePath + "/image/er.png";
+			ImageInfoSet imageInfoSet = null;
 
 			if (outputImage) {
 				diagram.setCurrentCategory(null, 0);
 
-				int imageFormat = ExportToImageAction.outputImage(monitor,
-						viewer, outputImageFilePath);
+				ImageInfo diagramImageInfo = ExportToImageAction.outputImage(
+						monitor, viewer, saveDirPath, "image/er.png");
 
-				if (imageFormat == -1) {
+				if (diagramImageInfo == null) {
 					throw new InputException(null);
+				}
+
+				imageInfoSet = new ImageInfoSet(diagramImageInfo);
+
+				List<Category> categoryList = this.getDiagram()
+						.getDiagramContents().getSettings()
+						.getCategorySetting().getSelectedCategories();
+
+				for (int i = 0; i < categoryList.size(); i++) {
+					Category category = categoryList.get(i);
+
+					diagram.setCurrentCategory(category, i + 1);
+
+					String categoryImageFilePath = "image/category/" + i
+							+ ".png";
+
+					ImageInfo imageInfo = ExportToImageAction
+							.outputImage(monitor, viewer, saveDirPath,
+									categoryImageFilePath);
+
+					if (imageInfo == null) {
+						throw new InputException(null);
+					}
+
+					imageInfoSet.addImageInfo(category, imageInfo);
 				}
 			}
 
-			Map<TableView, Location> tableLocationMap = getTableLocationMap(
-					this.getGraphicalViewer(), this.getDiagram());
-
 			ExportToHtmlWithProgressManager manager = new ExportToHtmlWithProgressManager(
-					saveFilePath, diagram, tableLocationMap);
+					saveDirPath, diagram, imageInfoSet);
 			monitor.run(true, true, manager);
 
 			if (manager.getException() != null) {
@@ -157,7 +168,8 @@ public class ExportToHtmlAction extends AbstractExportAction {
 			Activator.showExceptionDialog(e);
 
 		} finally {
-			diagram.setCurrentCategory(currentCategory, currentCategoryIndex);
+			diagram.setCurrentCategory(currentCategory, currentPageIndex);
+			diagram.refresh();
 		}
 
 		this.refreshProject();
@@ -166,43 +178,6 @@ public class ExportToHtmlAction extends AbstractExportAction {
 	@Override
 	protected String[] getFilterExtensions() {
 		return null;
-	}
-
-	public static Map<TableView, Location> getTableLocationMap(
-			GraphicalViewer viewer, ERDiagram diagram) {
-		Map<TableView, Location> tableLocationMap = new HashMap<TableView, Location>();
-
-		ScalableFreeformRootEditPart rootEditPart = (ScalableFreeformRootEditPart) viewer
-				.getEditPartRegistry().get(LayerManager.ID);
-		IFigure rootFigure = ((LayerManager) rootEditPart)
-				.getLayer(LayerConstants.PRINTABLE_LAYERS);
-		int translateX = ExportToImageAction
-				.translateX(rootFigure.getBounds().x);
-		int translateY = ExportToImageAction
-				.translateY(rootFigure.getBounds().y);
-
-		Category category = diagram.getCurrentCategory();
-
-		for (Object child : rootEditPart.getContents().getChildren()) {
-			NodeElementEditPart editPart = (NodeElementEditPart) child;
-			NodeElement nodeElement = (NodeElement) editPart.getModel();
-			if (!(nodeElement instanceof TableView)) {
-				continue;
-			}
-
-			if (category == null || category.isVisible(nodeElement, diagram)) {
-				IFigure figure = editPart.getFigure();
-				Rectangle figureRectangle = figure.getBounds();
-
-				Location location = new Location(
-						figureRectangle.x + translateX, figureRectangle.y
-								+ translateY, figureRectangle.width,
-						figureRectangle.height);
-				tableLocationMap.put((TableView) nodeElement, location);
-			}
-		}
-
-		return tableLocationMap;
 	}
 
 	@Override

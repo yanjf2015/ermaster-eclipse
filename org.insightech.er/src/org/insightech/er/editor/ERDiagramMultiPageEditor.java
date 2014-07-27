@@ -151,11 +151,11 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 	}
 
 	private void initStartPage() {
-		int categoryIndex = this.diagram.getCurrentCategoryIndex();
-		this.setActivePage(categoryIndex);
+		int pageIndex = this.diagram.getPageIndex();
+		this.setActivePage(pageIndex);
 
-		if (categoryIndex > 0) {
-			this.pageChange(categoryIndex);
+		if (pageIndex > 0) {
+			this.pageChange(pageIndex);
 		}
 
 		ERDiagramEditor activeEditor = (ERDiagramEditor) this.getActiveEditor();
@@ -285,7 +285,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void pageChange(int newPageIndex) {
+	public void pageChange(int newPageIndex) {
 		ERDiagramEditor currentEditor = (ERDiagramEditor) this
 				.getActiveEditor();
 		currentEditor.removeSelection();
@@ -302,8 +302,8 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 
 		Category category = this.getCurrentPageCategory();
 		this.diagram.setCurrentCategory(category, newPageIndex);
-		
-		this.diagram.refreshWithConnection();		
+
+		this.diagram.refreshWithConnection();
 	}
 
 	/**
@@ -408,7 +408,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 					}
 				}
 			};
-			
+
 			try {
 				ResourcesPlugin.getWorkspace().run(editorMarker, null);
 			} catch (CoreException e) {

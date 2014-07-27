@@ -19,7 +19,7 @@ import org.insightech.er.util.Format;
 public abstract class AbstractHtmlReportPageGenerator implements
 		HtmlReportPageGenerator {
 
-	private Map<Object, Integer> idMap;
+	protected Map<Object, Integer> idMap;
 
 	public AbstractHtmlReportPageGenerator(Map<Object, Integer> idMap) {
 		this.idMap = idMap;
@@ -183,8 +183,10 @@ public abstract class AbstractHtmlReportPageGenerator implements
 		for (NormalColumn normalColumn : normalColumnList) {
 			String type = null;
 			if (normalColumn.getType() != null) {
-				type = Format.formatType(normalColumn.getType(), normalColumn
-						.getTypeData(), diagram.getDatabase(), true);
+				type = Format
+						.formatType(normalColumn.getType(),
+								normalColumn.getTypeData(),
+								diagram.getDatabase(), true);
 			} else {
 				type = "";
 			}
@@ -216,8 +218,10 @@ public abstract class AbstractHtmlReportPageGenerator implements
 			String type = null;
 
 			if (normalColumn.getType() != null) {
-				type = Format.formatType(normalColumn.getType(), normalColumn
-						.getTypeData(), diagram.getDatabase(), true);
+				type = Format
+						.formatType(normalColumn.getType(),
+								normalColumn.getTypeData(),
+								diagram.getDatabase(), true);
 			} else {
 				type = "";
 			}
@@ -460,8 +464,8 @@ public abstract class AbstractHtmlReportPageGenerator implements
 			body.append(row);
 		}
 
-		template = MessageFormat.format(template, new Object[] {
-				header.toString(), body.toString() });
+		template = MessageFormat.format(template,
+				new Object[] { header.toString(), body.toString() });
 
 		return template;
 	}
@@ -528,9 +532,9 @@ public abstract class AbstractHtmlReportPageGenerator implements
 			}
 		}
 
-		template = MessageFormat.format(template, new Object[] {
-				header.toString(), body.toString(),
-				complexUniqueKeyList.size() + 1 });
+		template = MessageFormat.format(template,
+				new Object[] { header.toString(), body.toString(),
+						complexUniqueKeyList.size() + 1 });
 
 		return template;
 	}
