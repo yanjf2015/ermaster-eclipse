@@ -19,16 +19,13 @@ public abstract class AbstractTextTestDataCreator extends TestDataCreator {
 
 	@Override
 	protected void openFile() throws IOException {
-		File file = new File(this.exportTestDataSetting.getExportFilePath());
-		file.getParentFile().mkdirs();
+		File dir = this.getOutputDir();
+		File file = new File(dir, this.testData.getName()
+				+ this.getFileExtention());
 
 		out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(this.exportTestDataSetting
-						.getExportFilePath()
-						+ File.separator
-						+ this.testData.getName()
-						+ this.getFileExtention()), this.exportTestDataSetting
-						.getExportFileEncoding())));
+				new FileOutputStream(file),
+				this.exportTestDataSetting.getExportFileEncoding())));
 
 	}
 

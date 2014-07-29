@@ -25,7 +25,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
-import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.DirectoryText;
@@ -39,7 +38,7 @@ import org.insightech.er.editor.model.settings.export.ExportTestDataSetting;
 import org.insightech.er.editor.model.testdata.TestData;
 import org.insightech.er.util.Check;
 
-public class ExportToTestDataDialog extends AbstractDialog {
+public class ExportToTestDataDialog extends AbstractExportDialog {
 
 	private Table testDataTable;
 
@@ -57,8 +56,6 @@ public class ExportToTestDataDialog extends AbstractDialog {
 
 	private ERDiagram diagram;
 
-	private IEditorPart editorPart;
-
 	private List<TestData> testDataList;
 
 	private int targetIndex;
@@ -67,11 +64,10 @@ public class ExportToTestDataDialog extends AbstractDialog {
 
 	public ExportToTestDataDialog(Shell parentShell, IEditorPart editorPart,
 			ERDiagram diagram, List<TestData> testDataList, int targetIndex) {
-		super(parentShell, 3);
+		super(parentShell, 3, editorPart);
 
 		this.testDataList = testDataList;
 		this.targetIndex = targetIndex;
-		this.editorPart = editorPart;
 		this.diagram = diagram;
 
 		this.exportTestDataSetting = diagram.getDiagramContents().getSettings()
@@ -238,8 +234,8 @@ public class ExportToTestDataDialog extends AbstractDialog {
 		int format = exportTestDataSetting.getExportFormat();
 
 		if (format == TestData.EXPORT_FORMT_DBUNIT) {
-			testDataCreator = new DBUnitTestDataCreator(exportTestDataSetting
-					.getExportFileEncoding());
+			testDataCreator = new DBUnitTestDataCreator(
+					exportTestDataSetting.getExportFileEncoding());
 
 		} else if (format == TestData.EXPORT_FORMT_DBUNIT_FLAT_XML) {
 			testDataCreator = new DBUnitFlatXmlTestDataCreator(
@@ -255,8 +251,13 @@ public class ExportToTestDataDialog extends AbstractDialog {
 
 		testDataCreator.init(testData);
 
-		File dir = new File(exportTestDataSetting.getExportFilePath()
-				+ File.separator);
+		File dir = new File(exportTestDataSetting.getExportFilePath());
+
+		if (!dir.isAbsolute()) {
+			dir = new File(diagram.getProjectRoot(),
+					exportTestDataSetting.getExportFilePath());
+		}
+
 		if (dir.isDirectory() || dir.mkdirs()) {
 			testDataCreator.write(exportTestDataSetting, diagram);
 
@@ -324,8 +325,8 @@ public class ExportToTestDataDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		this.createButton(parent, IDialogConstants.OK_ID, ResourceString
-				.getResourceString("label.button.export"), true);
+		this.createButton(parent, IDialogConstants.OK_ID,
+				ResourceString.getResourceString("label.button.export"), true);
 		this.createButton(parent, IDialogConstants.CLOSE_ID,
 				IDialogConstants.CLOSE_LABEL, false);
 	}

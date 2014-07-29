@@ -11,8 +11,6 @@ import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -32,13 +30,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
-import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.FileText;
@@ -55,7 +51,7 @@ import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
-public class ExportToDDLDialog extends AbstractDialog {
+public class ExportToDDLDialog extends AbstractExportDialog {
 
 	private Combo environmentCombo;
 
@@ -70,8 +66,6 @@ public class ExportToDDLDialog extends AbstractDialog {
 	private Button inlineColumnComment;
 
 	private ERDiagram diagram;
-
-	private IEditorPart editorPart;
 
 	private Button dropTablespace;
 
@@ -117,10 +111,9 @@ public class ExportToDDLDialog extends AbstractDialog {
 
 	public ExportToDDLDialog(Shell parentShell, ERDiagram diagram,
 			IEditorPart editorPart, GraphicalViewer viewer) {
-		super(parentShell, 3);
+		super(parentShell, 3, editorPart);
 
 		this.diagram = diagram;
-		this.editorPart = editorPart;
 	}
 
 	/**
@@ -146,7 +139,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 
 		CompositeFactory.createLabel(parent, "label.output.file");
 		this.outputFileText = new FileText(parent, SWT.BORDER,
-				this.getProjectPath(), ".sql");
+				this.getProjectPath(), this.getOutputFileName(".sql"), ".sql");
 		this.outputFileText.setLayoutData(gridData);
 
 		this.fileEncodingCombo = CompositeFactory.createFileEncodingCombo(
@@ -517,11 +510,7 @@ public class ExportToDDLDialog extends AbstractDialog {
 		String outputFile = Format.null2blank(exportSetting.getDdlOutput());
 
 		if (Check.isEmpty(outputFile)) {
-			IFile file = ((IFileEditorInput) editorPart.getEditorInput())
-					.getFile();
-			outputFile = file.getLocation().toOSString();
-			outputFile = outputFile.substring(0, outputFile.lastIndexOf("."))
-					+ ".sql";
+			outputFile = this.getOutputFilePath(".sql");
 		}
 
 		this.outputFileText.setText(outputFile);
@@ -600,12 +589,4 @@ public class ExportToDDLDialog extends AbstractDialog {
 		return this.exportSetting;
 	}
 
-	private String getProjectPath() {
-		IFile file = ((IFileEditorInput) this.editorPart.getEditorInput())
-				.getFile();
-
-		IProject project = file.getProject();
-
-		return project.getLocation().toString();
-	}
 }

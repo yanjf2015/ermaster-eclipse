@@ -43,10 +43,10 @@ public class DBUnitXLSTestDataCreator extends TestDataCreator {
 	protected void write() throws IOException {
 		super.write();
 
-		POIUtils.writeExcelFile(new File(this.exportTestDataSetting
-				.getExportFilePath()
-				+ File.separator + this.testData.getName() + ".xls"),
-				this.workbook);
+		File dir = this.getOutputDir();
+		File file = new File(dir, this.testData.getName() + ".xls");
+
+		POIUtils.writeExcelFile(file, this.workbook);
 	}
 
 	@Override

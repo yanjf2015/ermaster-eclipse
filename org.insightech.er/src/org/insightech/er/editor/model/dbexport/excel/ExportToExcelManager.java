@@ -108,7 +108,7 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 		this.saveFilePath = saveFilePath;
 		this.diagram = diagram;
 		this.diagram.getDiagramContents().sort();
-		
+
 		this.template = template;
 		this.useLogicalNameAsSheetName = useLogicalNameAsSheetName;
 		this.imageBuffer = imageBuffer;
@@ -139,6 +139,12 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 	public void save(IProgressMonitor monitor) throws IOException,
 			InterruptedException {
 		File excelFile = new File(this.saveFilePath);
+		if (!excelFile.isAbsolute()) {
+			excelFile = new File(this.diagram.getProjectRoot(),
+					this.saveFilePath);
+		}
+
+		excelFile.getParentFile().mkdirs();
 
 		this.backup(excelFile, true);
 

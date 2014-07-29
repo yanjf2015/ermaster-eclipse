@@ -19,7 +19,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.Activator;
-import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.DirectoryText;
@@ -30,7 +29,7 @@ import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.model.settings.export.ExportJavaSetting;
 import org.insightech.er.util.Format;
 
-public class ExportToJavaDialog extends AbstractDialog {
+public class ExportToJavaDialog extends AbstractExportDialog {
 
 	private DirectoryText outputDirText;
 
@@ -42,18 +41,15 @@ public class ExportToJavaDialog extends AbstractDialog {
 
 	private ERDiagram diagram;
 
-	private IEditorPart editorPart;
-
 	private ExportSetting exportSetting;
 
 	private Combo fileEncodingCombo;
 
 	public ExportToJavaDialog(Shell parentShell, ERDiagram diagram,
 			IEditorPart editorPart) {
-		super(parentShell, 3);
+		super(parentShell, 3, editorPart);
 
 		this.diagram = diagram;
-		this.editorPart = editorPart;
 	}
 
 	/**

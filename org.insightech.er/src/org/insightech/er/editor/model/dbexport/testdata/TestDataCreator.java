@@ -1,5 +1,6 @@
 package org.insightech.er.editor.model.dbexport.testdata;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -83,8 +84,9 @@ public abstract class TestDataCreator {
 				toDecimalPlaces = toStr.length() - toStr.indexOf(".") - 1;
 			}
 
-			int decimalPlaces = Math.max(Math.max(fromDecimalPlaces,
-					incrementDecimalPlaces), toDecimalPlaces);
+			int decimalPlaces = Math.max(
+					Math.max(fromDecimalPlaces, incrementDecimalPlaces),
+					toDecimalPlaces);
 			int from = (int) (Double.parseDouble(fromStr) * Math.pow(10,
 					decimalPlaces));
 			int increment = (int) (Double.parseDouble(incrementStr) * Math.pow(
@@ -107,8 +109,8 @@ public abstract class TestDataCreator {
 				value = template.replaceAll("%", String.valueOf(num));
 
 			} else {
-				value = template.replaceAll("%", String.valueOf(num
-						/ Math.pow(10, decimalPlaces)));
+				value = template.replaceAll("%",
+						String.valueOf(num / Math.pow(10, decimalPlaces)));
 			}
 
 			if (column.getType() != null && column.getType().isTimestamp()) {
@@ -237,6 +239,19 @@ public abstract class TestDataCreator {
 		}
 	}
 
+	protected File getOutputDir() {
+		File outputDir = new File(this.exportTestDataSetting.getExportFilePath());
+
+		if (!outputDir.isAbsolute()) {
+			outputDir = new File(this.diagram.getProjectRoot() + "/"
+					+ this.exportTestDataSetting.getExportFilePath());
+		}
+
+		outputDir.getParentFile().mkdirs();
+
+		return outputDir;
+	}
+
 	protected abstract void openFile() throws IOException;
 
 	protected void write() throws IOException {
@@ -258,23 +273,19 @@ public abstract class TestDataCreator {
 			if (this.testData.getExportOrder() == TestData.EXPORT_ORDER_DIRECT_TO_REPEAT) {
 				for (Map<NormalColumn, String> data : directTestData
 						.getDataList()) {
-					this
-							.writeDirectTestData(table, data, diagram
-									.getDatabase());
+					this.writeDirectTestData(table, data, diagram.getDatabase());
 				}
 
-				this.writeRepeatTestData(table, repeatTestData, diagram
-						.getDatabase());
+				this.writeRepeatTestData(table, repeatTestData,
+						diagram.getDatabase());
 
 			} else {
-				this.writeRepeatTestData(table, repeatTestData, diagram
-						.getDatabase());
+				this.writeRepeatTestData(table, repeatTestData,
+						diagram.getDatabase());
 
 				for (Map<NormalColumn, String> data : directTestData
 						.getDataList()) {
-					this
-							.writeDirectTestData(table, data, diagram
-									.getDatabase());
+					this.writeDirectTestData(table, data, diagram.getDatabase());
 				}
 			}
 

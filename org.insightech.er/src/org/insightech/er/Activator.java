@@ -314,13 +314,19 @@ public class Activator extends AbstractUIPlugin {
 	 *            拡張子
 	 * @return 保存ダイアログで選択されたファイルのパス
 	 */
-	public static String showSaveDialog(String filePath,
-			String[] filterExtensions) {
-		String dir = null;
-		String fileName = null;
+	public static String showSaveDialog(File baseDir, String defaultFileName,
+			String filePath, String[] filterExtensions) {
+		String dir = baseDir.getAbsolutePath();
+		String fileName = defaultFileName;
 
 		if (filePath != null && !"".equals(filePath.trim())) {
-			File file = new File(filePath.trim());
+			filePath = filePath.trim();
+
+			File file = new File(filePath);
+
+			if (!file.isAbsolute()) {
+				file = new File(baseDir, filePath);
+			}
 
 			dir = file.getParent();
 			fileName = file.getName();

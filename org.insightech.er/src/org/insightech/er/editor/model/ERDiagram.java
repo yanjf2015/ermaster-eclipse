@@ -2,7 +2,10 @@ package org.insightech.er.editor.model;
 
 import java.util.Locale;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.ui.IFileEditorInput;
 import org.insightech.er.editor.ERDiagramMultiPageEditor;
 import org.insightech.er.editor.model.diagram_contents.DiagramContents;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
@@ -48,6 +51,8 @@ public class ERDiagram extends ViewableModel {
 	private PageSetting pageSetting;
 
 	public Point mousePoint = new Point();
+
+	private String projectRoot;
 
 	public ERDiagram(String database) {
 		this.diagramContents = new DiagramContents();
@@ -173,6 +178,13 @@ public class ERDiagram extends ViewableModel {
 
 	public void setEditor(ERDiagramMultiPageEditor editor) {
 		this.editor = editor;
+
+		IFile file = ((IFileEditorInput) this.editor.getEditorInput())
+				.getFile();
+
+		IProject project = file.getProject();
+
+		this.projectRoot = project.getLocation().toString();
 	}
 
 	public int[] getDefaultColor() {
@@ -228,49 +240,22 @@ public class ERDiagram extends ViewableModel {
 		return y;
 	}
 
-	/**
-	 * dbSetting ���擾���܂�.
-	 * 
-	 * @return dbSetting
-	 */
 	public DBSetting getDbSetting() {
 		return dbSetting;
 	}
 
-	/**
-	 * dbSetting ��ݒ肵�܂�.
-	 * 
-	 * @param dbSetting
-	 *            dbSetting
-	 */
 	public void setDbSetting(DBSetting dbSetting) {
 		this.dbSetting = dbSetting;
 	}
 
-	/**
-	 * pageSetting ���擾���܂�.
-	 * 
-	 * @return pageSetting
-	 */
 	public PageSetting getPageSetting() {
 		return pageSetting;
 	}
 
-	/**
-	 * pageSetting ��ݒ肵�܂�.
-	 * 
-	 * @param pageSetting
-	 *            pageSetting
-	 */
 	public void setPageSetting(PageSetting pageSetting) {
 		this.pageSetting = pageSetting;
 	}
 
-	/**
-	 * editor ���擾���܂�.
-	 * 
-	 * @return editor
-	 */
 	public ERDiagramMultiPageEditor getEditor() {
 		return editor;
 	}
@@ -289,21 +274,10 @@ public class ERDiagram extends ViewableModel {
 		return str;
 	}
 
-	/**
-	 * disableSelectColumn ���擾���܂�.
-	 * 
-	 * @return disableSelectColumn
-	 */
 	public boolean isDisableSelectColumn() {
 		return disableSelectColumn;
 	}
 
-	/**
-	 * disableSelectColumn ��ݒ肵�܂�.
-	 * 
-	 * @param disableSelectColumn
-	 *            disableSelectColumn
-	 */
 	public void setDisableSelectColumn(boolean disableSelectColumn) {
 		this.disableSelectColumn = disableSelectColumn;
 	}
@@ -314,6 +288,10 @@ public class ERDiagram extends ViewableModel {
 
 	public void setSnapToGrid(boolean snapToGrid) {
 		this.snapToGrid = snapToGrid;
+	}
+
+	public String getProjectRoot() {
+		return projectRoot;
 	}
 
 	public void refreshChildren() {

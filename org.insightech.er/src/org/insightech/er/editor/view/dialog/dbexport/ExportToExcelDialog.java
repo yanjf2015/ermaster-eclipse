@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.SWT;
@@ -28,13 +26,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
-import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.FileText;
@@ -50,7 +46,9 @@ import org.insightech.er.preference.template.TemplatePreferencePage;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.io.FileUtils;
 
-public class ExportToExcelDialog extends AbstractDialog {
+public class ExportToExcelDialog extends AbstractExportDialog {
+
+	private static final String DEFAULT_IMAGE_EXTENTION = ".png";
 
 	private Combo templateCombo;
 
@@ -68,18 +66,15 @@ public class ExportToExcelDialog extends AbstractDialog {
 
 	private ERDiagram diagram;
 
-	private IEditorPart editorPart;
-
 	private GraphicalViewer viewer;
 
 	private ExportSetting exportSetting;
 
 	public ExportToExcelDialog(Shell parentShell, ERDiagram diagram,
 			IEditorPart editorPart, GraphicalViewer viewer) {
-		super(parentShell, 3);
+		super(parentShell, 3, editorPart);
 
 		this.diagram = diagram;
-		this.editorPart = editorPart;
 		this.viewer = viewer;
 	}
 
@@ -108,7 +103,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 		CompositeFactory.createLabel(parent, "label.output.excel.file");
 
 		this.outputExcelFileText = new FileText(parent, SWT.BORDER,
-				this.getProjectPath(), ".xls");
+				this.getProjectPath(), this.getOutputFileName(".xls"), ".xls");
 		this.outputExcelFileText.setLayoutData(gridData);
 
 		this.outputExcelFileText.addModifyListener(new ModifyListener() {
@@ -120,7 +115,9 @@ public class ExportToExcelDialog extends AbstractDialog {
 		CompositeFactory.createLabel(parent, "label.output.image.file");
 
 		this.outputImageFileText = new FileText(parent, SWT.BORDER,
-				this.getProjectPath(), new String[] { "*.png", "*.jpeg" });
+				this.getProjectPath(),
+				this.getOutputFileName(DEFAULT_IMAGE_EXTENTION), new String[] {
+						"*.png", "*.jpeg" });
 		this.outputImageFileText.setLayoutData(gridData);
 
 		this.outputImageFileText.addModifyListener(new ModifyListener() {
@@ -270,14 +267,14 @@ public class ExportToExcelDialog extends AbstractDialog {
 
 			if (outputImage) {
 				ImageInfo imageInfo = ExportToImageAction.outputImage(monitor,
-						this.viewer, null, outputImageFilePath);
+						this.viewer, null, outputImageFile.getCanonicalPath());
 
 				if (imageInfo == null) {
 					throw new InputException(null);
 
 				} else {
-					imageBuffer = FileUtils.readFileToByteArray(new File(
-							outputImageFilePath));
+					imageBuffer = FileUtils
+							.readFileToByteArray(outputImageFile);
 
 					if (imageInfo.getFormat() == SWT.IMAGE_JPEG) {
 						excelPictureType = HSSFWorkbook.PICTURE_TYPE_JPEG;
@@ -296,7 +293,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 			stream = this.getTemplate();
 
 			ExportToExcelManager manager = new ExportToExcelManager(
-					outputExcelFilePath, diagram, stream,
+					outputExcelFile.getCanonicalPath(), diagram, stream,
 					this.useLogicalNameAsSheetNameButton.getSelection(),
 					imageBuffer, excelPictureType);
 			monitor.run(true, true, manager);
@@ -304,8 +301,7 @@ public class ExportToExcelDialog extends AbstractDialog {
 			boolean openAfterSaved = this.openAfterSavedButton.getSelection();
 
 			if (openAfterSaved) {
-				File fileToOpen = new File(outputExcelFilePath);
-				URI uri = fileToOpen.toURI();
+				URI uri = outputExcelFile.toURI();
 
 				IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
@@ -454,19 +450,15 @@ public class ExportToExcelDialog extends AbstractDialog {
 		}
 
 		if ("".equals(outputExcel)) {
-			IFile file = ((IFileEditorInput) editorPart.getEditorInput())
-					.getFile();
-			outputExcel = file.getLocation().toOSString();
+			outputExcel = this.getOutputFilePath(".xls");
+
+		} else {
+			outputExcel = outputExcel
+					.substring(0, outputExcel.lastIndexOf(".")) + ".xls";
 		}
-		outputExcel = outputExcel.substring(0, outputExcel.lastIndexOf("."))
-				+ ".xls";
 
 		if ("".equals(outputImage)) {
-			IFile file = ((IFileEditorInput) editorPart.getEditorInput())
-					.getFile();
-			outputImage = file.getLocation().toOSString();
-			outputImage = outputImage
-					.substring(0, outputImage.lastIndexOf(".")) + ".png";
+			outputImage = this.getOutputFilePath(DEFAULT_IMAGE_EXTENTION);
 		}
 
 		this.outputExcelFileText.setText(outputExcel);
@@ -522,12 +514,4 @@ public class ExportToExcelDialog extends AbstractDialog {
 		return "dialog.title.export.excel";
 	}
 
-	private String getProjectPath() {
-		IFile file = ((IFileEditorInput) this.editorPart.getEditorInput())
-				.getFile();
-
-		IProject project = file.getProject();
-
-		return project.getLocation().toString();
-	}
 }

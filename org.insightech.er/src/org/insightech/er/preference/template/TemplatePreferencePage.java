@@ -49,8 +49,9 @@ public class TemplatePreferencePage extends
 		new Label(composite, SWT.NONE);
 
 		this.fileListEditor = new TemplateFileListEditor(
-				PreferenceInitializer.TEMPLATE_FILE_LIST, ResourceString
-						.getResourceString("label.custom.tempplate"), composite);
+				PreferenceInitializer.TEMPLATE_FILE_LIST,
+				ResourceString.getResourceString("label.custom.tempplate"),
+				composite);
 		this.fileListEditor.load();
 
 		new Label(composite, SWT.NONE);
@@ -119,7 +120,7 @@ public class TemplatePreferencePage extends
 	}
 
 	private void download(String fileName) {
-		String filePath = Activator.showSaveDialog(fileName,
+		String filePath = Activator.showSaveDialog(null, fileName, fileName,
 				new String[] { ".xls" });
 
 		if (filePath != null) {

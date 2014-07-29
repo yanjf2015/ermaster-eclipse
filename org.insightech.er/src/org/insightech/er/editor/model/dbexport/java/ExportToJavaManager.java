@@ -608,6 +608,11 @@ public class ExportToJavaManager {
 		dstPath = this.exportJavaSetting.getJavaOutput() + File.separator
 				+ "src" + dstPath;
 		File file = new File(dstPath);
+
+		if (!file.isAbsolute()) {
+			file = new File(this.diagram.getProjectRoot(), dstPath);
+		}
+
 		file.getParentFile().mkdirs();
 
 		FileUtils.writeStringToFile(file, content,

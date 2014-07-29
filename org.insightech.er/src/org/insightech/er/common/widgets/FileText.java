@@ -21,17 +21,16 @@ public class FileText {
 
 	private String[] filterExtensions;
 
-	public FileText(Composite parent, int style, String projectPath) {
-		this(parent, style, projectPath, new String[0]);
-	}
-
 	public FileText(Composite parent, int style, String projectPath,
-			String filterExtension) {
-		this(parent, style, projectPath, new String[] { filterExtension });
+			String defaultFileName, String filterExtension) {
+		this(parent, style, projectPath, defaultFileName,
+				new String[] { filterExtension });
 	}
 
 	public FileText(Composite parent, int style, final String projectPath,
-			String[] filterExtensions) {
+			final String defaultFileName, String[] filterExtensions) {
+		final File projectDir = new File(projectPath).getParentFile();
+
 		this.text = new Text(parent, style);
 
 		this.filterExtensions = filterExtensions;
@@ -46,7 +45,8 @@ public class FileText {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String saveFilePath = Activator.showSaveDialog(text.getText(),
+				String saveFilePath = Activator.showSaveDialog(projectDir,
+						defaultFileName, text.getText(),
 						FileText.this.filterExtensions);
 				if (saveFilePath != null) {
 					try {
