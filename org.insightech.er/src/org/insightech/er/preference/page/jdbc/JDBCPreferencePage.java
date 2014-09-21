@@ -1,10 +1,11 @@
-package org.insightech.er.preference.jdbc;
+package org.insightech.er.preference.page.jdbc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -23,15 +24,14 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
-import org.insightech.er.Resources;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.settings.JDBCDriverSetting;
 import org.insightech.er.preference.PreferenceInitializer;
 import org.insightech.er.util.Format;
 
-public class JDBCPreferencePage extends
-		org.eclipse.jface.preference.PreferencePage implements
+public class JDBCPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private Table table;
@@ -93,23 +93,13 @@ public class JDBCPreferencePage extends
 	}
 
 	private void createButton(Composite parent) {
-		GridData buttonGridData = new GridData();
-		buttonGridData.widthHint = Resources.BUTTON_WIDTH;
+		this.addButton = CompositeFactory.createSmallButton(parent,
+				"label.button.add");
+		this.editButton = CompositeFactory.createSmallButton(parent,
+				"label.button.edit");
+		this.deleteButton = CompositeFactory.createSmallButton(parent,
+				"label.button.delete");
 
-		this.addButton = new Button(parent, SWT.NONE);
-		this.addButton.setLayoutData(buttonGridData);
-		this.addButton.setText(ResourceString
-				.getResourceString("label.button.add"));
-
-		this.editButton = new Button(parent, SWT.NONE);
-		this.editButton.setLayoutData(buttonGridData);
-		this.editButton.setText(ResourceString
-				.getResourceString("label.button.edit"));
-
-		this.deleteButton = new Button(parent, SWT.NONE);
-		this.deleteButton.setLayoutData(buttonGridData);
-		this.deleteButton.setText(ResourceString
-				.getResourceString("label.button.delete"));
 		this.deleteButton.setEnabled(false);
 	}
 
@@ -290,8 +280,8 @@ public class JDBCPreferencePage extends
 			List<JDBCDriverSetting> otherDriverSettingList = getOtherDriverSettingList(index);
 
 			JDBCPathDialog dialog = new JDBCPathDialog(PlatformUI
-					.getWorkbench().getActiveWorkbenchWindow().getShell(), item
-					.getText(0), item.getText(1), item.getText(2),
+					.getWorkbench().getActiveWorkbenchWindow().getShell(),
+					item.getText(0), item.getText(1), item.getText(2),
 					otherDriverSettingList, true);
 
 			if (dialog.open() == IDialogConstants.OK_ID) {

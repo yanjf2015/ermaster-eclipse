@@ -1,4 +1,4 @@
-package org.insightech.er.preference;
+package org.insightech.er.preference.editor;
 
 import java.io.File;
 import java.util.StringTokenizer;
@@ -84,7 +84,7 @@ public class MultiFileFieldEditor extends FileFieldEditor {
 	}
 
 	/**
-	 * multiple ‚ğİ’è‚µ‚Ü‚·.
+	 * multiple ï¿½ï¿½İ’è‚µï¿½Ü‚ï¿½.
 	 * 
 	 * @param multiple
 	 *            multiple

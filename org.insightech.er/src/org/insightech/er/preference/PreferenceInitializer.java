@@ -17,6 +17,7 @@ import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.db.impl.standard_sql.StandardSQLDBManager;
 import org.insightech.er.editor.model.settings.DBSetting;
 import org.insightech.er.editor.model.settings.JDBCDriverSetting;
+import org.insightech.er.preference.editor.FileListEditor;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
@@ -183,10 +184,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
 
 		for (int i = 0; i < listSize; i++) {
-			if (db
-					.equals(store
-							.getString(PreferenceInitializer.JDBC_DRIVER_DB_NAME_PREFIX
-									+ i))
+			if (db.equals(store
+					.getString(PreferenceInitializer.JDBC_DRIVER_DB_NAME_PREFIX
+							+ i))
 					&& driverClassName
 							.equals(store
 									.getString(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_PREFIX
@@ -252,7 +252,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				Format.null2blank(dbSetting.getPassword()));
 		store.setValue(
 				PreferenceInitializer.DB_SETTING_USE_DEFAULT_DRIVER + no,
-				dbSetting.isUseDefaultDriver());
+				String.valueOf(dbSetting.isUseDefaultDriver()));
 		store.setValue(PreferenceInitializer.DB_SETTING_URL + no,
 				Format.null2blank(dbSetting.getUrl()));
 		store.setValue(PreferenceInitializer.DB_SETTING_DRIVER_CLASS_NAME + no,
@@ -301,11 +301,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 		saveSetting(num, dbSetting);
 	}
 
-	/**
-	 * allTranslations ���擾���܂�.
-	 * 
-	 * @return allTranslations
-	 */
 	public static List<String> getAllUserTranslations() {
 		String str = Activator.getDefault().getPreferenceStore()
 				.getString(PreferenceInitializer.TRANSLATION_FILE_LIST);
@@ -323,6 +318,24 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				list.add(fileName);
 				names.add(fileName);
 			}
+		}
+
+		return list;
+	}
+
+	public static List<String> getAllExcelTemplateFiles() {
+		String str = Activator.getDefault().getPreferenceStore()
+				.getString(PreferenceInitializer.TEMPLATE_FILE_LIST);
+		
+		return parseStringToList(str);
+	}
+
+	private static List<String> parseStringToList(String stringList) {
+		StringTokenizer st = new StringTokenizer(stringList, "/");
+		List<String> list = new ArrayList<String>();
+
+		while (st.hasMoreElements()) {
+			list.add(st.nextToken());
 		}
 
 		return list;

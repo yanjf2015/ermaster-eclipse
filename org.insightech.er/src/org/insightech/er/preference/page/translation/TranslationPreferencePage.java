@@ -1,19 +1,18 @@
-package org.insightech.er.preference.translation;
+package org.insightech.er.preference.page.translation;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.insightech.er.ResourceString;
+import org.insightech.er.Resources;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.preference.PreferenceInitializer;
 
-public class TranslationPreferencePage extends
-		PreferencePage implements
+public class TranslationPreferencePage extends PreferencePage implements
 		IWorkbenchPreferencePage {
 
 	private TranslationFileListEditor fileListEditor;
@@ -28,10 +27,8 @@ public class TranslationPreferencePage extends
 		layout.numColumns = 2;
 		composite.setLayout(layout);
 
-		Composite buttonComposite = new Composite(composite, SWT.NONE);
-		this.createButtonComposite(buttonComposite);
-
-		CompositeFactory.filler(composite, 4);
+		CompositeFactory.fillLine(composite,
+				Resources.PREFERENCE_PAGE_MARGIN_TOP);
 
 		this.fileListEditor = new TranslationFileListEditor(
 				PreferenceInitializer.TRANSLATION_FILE_LIST,
@@ -40,27 +37,15 @@ public class TranslationPreferencePage extends
 				composite);
 		this.fileListEditor.load();
 
-		CompositeFactory.filler(composite, 2);
+		CompositeFactory.fillLine(composite);
 
-		Label label = new Label(composite, SWT.NONE);
-		label.setText(ResourceString
-				.getResourceString("dialog.message.translation.file.store"));
-		new Label(composite, SWT.NONE);
+		CompositeFactory.createLabel(composite,
+				"dialog.message.translation.file.store", 2);
 
-		label = new Label(composite, SWT.NONE);
-		label.setText(ResourceString
-				.getResourceString("dialog.message.translation.file.encode"));
-		new Label(composite, SWT.NONE);
+		CompositeFactory.createLabel(composite,
+				"dialog.message.translation.file.encode", 2);
 
 		return composite;
-	}
-
-	private void createButtonComposite(Composite composite) {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		composite.setLayout(layout);
-
-		new Label(composite, SWT.NONE);
 	}
 
 	@Override
@@ -77,5 +62,4 @@ public class TranslationPreferencePage extends
 		return super.performOk();
 	}
 
-	
 }

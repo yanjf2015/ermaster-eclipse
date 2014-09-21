@@ -1,9 +1,10 @@
-package org.insightech.er.preference.jdbc;
+package org.insightech.er.preference.page.jdbc;
 
 import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -16,7 +17,7 @@ import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.settings.JDBCDriverSetting;
-import org.insightech.er.preference.MultiFileFieldEditor;
+import org.insightech.er.preference.editor.MultiFileFieldEditor;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
@@ -37,11 +38,11 @@ public class JDBCPathDialog extends AbstractDialog {
 	private List<JDBCDriverSetting> otherDriverSettingList;
 
 	private boolean editable;
-	
+
 	public JDBCPathDialog(Shell parentShell, String database,
 			String driverClassName, String path,
 			List<JDBCDriverSetting> otherDriverSettingList, boolean editable) {
-		super(parentShell, 3);
+		super(parentShell);
 
 		this.database = database;
 		this.driverClassName = driverClassName;
@@ -49,6 +50,13 @@ public class JDBCPathDialog extends AbstractDialog {
 
 		this.otherDriverSettingList = otherDriverSettingList;
 		this.editable = editable;
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 3;
 	}
 
 	@Override
@@ -94,12 +102,12 @@ public class JDBCPathDialog extends AbstractDialog {
 		}
 
 		this.driverClassNameText = CompositeFactory.createText(this, composite,
-				"label.driver.class.name", 2, -1, SWT.BORDER, false);
+				"label.driver.class.name", 2, -1, SWT.BORDER, false, false);
 
 		this.driverClassNameText.setEditable(editable);
 
-		this.fileFieldEditor = new MultiFileFieldEditor("", ResourceString
-				.getResourceString("label.path"), composite);
+		this.fileFieldEditor = new MultiFileFieldEditor("",
+				ResourceString.getResourceString("label.path"), composite);
 		this.fileFieldEditor.setMultiple(true);
 
 		this.fileFieldEditor.setFocus();
@@ -113,7 +121,7 @@ public class JDBCPathDialog extends AbstractDialog {
 	@Override
 	protected String getErrorMessage() {
 		String selectedDatabase = this.database;
-		
+
 		if (this.databaseCombo != null) {
 			selectedDatabase = this.databaseCombo.getText();
 

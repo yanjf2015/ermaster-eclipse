@@ -1,4 +1,4 @@
-package org.insightech.er.preference;
+package org.insightech.er.preference.editor;
 
 import java.io.File;
 import java.io.IOException;

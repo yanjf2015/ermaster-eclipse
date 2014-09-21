@@ -1,8 +1,9 @@
-package org.insightech.er.preference;
+package org.insightech.er.preference.page.root;
 
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -20,8 +21,8 @@ import org.insightech.er.editor.model.diagram_contents.not_element.group.GlobalG
 import org.insightech.er.editor.model.diagram_contents.not_element.group.GroupSet;
 import org.insightech.er.editor.view.dialog.group.GroupManageDialog;
 
-public class PreferencePage extends org.eclipse.jface.preference.PreferencePage
-		implements IWorkbenchPreferencePage {
+public class RootPreferencePage extends PreferencePage implements
+		IWorkbenchPreferencePage {
 
 	@Override
 	protected Control createContents(Composite parent) {

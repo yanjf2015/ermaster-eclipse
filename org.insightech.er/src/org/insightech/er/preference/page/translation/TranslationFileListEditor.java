@@ -1,8 +1,8 @@
-package org.insightech.er.preference.translation;
+package org.insightech.er.preference.page.translation;
 
 import org.eclipse.swt.widgets.Composite;
-import org.insightech.er.preference.FileListEditor;
 import org.insightech.er.preference.PreferenceInitializer;
+import org.insightech.er.preference.editor.FileListEditor;
 
 public class TranslationFileListEditor extends FileListEditor {
 
