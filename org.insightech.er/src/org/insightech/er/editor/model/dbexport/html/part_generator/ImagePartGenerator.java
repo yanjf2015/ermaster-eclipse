@@ -1,5 +1,6 @@
 package org.insightech.er.editor.model.dbexport.html.part_generator;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class ImagePartGenerator {
 		String pathToImageFile = imageInfo.getPath();
 
 		if (relativePath != null) {
-			pathToImageFile = relativePath + pathToImageFile;
+			pathToImageFile = relativePath + File.separator + pathToImageFile;
 		}
 
 		Object[] args = {

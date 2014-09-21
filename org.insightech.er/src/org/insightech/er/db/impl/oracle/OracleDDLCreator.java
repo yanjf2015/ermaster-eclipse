@@ -7,6 +7,7 @@ import org.insightech.er.db.impl.oracle.tablespace.OracleTablespaceProperties;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.Column;
@@ -19,8 +20,9 @@ import org.insightech.er.util.Check;
 
 public class OracleDDLCreator extends DDLCreator {
 
-	public OracleDDLCreator(ERDiagram diagram, boolean semicolon) {
-		super(diagram, semicolon);
+	public OracleDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		super(diagram, targetCategory, semicolon);
 	}
 
 	@Override
@@ -66,8 +68,8 @@ public class OracleDDLCreator extends DDLCreator {
 					StringBuilder ddl = new StringBuilder();
 
 					ddl.append("COMMENT ON COLUMN ");
-					ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
-							.getDatabase())));
+					ddl.append(filterName(table.getNameWithSchema(this
+							.getDiagram().getDatabase())));
 					ddl.append(".");
 					ddl.append(filterName(normalColumn.getPhysicalName()));
 					ddl.append(" IS '");
@@ -343,11 +345,10 @@ public class OracleDDLCreator extends DDLCreator {
 	public String getDDL(Trigger trigger) {
 		return super.getDDL(trigger) + "\r\n\r\n/\r\n";
 	}
-	
+
 	@Override
 	public String getCreateOrReplacePrefix() {
 		return "CREATE OR REPLACE";
 	}
 
-	
 }

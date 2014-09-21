@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.insightech.er.ResourceString;
+import org.insightech.er.Resources;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
@@ -46,9 +47,18 @@ public class RelationDialog extends AbstractDialog {
 	private ColumnComboInfo columnComboInfo;
 
 	public RelationDialog(Shell parentShell, Relation relation) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.relation = relation;
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 2;
+		layout.makeColumnsEqualWidth = true;
+		layout.verticalSpacing = Resources.VERTICAL_SPACING;
 	}
 
 	/**
@@ -56,9 +66,9 @@ public class RelationDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void initialize(Composite composite) {
-		CompositeFactory.createLabel(composite, "label.constraint.name", 2);
+		CompositeFactory.createLeftLabel(composite, "label.constraint.name", 2);
 		this.nameText = CompositeFactory.createText(this, composite, null, 2,
-				false);
+				false, false);
 
 		createMethodGroup(composite);
 
@@ -81,22 +91,13 @@ public class RelationDialog extends AbstractDialog {
 		group.setText(ResourceString
 				.getResourceString("label.reference.operation"));
 
-		Label label1 = new Label(group, SWT.NONE);
-		label1.setText("ON UPDATE");
-		createOnUpdateCombo(group);
-
-		Label label2 = new Label(group, SWT.NONE);
-		label2.setText("ON DELETE");
-		createOnDeleteCombo(group);
+		this.createOnUpdateCombo(group);
+		this.createOnDeleteCombo(group);
 	}
 
 	private void createOnUpdateCombo(Group group) {
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		this.onUpdateCombo = new Combo(group, SWT.NONE);
-		this.onUpdateCombo.setLayoutData(gridData);
+		this.onUpdateCombo = CompositeFactory.createCombo(this, group,
+				"ON UPDATE", 1);
 
 		ERDiagram diagram = this.relation.getSource().getDiagram();
 		DBManager dbManager = DBManagerFactory.getDBManager(diagram);
@@ -107,12 +108,8 @@ public class RelationDialog extends AbstractDialog {
 	}
 
 	private void createOnDeleteCombo(Group group) {
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		this.onDeleteCombo = new Combo(group, SWT.NONE);
-		this.onDeleteCombo.setLayoutData(gridData);
+		this.onDeleteCombo = CompositeFactory.createCombo(this, group,
+				"ON DELETE", 1);
 
 		ERDiagram diagram = this.relation.getSource().getDiagram();
 		DBManager dbManager = DBManagerFactory.getDBManager(diagram);

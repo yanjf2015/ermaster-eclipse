@@ -3,6 +3,7 @@ package org.insightech.er.editor.model.settings;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 
@@ -18,40 +19,18 @@ public class CategorySetting implements Serializable, Cloneable {
 
 	private boolean showReferredTables;
 
-	/**
-	 * freeLayout ���擾���܂�.
-	 * 
-	 * @return freeLayout
-	 */
 	public boolean isFreeLayout() {
 		return freeLayout;
 	}
 
-	/**
-	 * freeLayout ��ݒ肵�܂�.
-	 * 
-	 * @param freeLayout
-	 *            freeLayout
-	 */
 	public void setFreeLayout(boolean freeLayout) {
 		this.freeLayout = freeLayout;
 	}
 
-	/**
-	 * showReferredTables ���擾���܂�.
-	 * 
-	 * @return showReferredTables
-	 */
 	public boolean isShowReferredTables() {
 		return showReferredTables;
 	}
 
-	/**
-	 * showReferredTables ��ݒ肵�܂�.
-	 * 
-	 * @param showReferredTables
-	 *            showReferredTables
-	 */
 	public void setShowReferredTables(boolean showReferredTables) {
 		this.showReferredTables = showReferredTables;
 	}
@@ -63,16 +42,6 @@ public class CategorySetting implements Serializable, Cloneable {
 
 	public void setSelectedCategories(List<Category> selectedCategories) {
 		this.selectedCategories = selectedCategories;
-	}
-
-	public boolean contains(String categoryName) {
-		for (Category category : this.selectedCategories) {
-			if (category.getName().equals(categoryName)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public List<Category> getAllCategories() {
@@ -109,26 +78,22 @@ public class CategorySetting implements Serializable, Cloneable {
 		return selectedCategories;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Object clone() {
+	public Object clone(Map<Category, Category> categoryCloneMap) {
 		try {
-			CategorySetting settings = (CategorySetting) super.clone();
-			settings.allCategories = new ArrayList<Category>();
-			settings.selectedCategories = new ArrayList<Category>();
+			CategorySetting clone = (CategorySetting) super.clone();
+			clone.allCategories = new ArrayList<Category>();
+			clone.selectedCategories = new ArrayList<Category>();
 
 			for (Category category : this.allCategories) {
-				Category clone = category.clone();
-				settings.allCategories.add(clone);
+				Category cloneCategory = categoryCloneMap.get(category);
+				clone.allCategories.add(cloneCategory);
 
-				if (this.contains(category.getName())) {
-					settings.selectedCategories.add(clone);
+				if (this.selectedCategories.contains(category)) {
+					clone.selectedCategories.add(cloneCategory);
 				}
 			}
 
-			return settings;
+			return clone;
 
 		} catch (CloneNotSupportedException e) {
 			return null;

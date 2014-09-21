@@ -17,7 +17,7 @@ public class CategoryNameChangeDialog extends AbstractDialog {
 	private String categoryName;
 
 	public CategoryNameChangeDialog(Shell parentShell, Category category) {
-		super(parentShell, 2);
+		super(parentShell);
 		this.targetCategory = category;
 	}
 
@@ -27,7 +27,7 @@ public class CategoryNameChangeDialog extends AbstractDialog {
 	@Override
 	protected void initialize(Composite composite) {
 		this.categoryNameText = CompositeFactory.createText(this, composite,
-				"label.category.name", true);
+				"label.category.name", true, true);
 	}
 
 	@Override

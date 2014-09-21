@@ -6,12 +6,12 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.view.View;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.POIUtils.CellLocation;
 
@@ -38,7 +38,7 @@ public class ViewSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
@@ -66,8 +66,11 @@ public class ViewSheetGenerator extends AbstractSheetGenerator {
 			HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
 					sheetNameMap);
 
-			sheetObjectMap.put(workbook.getSheetName(workbook
-					.getSheetIndex(newSheet)), view);
+			String sheetName = workbook.getSheetName(workbook
+					.getSheetIndex(newSheet));
+			monitor.subTaskWithCounter("[View] " + sheetName);
+
+			sheetObjectMap.put(sheetName, view);
 
 			this.setViewData(workbook, newSheet, view);
 
@@ -76,7 +79,7 @@ public class ViewSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	/**
-	 * ÉrÉÖÅ[ÉVÅ[ÉgÇ…ÉfÅ[É^Çê›íËÇµÇ‹Ç∑.
+	 * ÔøΩrÔøΩÔøΩÔøΩ[ÔøΩVÔøΩ[ÔøΩgÔøΩ…ÉfÔøΩ[ÔøΩ^ÔøΩÔøΩ›íËÇµÔøΩ‹ÇÔøΩ.
 	 * 
 	 * @param workbook
 	 * @param sheet
@@ -84,19 +87,22 @@ public class ViewSheetGenerator extends AbstractSheetGenerator {
 	 */
 	public void setViewData(HSSFWorkbook workbook, HSSFSheet sheet, View view) {
 		POIUtils.replace(sheet, KEYWORD_LOGICAL_VIEW_NAME, this.getValue(
-				this.keywordsValueMap, KEYWORD_LOGICAL_VIEW_NAME, view
-						.getLogicalName()));
+				this.keywordsValueMap, KEYWORD_LOGICAL_VIEW_NAME,
+				view.getLogicalName()));
 
 		POIUtils.replace(sheet, KEYWORD_PHYSICAL_VIEW_NAME, this.getValue(
-				this.keywordsValueMap, KEYWORD_PHYSICAL_VIEW_NAME, view
-						.getPhysicalName()));
+				this.keywordsValueMap, KEYWORD_PHYSICAL_VIEW_NAME,
+				view.getPhysicalName()));
 
 		POIUtils.replace(sheet, KEYWORD_VIEW_DESCRIPTION, this.getValue(
-				this.keywordsValueMap, KEYWORD_VIEW_DESCRIPTION, view
-						.getDescription()));
+				this.keywordsValueMap, KEYWORD_VIEW_DESCRIPTION,
+				view.getDescription()));
 
-		POIUtils.replace(sheet, KEYWORD_VIEW_SQL, this.getValue(
-				this.keywordsValueMap, KEYWORD_VIEW_SQL, view.getSql()));
+		POIUtils.replace(
+				sheet,
+				KEYWORD_VIEW_SQL,
+				this.getValue(this.keywordsValueMap, KEYWORD_VIEW_SQL,
+						view.getSql()));
 
 		CellLocation cellLocation = POIUtils.findCell(sheet,
 				FIND_KEYWORDS_OF_COLUMN);

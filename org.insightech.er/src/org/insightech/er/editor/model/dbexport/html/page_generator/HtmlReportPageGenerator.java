@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 
 public interface HtmlReportPageGenerator {
 
@@ -26,5 +27,7 @@ public interface HtmlReportPageGenerator {
 	public String getObjectName(Object object);
 
 	public List<Object> getObjectList(ERDiagram diagram);
+
+	public void setImageInfoSet(ImageInfoSet imageInfoSet);
 
 }

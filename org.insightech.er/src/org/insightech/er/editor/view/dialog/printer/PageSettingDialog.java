@@ -1,6 +1,5 @@
 package org.insightech.er.editor.view.dialog.printer;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,10 +41,17 @@ public class PageSettingDialog extends AbstractDialog {
 	private ERDiagram diagram;
 
 	public PageSettingDialog(Shell parentShell, ERDiagram diagram) {
-		super(parentShell, 1);
+		super(parentShell);
 
 		this.pageSetting = diagram.getPageSetting();
 		this.diagram = diagram;
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 1;
 	}
 
 	/**
@@ -60,11 +66,6 @@ public class PageSettingDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void initialize(Composite parent) {
-		parent.setBackground(ColorConstants.white);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		parent.setLayout(layout);
-
 		this.initDirectionGroup(parent);
 		this.initScaleGroup(parent);
 		this.initSizeGroup(parent);
@@ -77,7 +78,6 @@ public class PageSettingDialog extends AbstractDialog {
 
 		Group directionGroup = new Group(parent, SWT.NONE);
 		directionGroup.setLayoutData(gridData);
-		directionGroup.setBackground(ColorConstants.white);
 		directionGroup.setText(ResourceString
 				.getResourceString("label.page.direction"));
 
@@ -92,15 +92,15 @@ public class PageSettingDialog extends AbstractDialog {
 		vImage.setImage(Activator.getImage(ImageKey.PAGE_SETTING_V));
 
 		vButton = new Button(directionGroup, SWT.RADIO);
-		vButton.setBackground(ColorConstants.white);
-		vButton.setText(ResourceString.getResourceString("label.page.direction.v"));
+		vButton.setText(ResourceString
+				.getResourceString("label.page.direction.v"));
 
 		Label hImage = new Label(directionGroup, SWT.NONE);
 		hImage.setImage(Activator.getImage(ImageKey.PAGE_SETTING_H));
 
 		hButton = new Button(directionGroup, SWT.RADIO);
-		hButton.setBackground(ColorConstants.white);
-		hButton.setText(ResourceString.getResourceString("label.page.direction.h"));
+		hButton.setText(ResourceString
+				.getResourceString("label.page.direction.h"));
 	}
 
 	private void initScaleGroup(Composite parent) {
@@ -110,7 +110,6 @@ public class PageSettingDialog extends AbstractDialog {
 
 		Group scaleGroup = new Group(parent, SWT.NONE);
 		scaleGroup.setLayoutData(gridData);
-		scaleGroup.setBackground(ColorConstants.white);
 		scaleGroup.setText(ResourceString
 				.getResourceString("label.page.scale.printing"));
 
@@ -121,7 +120,6 @@ public class PageSettingDialog extends AbstractDialog {
 		scaleGroup.setLayout(scaleGroupLayout);
 
 		Label label = new Label(scaleGroup, SWT.NONE);
-		label.setBackground(ColorConstants.white);
 		label.setText(ResourceString.getResourceString("label.page.scale"));
 
 		scaleSpinner = new Spinner(scaleGroup, SWT.BORDER);
@@ -131,7 +129,6 @@ public class PageSettingDialog extends AbstractDialog {
 		scaleSpinner.setSelection(100);
 
 		label = new Label(scaleGroup, SWT.NONE);
-		label.setBackground(ColorConstants.white);
 		label.setText("%");
 
 	}
@@ -143,7 +140,6 @@ public class PageSettingDialog extends AbstractDialog {
 
 		Group sizeGroup = new Group(parent, SWT.NONE);
 		sizeGroup.setLayoutData(sizeGroupGridData);
-		sizeGroup.setBackground(ColorConstants.white);
 
 		GridLayout sizeGroupLayout = new GridLayout();
 		sizeGroupLayout.marginWidth = 20;
@@ -152,19 +148,15 @@ public class PageSettingDialog extends AbstractDialog {
 		sizeGroup.setLayout(sizeGroupLayout);
 
 		Label label = new Label(sizeGroup, SWT.NONE);
-		label.setBackground(ColorConstants.white);
 		label.setText(ResourceString.getResourceString("label.page.size"));
 
 		sizeCombo = new Combo(sizeGroup, SWT.READ_ONLY | SWT.BORDER);
-		sizeCombo.setBackground(ColorConstants.white);
 		this.setPaperSize(sizeCombo);
 
 		label = new Label(sizeGroup, SWT.NONE);
-		label.setBackground(ColorConstants.white);
 		label.setText(ResourceString.getResourceString("label.page.margin"));
 
 		Composite marginComposite = new Composite(sizeGroup, SWT.NONE);
-		marginComposite.setBackground(ColorConstants.white);
 
 		GridLayout marginCompositeLayout = new GridLayout();
 		marginCompositeLayout.marginWidth = 10;
@@ -176,7 +168,6 @@ public class PageSettingDialog extends AbstractDialog {
 		label = new Label(marginComposite, SWT.NONE);
 
 		label = new Label(marginComposite, SWT.NONE);
-		label.setBackground(ColorConstants.white);
 		label.setText(ResourceString.getResourceString("label.page.margin.top"));
 
 		topMarginSpinner = new Spinner(marginComposite, SWT.BORDER);
@@ -186,8 +177,8 @@ public class PageSettingDialog extends AbstractDialog {
 		label = new Label(marginComposite, SWT.NONE);
 
 		label = new Label(marginComposite, SWT.NONE);
-		label.setBackground(ColorConstants.white);
-		label.setText(ResourceString.getResourceString("label.page.margin.left"));
+		label.setText(ResourceString
+				.getResourceString("label.page.margin.left"));
 
 		leftMarginSpinner = new Spinner(marginComposite, SWT.BORDER);
 		this.setMarginSpinner(leftMarginSpinner);
@@ -196,8 +187,8 @@ public class PageSettingDialog extends AbstractDialog {
 		label = new Label(marginComposite, SWT.NONE);
 
 		label = new Label(marginComposite, SWT.NONE);
-		label.setBackground(ColorConstants.white);
-		label.setText(ResourceString.getResourceString("label.page.margin.right"));
+		label.setText(ResourceString
+				.getResourceString("label.page.margin.right"));
 
 		rightMarginSpinner = new Spinner(marginComposite, SWT.BORDER);
 		this.setMarginSpinner(rightMarginSpinner);
@@ -206,8 +197,8 @@ public class PageSettingDialog extends AbstractDialog {
 		label = new Label(marginComposite, SWT.NONE);
 
 		label = new Label(marginComposite, SWT.NONE);
-		label.setBackground(ColorConstants.white);
-		label.setText(ResourceString.getResourceString("label.page.margin.bottom"));
+		label.setText(ResourceString
+				.getResourceString("label.page.margin.bottom"));
 
 		bottomMarginSpinner = new Spinner(marginComposite, SWT.BORDER);
 		this.setMarginSpinner(bottomMarginSpinner);
@@ -241,9 +232,10 @@ public class PageSettingDialog extends AbstractDialog {
 	protected void perfomeOK() throws InputException {
 		this.pageSetting = new PageSetting(this.hButton.getSelection(),
 				this.scaleSpinner.getSelection(), this.sizeCombo.getText(),
-				this.topMarginSpinner.getSelection(), this.rightMarginSpinner
-						.getSelection(), this.bottomMarginSpinner
-						.getSelection(), this.leftMarginSpinner.getSelection());
+				this.topMarginSpinner.getSelection(),
+				this.rightMarginSpinner.getSelection(),
+				this.bottomMarginSpinner.getSelection(),
+				this.leftMarginSpinner.getSelection());
 		this.diagram.setPageSetting(this.pageSetting);
 	}
 

@@ -16,7 +16,7 @@ public class SelectImportedObjectFromDBDialog extends
 	private Button clearDiagramButton;
 
 	private ERDiagramEditor editor;
-	
+
 	private ERDiagram diagram;
 
 	public SelectImportedObjectFromDBDialog(Shell parentShell,
@@ -30,11 +30,11 @@ public class SelectImportedObjectFromDBDialog extends
 	@Override
 	protected void initializeOptionGroup(Group group) {
 		this.clearDiagramButton = CompositeFactory.createCheckbox(this, group,
-				"label.clear.diagram");
+				"label.clear.diagram", false);
 		this.clearDiagramButton.setSelection(true);
 
 		this.useCommentAsLogicalNameButton = CompositeFactory.createCheckbox(
-				this, group, "label.use.comment.as.logical.name");
+				this, group, "label.use.comment.as.logical.name", false);
 		super.initializeOptionGroup(group);
 	}
 
@@ -47,7 +47,7 @@ public class SelectImportedObjectFromDBDialog extends
 
 		if (this.clearDiagramButton.getSelection()) {
 			if (!Activator.showConfirmDialog("label.clear.diagram.confirm")) {
-				throw new InputException(null);
+				throw new InputException();
 			} else {
 				this.diagram.clear();
 				this.editor.resetCommandStack();

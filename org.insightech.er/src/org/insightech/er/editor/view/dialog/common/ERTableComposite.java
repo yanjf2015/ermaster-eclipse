@@ -115,6 +115,7 @@ public class ERTableComposite extends Composite {
 
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = horizontalSpan;
+
 		this.setLayoutData(gridData);
 
 		this.createComposite();
@@ -123,7 +124,8 @@ public class ERTableComposite extends Composite {
 
 	private void createComposite() {
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
+		gridLayout.marginWidth = 0;
+		gridLayout.numColumns = 1;
 
 		this.setLayout(gridLayout);
 
@@ -149,9 +151,9 @@ public class ERTableComposite extends Composite {
 		CompositeFactory.createTableColumn(this.table, "label.column.type",
 				TYPE_WIDTH, SWT.NONE);
 		CompositeFactory.createTableColumn(this.table, "label.not.null",
-				NOT_NULL_WIDTH, SWT.NONE);
+				NOT_NULL_WIDTH, SWT.CENTER);
 		CompositeFactory.createTableColumn(this.table, "label.unique.key",
-				UNIQUE_KEY_WIDTH, SWT.NONE);
+				UNIQUE_KEY_WIDTH, SWT.CENTER);
 
 		this.table.addSelectionListener(new SelectionAdapter() {
 
@@ -196,18 +198,11 @@ public class ERTableComposite extends Composite {
 	 * 
 	 */
 	private void createButton() {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 8;
+		Composite buttonComposite = CompositeFactory.createChildComposite(this,
+				1, 8);
 
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-
-		Composite buttonComposite = new Composite(this, SWT.NONE);
-		buttonComposite.setLayoutData(gridData);
-		buttonComposite.setLayout(gridLayout);
-
-		this.columnAddButton = CompositeFactory.createButton(buttonComposite,
-				"label.button.add");
+		this.columnAddButton = CompositeFactory.createSmallButton(
+				buttonComposite, "label.button.add");
 
 		this.columnAddButton.addSelectionListener(new SelectionAdapter() {
 
@@ -220,8 +215,8 @@ public class ERTableComposite extends Composite {
 			}
 		});
 
-		this.columnEditButton = CompositeFactory.createButton(buttonComposite,
-				"label.button.edit");
+		this.columnEditButton = CompositeFactory.createSmallButton(
+				buttonComposite, "label.button.edit");
 
 		this.columnEditButton.addSelectionListener(new SelectionAdapter() {
 
@@ -242,7 +237,7 @@ public class ERTableComposite extends Composite {
 
 		});
 
-		this.columnDeleteButton = CompositeFactory.createButton(
+		this.columnDeleteButton = CompositeFactory.createSmallButton(
 				buttonComposite, "label.button.delete");
 
 		this.columnDeleteButton.addSelectionListener(new SelectionAdapter() {
@@ -267,7 +262,7 @@ public class ERTableComposite extends Composite {
 
 		CompositeFactory.filler(buttonComposite, 1, 30);
 
-		this.upButton = CompositeFactory.createButton(buttonComposite,
+		this.upButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.up.arrow");
 
 		this.upButton.addSelectionListener(new SelectionAdapter() {
@@ -282,7 +277,7 @@ public class ERTableComposite extends Composite {
 
 		});
 
-		this.downButton = CompositeFactory.createButton(buttonComposite,
+		this.downButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.down.arrow");
 
 		this.downButton.addSelectionListener(new SelectionAdapter() {
@@ -379,7 +374,8 @@ public class ERTableComposite extends Composite {
 			SqlType sqlType = normalColumn.getType();
 
 			tableItem.setText(4, Format.formatType(sqlType,
-					normalColumn.getTypeData(), this.diagram.getDatabase(), true));
+					normalColumn.getTypeData(), this.diagram.getDatabase(),
+					true));
 
 			this.setTableEditor(normalColumn, tableItem);
 
@@ -476,36 +472,26 @@ public class ERTableComposite extends Composite {
 	private void setNotNull(NormalColumn normalColumn, boolean notnull) {
 		normalColumn.setNotNull(notnull);
 
-		for (NormalColumn anotherColumn : ertable.getNormalColumns()) {
-			if (anotherColumn.isForeignKey()) {
-				Relation anotherColumnsRelation = anotherColumn
-						.getRelationList().get(0);
+		if (ertable != null) {
+			for (NormalColumn anotherColumn : ertable.getNormalColumns()) {
+				if (anotherColumn.isForeignKey()) {
+					Relation anotherColumnsRelation = anotherColumn
+							.getRelationList().get(0);
 
-				for (Relation relation : normalColumn.getRelationList()) {
-					if (anotherColumnsRelation == relation) {
-						((Button) columnNotNullCheckMap.get(anotherColumn)[0]
-								.getEditor()).setSelection(notnull);
-						anotherColumn.setNotNull(notnull);
+					for (Relation relation : normalColumn.getRelationList()) {
+						if (anotherColumnsRelation == relation) {
+							((Button) columnNotNullCheckMap.get(anotherColumn)[0]
+									.getEditor()).setSelection(notnull);
+							anotherColumn.setNotNull(notnull);
 
-						break;
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
 
-	/**
-	 * <pre>
-	 * �J�����̒ǉBⵂ��ꍇ
-	 * CopyColumn ���ǉB���܂�
-	 * ���̍ہAword �ɂ� CopyWord ���ݒ肳��Ă��܂�
-	 * �iCopyWord �� original �� ���[�h��I�ⵂ��ꍇ�́A���̃C���X�^���X
-	 *  �I�ⵂȂ��B��ꍇ�́A�V�����C���X�^���X�j
-	 * </pre>
-	 * 
-	 * @param column
-	 * @param add
-	 */
 	private void addTableData(NormalColumn column, boolean add) {
 		int index = this.table.getSelectionIndex();
 
@@ -600,7 +586,11 @@ public class ERTableComposite extends Composite {
 		int index = this.table.getSelectionIndex();
 
 		if (index != -1) {
-			column = (CopyColumn) this.columnList.get(index);
+			Column targetColumn = this.columnList.get(index);
+
+			if (targetColumn instanceof CopyColumn) {
+				column = (CopyColumn) targetColumn;
+			}
 		}
 
 		return column;

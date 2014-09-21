@@ -9,6 +9,7 @@ import org.insightech.er.db.impl.postgres.tablespace.PostgresTablespacePropertie
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.Column;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
@@ -23,8 +24,9 @@ public class PostgresDDLCreator extends DDLCreator {
 	private static final Pattern DROP_TRIGGER_TABLE_PATTERN = Pattern
 			.compile(".*\\s[oO][nN]\\s+(.+)\\s.*");
 
-	public PostgresDDLCreator(ERDiagram diagram, boolean semicolon) {
-		super(diagram, semicolon);
+	public PostgresDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		super(diagram, targetCategory, semicolon);
 	}
 
 	/**
@@ -62,8 +64,8 @@ public class PostgresDDLCreator extends DDLCreator {
 	public List<String> getCommentDDL(ERTable table) {
 		List<String> ddlList = new ArrayList<String>();
 
-		String tableComment = this.filterComment(table.getLogicalName(), table
-				.getDescription(), false);
+		String tableComment = this.filterComment(table.getLogicalName(),
+				table.getDescription(), false);
 
 		if (!Check.isEmpty(tableComment)) {
 			StringBuilder ddl = new StringBuilder();
@@ -85,15 +87,16 @@ public class PostgresDDLCreator extends DDLCreator {
 			if (column instanceof NormalColumn) {
 				NormalColumn normalColumn = (NormalColumn) column;
 
-				String comment = this.filterComment(normalColumn
-						.getLogicalName(), normalColumn.getDescription(), true);
+				String comment = this.filterComment(
+						normalColumn.getLogicalName(),
+						normalColumn.getDescription(), true);
 
 				if (!Check.isEmpty(comment)) {
 					StringBuilder ddl = new StringBuilder();
 
 					ddl.append("COMMENT ON COLUMN ");
-					ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
-							.getDatabase())));
+					ddl.append(filterName(table.getNameWithSchema(this
+							.getDiagram().getDatabase())));
 					ddl.append(".");
 					ddl.append(filterName(normalColumn.getPhysicalName()));
 					ddl.append(" IS '");
@@ -110,9 +113,9 @@ public class PostgresDDLCreator extends DDLCreator {
 				ColumnGroup columnGroup = (ColumnGroup) column;
 
 				for (NormalColumn normalColumn : columnGroup.getColumns()) {
-					String comment = this.filterComment(normalColumn
-							.getLogicalName(), normalColumn.getDescription(),
-							true);
+					String comment = this.filterComment(
+							normalColumn.getLogicalName(),
+							normalColumn.getDescription(), true);
 
 					if (!Check.isEmpty(comment)) {
 						StringBuilder ddl = new StringBuilder();
@@ -178,8 +181,7 @@ public class PostgresDDLCreator extends DDLCreator {
 
 			ddl.append("ALTER SEQUENCE ");
 			ddl.append(filterName(table.getNameWithSchema(this.getDiagram()
-					.getDatabase())
-					+ "_" + column.getPhysicalName() + "_SEQ"));
+					.getDatabase()) + "_" + column.getPhysicalName() + "_SEQ"));
 
 			if (sequence.getIncrement() != null) {
 				ddl.append(" INCREMENT ");

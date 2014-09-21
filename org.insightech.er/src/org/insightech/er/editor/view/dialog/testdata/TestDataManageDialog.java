@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IEditorPart;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -35,61 +34,39 @@ public class TestDataManageDialog extends AbstractDialog {
 
 	private static final int GROUP_LIST_HEIGHT = 230;
 
-	// ERデータ
 	private ERDiagram diagram;
 
-	// テストデータ一覧
 	private org.eclipse.swt.widgets.List testDataListWidget;
 
-	// 追加
 	private Button addButton;
 
-	// 編集
 	private Button editButton;
 
-	// 削除
 	private Button deleteButton;
 
-	// コピー
 	private Button copyButton;
 
 	private Button exportButton;
 
-	// テーブル一覧
 	private Table testDataTable;
 
-	// 編集中テストデータリスト
 	private List<TestData> testDataList;
 
-	private IEditorPart editorPart;
+	public TestDataManageDialog(Shell parentShell, ERDiagram diagram,
+			List<TestData> testDataList) {
+		super(parentShell);
 
-	/**
-	 * コンストラクタ
-	 */
-	public TestDataManageDialog(Shell parentShell, IEditorPart editorPart,
-			ERDiagram diagram, List<TestData> testDataList) {
-		super(parentShell, 2);
-
-		this.editorPart = editorPart;
 		this.diagram = diagram;
 		this.testDataList = testDataList;
 	}
 
-	/**
-	 * 初期化処理を実施します。
-	 */
 	@Override
 	protected void initialize(Composite composite) {
-		// テストデータ一覧パネル
 		this.createLeftComposite(composite);
 
-		// テストデータ詳細（テーブル一覧）パネル
 		this.createRightComposite(composite);
 	}
 
-	/**
-	 * テストデータ一覧パネルを生成します。
-	 */
 	private void createLeftComposite(Composite parent) {
 		GridData gridData = new GridData();
 
@@ -101,28 +78,28 @@ public class TestDataManageDialog extends AbstractDialog {
 		composite.setLayoutData(gridData);
 		composite.setLayout(gridLayout);
 
-		// テストデータ一覧
 		GridData listCompGridData = new GridData();
 		listCompGridData.horizontalSpan = 4;
 		this.createTestDataList(composite, listCompGridData);
 
-		// 追加
-		this.addButton = CompositeFactory.createButton(composite,
+		this.addButton = CompositeFactory.createSmallButton(composite,
 				"label.button.add");
 
-		// 編集
-		this.editButton = CompositeFactory.createButton(composite,
+		this.editButton = CompositeFactory.createSmallButton(composite,
 				"label.button.edit");
 		this.editButton.setEnabled(false);
 
-		// 削除
-		this.deleteButton = CompositeFactory.createButton(composite,
+		this.deleteButton = CompositeFactory.createSmallButton(composite,
 				"label.button.delete");
 		this.deleteButton.setEnabled(false);
 
-		// コピー
-		this.copyButton = CompositeFactory.createButton(composite,
+		this.copyButton = CompositeFactory.createSmallButton(composite,
 				"label.button.copy");
+		this.copyButton.setEnabled(false);
+
+		this.exportButton = CompositeFactory.createButton(composite,
+				"label.button.testdata.export", 2, -1);
+		this.exportButton.setEnabled(true);
 	}
 
 	private void createTestDataList(Composite parent, GridData gridData) {
@@ -144,12 +121,6 @@ public class TestDataManageDialog extends AbstractDialog {
 		this.initTestDataList();
 	}
 
-	/**
-	 * テストデータ詳細を生成します。
-	 * 
-	 * @param gridData
-	 * 
-	 */
 	private void createRightComposite(Composite parent) {
 		Composite composite = new Composite(parent, SWT.BORDER);
 
@@ -161,7 +132,6 @@ public class TestDataManageDialog extends AbstractDialog {
 		gridLayout.verticalSpacing = 8;
 		composite.setLayout(gridLayout);
 
-		// テストデータテーブル
 		GridData tableGridData = new GridData();
 		tableGridData.heightHint = GROUP_LIST_HEIGHT;
 		tableGridData.verticalIndent = 15;
@@ -178,15 +148,11 @@ public class TestDataManageDialog extends AbstractDialog {
 		nameColumn.setText(ResourceString
 				.getResourceString("label.testdata.table.name"));
 
-		TableColumn dataNumColumn = new TableColumn(testDataTable, SWT.NONE);
-		dataNumColumn.setWidth(80);
+		TableColumn dataNumColumn = new TableColumn(testDataTable, SWT.RIGHT);
 		dataNumColumn.setResizable(false);
 		dataNumColumn.setText(ResourceString
 				.getResourceString("label.testdata.table.test.num"));
-
-		this.exportButton = CompositeFactory.createButton(composite,
-				"label.button.testdata.export", 1);
-		this.exportButton.setEnabled(false);
+		dataNumColumn.pack();
 	}
 
 	private void initTestDataList() {
@@ -200,7 +166,6 @@ public class TestDataManageDialog extends AbstractDialog {
 	}
 
 	private void initTableData() {
-		// テーブル一覧
 		this.testDataTable.removeAll();
 
 		int targetIndex = this.testDataListWidget.getSelectionIndex();
@@ -270,7 +235,7 @@ public class TestDataManageDialog extends AbstractDialog {
 
 			this.editButton.setEnabled(true);
 			this.deleteButton.setEnabled(true);
-			this.exportButton.setEnabled(true);
+			this.copyButton.setEnabled(true);
 
 			initTableData();
 		}
@@ -280,8 +245,8 @@ public class TestDataManageDialog extends AbstractDialog {
 		int targetIndex = this.testDataListWidget.getSelectionIndex();
 
 		ExportToTestDataDialog exportTestDataDialog = new ExportToTestDataDialog(
-				this.getShell(), this.editorPart, this.diagram, testDataList,
-				targetIndex);
+				this.getShell(), testDataList, targetIndex);
+		exportTestDataDialog.init(this.diagram);
 
 		exportTestDataDialog.open();
 	}
@@ -344,7 +309,7 @@ public class TestDataManageDialog extends AbstractDialog {
 			}
 		}
 
-		initTableData();
+		this.initTableData();
 	}
 
 	@Override
@@ -397,7 +362,7 @@ public class TestDataManageDialog extends AbstractDialog {
 				if (targetIndex == -1) {
 					editButton.setEnabled(false);
 					deleteButton.setEnabled(false);
-					exportButton.setEnabled(false);
+					copyButton.setEnabled(false);
 				}
 
 				initTableData();
@@ -437,7 +402,7 @@ public class TestDataManageDialog extends AbstractDialog {
 					initTableData();
 					editButton.setEnabled(true);
 					deleteButton.setEnabled(true);
-					exportButton.setEnabled(true);
+					copyButton.setEnabled(true);
 				}
 			}
 		});

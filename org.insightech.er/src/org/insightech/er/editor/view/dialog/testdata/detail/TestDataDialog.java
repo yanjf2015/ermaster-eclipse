@@ -7,7 +7,6 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -21,10 +20,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.insightech.er.ResourceString;
-import org.insightech.er.common.dialog.AbstractDialog;
+import org.insightech.er.common.dialog.AbstractTabbedDialog;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.testdata.TableTestData;
@@ -33,9 +32,9 @@ import org.insightech.er.editor.view.dialog.testdata.detail.tab.DirectTestDataTa
 import org.insightech.er.editor.view.dialog.testdata.detail.tab.RepeatTestDataTabWrapper;
 import org.insightech.er.util.Format;
 
-public class TestDataDialog extends AbstractDialog {
+public class TestDataDialog extends AbstractTabbedDialog {
 
-	public static final int WIDTH = 770;
+	public static final int TABLE_WIDTH = 800;
 
 	public static final int TABLE_HEIGHT = 300;
 
@@ -50,10 +49,6 @@ public class TestDataDialog extends AbstractDialog {
 	private Button repeatToDirectRadio;
 
 	private Button directToRepeatRadio;
-
-	private TabFolder tabFolder;
-
-	private List<ValidatableTabWrapper> tabWrapperList;
 
 	private DirectTestDataTabWrapper directTestDataTabWrapper;
 
@@ -83,8 +78,13 @@ public class TestDataDialog extends AbstractDialog {
 
 		this.allTableList = diagram.getDiagramContents().getContents()
 				.getTableSet().getList();
+	}
 
-		this.tabWrapperList = new ArrayList<ValidatableTabWrapper>();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 1;
 	}
 
 	@Override
@@ -96,13 +96,18 @@ public class TestDataDialog extends AbstractDialog {
 
 	private void createNameComposite(Composite parent) {
 		Composite nameComposite = new Composite(parent, SWT.NONE);
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
 
-		GridLayout mainLayout = new GridLayout();
-		mainLayout.numColumns = 2;
-		nameComposite.setLayout(mainLayout);
+		nameComposite.setLayoutData(gridData);
+
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		nameComposite.setLayout(layout);
 
 		this.nameText = CompositeFactory.createText(this, nameComposite,
-				"label.testdata.name", 1, 200, true);
+				"label.testdata.name", true, true);
 	}
 
 	private void createTopComposite(Composite parent) {
@@ -194,32 +199,15 @@ public class TestDataDialog extends AbstractDialog {
 	}
 
 	private void createBottomComposite(Composite composite) {
-		GridData bottomGridData = new GridData();
-		bottomGridData.grabExcessHorizontalSpace = true;
-		bottomGridData.horizontalAlignment = GridData.FILL;
-		bottomGridData.widthHint = WIDTH;
-
 		this.createOutputOrderGroup(composite);
-		
-		// �^�u
-		this.tabFolder = new TabFolder(composite, SWT.NONE);
-		this.tabFolder.setLayoutData(bottomGridData);
-
-		this.directTestDataTabWrapper = new DirectTestDataTabWrapper(this,
-				this.tabFolder, SWT.NONE);
-		this.tabWrapperList.add(this.directTestDataTabWrapper);
-
-		this.repeatTestDataTabWrapper = new RepeatTestDataTabWrapper(this,
-				this.tabFolder, SWT.NONE);
-		this.tabWrapperList.add(this.repeatTestDataTabWrapper);
-
+		this.createTabFolder(composite);
 	}
 
 	private void createOutputOrderGroup(Composite parent) {
 		GridData groupGridData = new GridData();
 		groupGridData.horizontalAlignment = GridData.FILL;
 		groupGridData.grabExcessHorizontalSpace = true;
-		
+
 		GridLayout groupLayout = new GridLayout();
 		groupLayout.marginWidth = 15;
 		groupLayout.marginHeight = 15;
@@ -236,9 +224,7 @@ public class TestDataDialog extends AbstractDialog {
 				"label.output.order.repeat.to.direct");
 	}
 
-	
 	private void initSelectedTableTable() {
-		// �e�[�u���ꗗ
 		this.selectedTableTable.removeAll();
 
 		for (Map.Entry<ERTable, TableTestData> entry : testData
@@ -318,16 +304,7 @@ public class TestDataDialog extends AbstractDialog {
 			return "error.testdata.table.empty";
 		}
 
-		try {
-			for (ValidatableTabWrapper tabWrapper : this.tabWrapperList) {
-				tabWrapper.validatePage();
-			}
-
-		} catch (InputException e) {
-			return e.getMessage();
-		}
-
-		return null;
+		return super.getErrorMessage();
 	}
 
 	@Override
@@ -337,16 +314,16 @@ public class TestDataDialog extends AbstractDialog {
 		this.testData.setName(text);
 
 		if (this.repeatToDirectRadio.getSelection()) {
-			testData.setExportOrder(TestData.EXPORT_ORDER_REPEAT_TO_DIRECT);
+			this.testData
+					.setExportOrder(TestData.EXPORT_ORDER_REPEAT_TO_DIRECT);
 
 		} else if (this.directToRepeatRadio.getSelection()) {
-			testData.setExportOrder(TestData.EXPORT_ORDER_DIRECT_TO_REPEAT);
+			this.testData
+					.setExportOrder(TestData.EXPORT_ORDER_DIRECT_TO_REPEAT);
 
 		}
 
-		for (ValidatableTabWrapper tab : this.tabWrapperList) {
-			tab.perfomeOK();
-		}
+		super.perfomeOK();
 	}
 
 	@Override
@@ -383,8 +360,6 @@ public class TestDataDialog extends AbstractDialog {
 				}
 
 				for (int index : indexes) {
-					// �I�Ⳃꂽ�e�[�u���ɂăe�[�u���e�X�g�f�[�^��ǉ�
-
 					ERTable table = allTableList.get(index);
 					if (!testData.contains(table)) {
 						TableTestData tableTestData = new TableTestData();
@@ -425,6 +400,8 @@ public class TestDataDialog extends AbstractDialog {
 				if (index == -1) {
 					removeButton.setEnabled(false);
 				}
+
+				resetTabs();
 			}
 
 		});
@@ -452,29 +429,6 @@ public class TestDataDialog extends AbstractDialog {
 
 		});
 
-		this.tabFolder.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int index = tabFolder.getSelectionIndex();
-
-				ValidatableTabWrapper selectedTabWrapper = tabWrapperList
-						.get(index);
-				selectedTabWrapper.setInitFocus();
-			}
-
-		});
-
-	}
-
-	private void resetTabs() {
-		for (ValidatableTabWrapper tab : tabWrapperList) {
-			// tab.setVisible(false);
-			tab.reset();
-			// tab.setVisible(true);
-		}
 	}
 
 	public ERTable getTargetTable() {
@@ -488,5 +442,21 @@ public class TestDataDialog extends AbstractDialog {
 
 	public void setSelectedTable(int selectedTableIndex) {
 		this.selectedTableIndex = selectedTableIndex;
+	}
+
+	@Override
+	protected List<ValidatableTabWrapper> createTabWrapperList(
+			TabFolder tabFolder) {
+		List<ValidatableTabWrapper> list = new ArrayList<ValidatableTabWrapper>();
+
+		this.directTestDataTabWrapper = new DirectTestDataTabWrapper(this,
+				tabFolder);
+		list.add(this.directTestDataTabWrapper);
+
+		this.repeatTestDataTabWrapper = new RepeatTestDataTabWrapper(this,
+				tabFolder);
+		list.add(this.repeatTestDataTabWrapper);
+
+		return list;
 	}
 }

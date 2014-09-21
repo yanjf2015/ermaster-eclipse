@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
-import org.insightech.er.editor.view.dialog.element.table.tab.AdvancedComposite;
+import org.insightech.er.editor.view.dialog.element.table_view.tab.AdvancedComposite;
 
 public class PostgresAdvancedComposite extends AdvancedComposite {
 
@@ -34,7 +34,7 @@ public class PostgresAdvancedComposite extends AdvancedComposite {
 		super.setData();
 
 		this.withoutOIDs
-				.setSelection(((PostgresTableProperties) this.tableProperties)
+				.setSelection(((PostgresTableProperties) this.tableViewProperties)
 						.isWithoutOIDs());
 	}
 
@@ -42,11 +42,11 @@ public class PostgresAdvancedComposite extends AdvancedComposite {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void validate() throws InputException {
-		super.validate();
-
-		((PostgresTableProperties) this.tableProperties)
+	public boolean validate() throws InputException {
+		((PostgresTableProperties) this.tableViewProperties)
 				.setWithoutOIDs(this.withoutOIDs.getSelection());
+
+		return super.validate();
 	}
 
 }

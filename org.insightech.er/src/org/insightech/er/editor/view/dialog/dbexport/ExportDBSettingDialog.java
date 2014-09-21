@@ -1,20 +1,18 @@
 package org.insightech.er.editor.view.dialog.dbexport;
 
+import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.insightech.er.Activator;
-import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.ERDiagram;
@@ -39,22 +37,9 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 	 */
 	@Override
 	protected void initializeBody(Composite group) {
-		GridData labelLayoutData = new GridData();
-		// labelLayoutData.widthHint = 130;
-
-		// DB
-		Label label = new Label(group, SWT.NONE);
-		label.setLayoutData(labelLayoutData);
-		label.setText(ResourceString
-				.getResourceString("label.tablespace.environment"));
-		label.setEnabled(true);
-
-		this.environmentCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.widthHint = 200;
-		this.environmentCombo.setLayoutData(data);
+		this.environmentCombo = CompositeFactory.createReadOnlyCombo(this,
+				group, "label.tablespace.environment", 1);
 		this.environmentCombo.setVisibleItemCount(20);
-		this.environmentCombo.setEnabled(true);
 
 		super.initializeBody(group);
 	}
@@ -93,7 +78,7 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 	@Override
 	protected void perfomeOK() throws InputException {
 		this.setCurrentSetting();
-		
+
 		String db = this.getDBSName();
 		DBManager manager = DBManagerFactory.getDBManager(db);
 
@@ -137,11 +122,14 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 			throw e;
 
 		} catch (Exception e) {
-			Activator.log(e);
 			Throwable cause = e.getCause();
 
 			if (cause instanceof UnknownHostException) {
 				throw new InputException("error.server.not.found");
+
+			} else if (cause instanceof ConnectException) {
+				throw new InputException("error.server.not.connected");
+
 			}
 
 			Activator.showExceptionDialog(e);

@@ -1,11 +1,10 @@
 package org.insightech.er.editor.view.dialog.option.tab;
 
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.TabFolder;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.view.dialog.option.OptionSettingDialog;
 
@@ -21,32 +20,23 @@ public class OptionTabWrapper extends ValidatableTabWrapper {
 
 	private Settings settings;
 
-	private OptionSettingDialog dialog;
-
 	public OptionTabWrapper(OptionSettingDialog dialog, TabFolder parent,
-			int style, Settings settings) {
-		super(dialog, parent, style, "label.option");
+			Settings settings) {
+		super(dialog, parent, "label.option");
 
 		this.settings = settings;
-		this.dialog = dialog;
-
-		this.init();
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		this.setLayout(layout);
-
 		this.autoImeChangeCheck = CompositeFactory.createCheckbox(this.dialog,
-				this, "label.auto.ime.change");
+				this, "label.auto.ime.change", false);
 		this.validatePhysicalNameCheck = CompositeFactory.createCheckbox(
-				this.dialog, this, "label.validate.physical.name");
+				this.dialog, this, "label.validate.physical.name", false);
 		this.useBezierCurveCheck = CompositeFactory.createCheckbox(this.dialog,
-				this, "label.use.bezier.curve");
+				this, "label.use.bezier.curve", false);
 		this.suspendValidatorCheck = CompositeFactory.createCheckbox(
-				this.dialog, this, "label.suspend.validator");
+				this.dialog, this, "label.suspend.validator", false);
 	}
 
 	@Override

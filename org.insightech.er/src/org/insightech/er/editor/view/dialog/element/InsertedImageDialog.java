@@ -1,5 +1,6 @@
 package org.insightech.er.editor.view.dialog.element;
 
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
@@ -25,9 +26,16 @@ public class InsertedImageDialog extends AbstractDialog {
 	private InsertedImage newInsertedImage;
 
 	public InsertedImageDialog(Shell parentShell, InsertedImage insertedImage) {
-		super(parentShell, 4);
+		super(parentShell);
 
 		this.insertedImage = insertedImage;
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 4;
 	}
 
 	/**
@@ -48,8 +56,10 @@ public class InsertedImageDialog extends AbstractDialog {
 		this.alphaSpinner = CompositeFactory.createSpinnerWithScale(this,
 				composite, "label.image.alpha", 0, 255);
 
+		CompositeFactory.fillLine(composite);
+
 		this.fixAspectRatioCheckbox = CompositeFactory.createCheckbox(this,
-				composite, "label.image.fix.aspect.ratio", 3);
+				composite, "label.image.fix.aspect.ratio", false, 3);
 	}
 
 	/**

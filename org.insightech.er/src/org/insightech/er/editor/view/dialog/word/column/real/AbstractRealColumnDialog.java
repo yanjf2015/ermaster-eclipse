@@ -1,8 +1,6 @@
 package org.insightech.er.editor.view.dialog.word.column.real;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -48,7 +46,8 @@ public abstract class AbstractRealColumnDialog extends AbstractColumnDialog {
 		this.tabItem = new TabItem(this.tabFolder, SWT.NONE);
 		this.tabItem.setText(ResourceString.getResourceString("label.detail"));
 
-		Composite detailComposite = this.createDetailTab(this.tabFolder);
+		Composite detailComposite = CompositeFactory.createComposite(
+				this.tabFolder, 2);
 		this.initializeDetailTab(detailComposite);
 		this.tabItem.setControl(detailComposite);
 
@@ -62,18 +61,9 @@ public abstract class AbstractRealColumnDialog extends AbstractColumnDialog {
 	protected void initializeComposite(Composite composite) {
 		int numColumns = this.getCompositeNumColumns();
 
-		Composite checkBoxComposite = new Composite(composite, SWT.NONE);
-
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = numColumns;
-		gridData.heightHint = 40;
-
-		checkBoxComposite.setLayoutData(gridData);
-
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = this.getCheckBoxCompositeNumColumns();
-
-		checkBoxComposite.setLayout(gridLayout);
+		Composite checkBoxComposite = CompositeFactory.createChildComposite(
+				composite, 40, numColumns,
+				this.getCheckBoxCompositeNumColumns());
 
 		this.initializeCheckBoxComposite(checkBoxComposite);
 
@@ -87,27 +77,16 @@ public abstract class AbstractRealColumnDialog extends AbstractColumnDialog {
 		return 2;
 	}
 
-	private Composite createDetailTab(TabFolder tabFolder) {
-		GridLayout gridLayout = new GridLayout();
-
-		gridLayout.numColumns = 2;
-
-		Composite composite = new Composite(tabFolder, SWT.NONE);
-		composite.setLayout(gridLayout);
-
-		return composite;
-	}
-
 	protected void initializeDetailTab(Composite composite) {
 		this.constraintText = CompositeFactory.createText(this, composite,
-				"label.column.constraint", false);
+				"label.column.constraint", false, true);
 	}
 
 	protected void initializeCheckBoxComposite(Composite composite) {
 		this.notNullCheck = CompositeFactory.createCheckbox(this, composite,
-				"label.not.null");
+				"label.not.null", false);
 		this.uniqueKeyCheck = CompositeFactory.createCheckbox(this, composite,
-				"label.unique.key");
+				"label.unique.key", false);
 	}
 
 	/**

@@ -18,12 +18,12 @@ public class PostgresTablespaceDialog extends TablespaceDialog {
 		super.initialize(composite);
 
 		this.location = CompositeFactory.createText(this, composite,
-				"label.tablespace.location", false);
+				"label.tablespace.location", false, false);
 		CompositeFactory.filler(composite, 1);
 		CompositeFactory.createExampleLabel(composite,
 				"label.tablespace.data.file.example");
 		this.owner = CompositeFactory.createText(this, composite,
-				"label.tablespace.owner", false);
+				"label.tablespace.owner", false, false);
 	}
 
 	@Override

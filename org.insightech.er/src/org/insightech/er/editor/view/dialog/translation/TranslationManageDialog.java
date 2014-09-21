@@ -41,7 +41,7 @@ public class TranslationManageDialog extends AbstractDialog {
 
 	public TranslationManageDialog(Shell parentShell, Settings settings,
 			ERDiagram diagram) {
-		super(parentShell, 1);
+		super(parentShell);
 
 		this.translationSettings = settings.getTranslationSetting();
 		this.allTranslations = this.translationSettings.getAllTranslations();
@@ -53,25 +53,28 @@ public class TranslationManageDialog extends AbstractDialog {
 	@Override
 	protected void initialize(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 4;
+		gridLayout.numColumns = 1;
+
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
 
 		Group group = new Group(composite, SWT.NONE);
+		group.setLayoutData(gridData);
 		group.setText(ResourceString
 				.getResourceString("label.translation.message"));
 		group.setLayout(gridLayout);
 
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 4;
-
 		this.useButton = new Button(group, SWT.CHECK);
 		this.useButton.setText(ResourceString
 				.getResourceString("label.translation.use"));
-		this.useButton.setLayoutData(gridData);
 
 		GridData tableGridData = new GridData();
 		tableGridData.heightHint = 200;
-		tableGridData.horizontalSpan = 3;
+		tableGridData.horizontalSpan = 1;
 		tableGridData.verticalSpan = 2;
+		tableGridData.horizontalAlignment = GridData.FILL;
+		tableGridData.grabExcessHorizontalSpace = true;
 
 		this.dictionaryTable = new Table(group, SWT.BORDER | SWT.FULL_SELECTION);
 		this.dictionaryTable.setHeaderVisible(true);

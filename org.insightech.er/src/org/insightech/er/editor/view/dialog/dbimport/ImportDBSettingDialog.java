@@ -1,5 +1,6 @@
 package org.insightech.er.editor.view.dialog.dbimport;
 
+import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,18 +44,26 @@ public class ImportDBSettingDialog extends AbstractDBSettingDialog {
 			throw e;
 
 		} catch (Throwable e) {
-			Activator.log(e);
-			Throwable cause = e.getCause();
+			Throwable cause = e;
+
+			while (cause.getCause() != null) {
+				cause = cause.getCause();
+			}
 
 			if (cause instanceof UnknownHostException) {
 				throw new InputException("error.server.not.found");
+
+			} else if (cause instanceof ConnectException) {
+				throw new InputException("error.server.not.connected");
 
 			} else if (e instanceof UnsupportedClassVersionError) {
 				throw new InputException("error.jdbc.class.version",
 						new String[] { System.getProperty("java.version") });
 			}
 
+			Activator.log(e);
 			Activator.showMessageDialog(e.getMessage());
+
 			throw new InputException("error.database.not.found");
 
 		} finally {

@@ -66,6 +66,7 @@ public class ERDiagramEditPart extends AbstractModelEditPart {
 
 		ERDiagram diagram = (ERDiagram) this.getModel();
 
+		// category must be first.
 		modelChildren.addAll(diagram.getDiagramContents().getSettings()
 				.getCategorySetting().getSelectedCategories());
 

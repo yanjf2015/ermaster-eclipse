@@ -2,10 +2,10 @@ package org.insightech.er.editor.model;
 
 import java.util.Locale;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 import org.insightech.er.editor.ERDiagramMultiPageEditor;
 import org.insightech.er.editor.model.diagram_contents.DiagramContents;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
@@ -52,8 +52,6 @@ public class ERDiagram extends ViewableModel {
 
 	public Point mousePoint = new Point();
 
-	private String projectRoot;
-
 	public ERDiagram(String database) {
 		this.diagramContents = new DiagramContents();
 		this.diagramContents.getSettings().setDatabase(database);
@@ -61,6 +59,10 @@ public class ERDiagram extends ViewableModel {
 
 		this.setDefaultColor(128, 128, 192);
 		this.setColor(255, 255, 255);
+
+		FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
+
+		this.setFontName(fontData.getName());
 	}
 
 	public void clear() {
@@ -97,13 +99,6 @@ public class ERDiagram extends ViewableModel {
 		element.setDiagram(this);
 
 		this.diagramContents.getContents().addNodeElement(element);
-
-		if (this.editor != null) {
-			Category category = this.editor.getCurrentPageCategory();
-			if (category != null) {
-				category.getContents().add(element);
-			}
-		}
 
 		if (element instanceof TableView) {
 			for (NormalColumn normalColumn : ((TableView) element)
@@ -178,17 +173,17 @@ public class ERDiagram extends ViewableModel {
 
 	public void setEditor(ERDiagramMultiPageEditor editor) {
 		this.editor = editor;
-
-		IFile file = ((IFileEditorInput) this.editor.getEditorInput())
-				.getFile();
-
-		IProject project = file.getProject();
-
-		this.projectRoot = project.getLocation().toString();
 	}
 
 	public int[] getDefaultColor() {
 		return defaultColor;
+	}
+
+	public RGB getDefaultColorAsGRB() {
+		RGB rgb = new RGB(this.defaultColor[0], this.defaultColor[1],
+				this.defaultColor[2]);
+
+		return rgb;
 	}
 
 	public void setDefaultColor(int red, int green, int blue) {
@@ -290,10 +285,6 @@ public class ERDiagram extends ViewableModel {
 		this.snapToGrid = snapToGrid;
 	}
 
-	public String getProjectRoot() {
-		return projectRoot;
-	}
-
 	public void refreshChildren() {
 		if (isUpdateable()) {
 			this.firePropertyChange("refreshChildren", null, null);
@@ -321,6 +312,13 @@ public class ERDiagram extends ViewableModel {
 	public void refreshWithConnection() {
 		if (isUpdateable()) {
 			this.firePropertyChange("refreshWithConnection", null, null);
+		}
+	}
+
+	public void refreshCategories() {
+		for (Category category : this.getDiagramContents().getSettings()
+				.getCategorySetting().getSelectedCategories()) {
+			category.refreshVisuals();
 		}
 	}
 

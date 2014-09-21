@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TreeNode;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -16,7 +13,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
@@ -35,15 +31,11 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 
 	private Button mergeWordButton;
 
-	private Button mergeGroupButton;
-
 	protected DBObjectSet dbObjectSet;
 
 	protected boolean resultUseCommentAsLogicalName;
 
 	private boolean resultMergeWord;
-
-	private boolean resultMergeGroup;
 
 	private List<DBObject> resultSelectedDbObjects;
 
@@ -60,8 +52,6 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 	@Override
 	protected void initialize(Composite composite) {
 		this.createObjectListComposite(composite);
-
-		this.setListener();
 	}
 
 	private void createObjectListComposite(Composite parent) {
@@ -77,7 +67,8 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData);
 
-		this.createAllObjectGroup(composite);
+		this.viewer = CompositeFactory.createCheckedTreeViewer(this, composite,
+				300, 1);
 
 		GridData groupGridData = new GridData();
 		groupGridData.horizontalAlignment = GridData.FILL;
@@ -98,38 +89,8 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 
 	protected void initializeOptionGroup(Group group) {
 		this.mergeWordButton = CompositeFactory.createCheckbox(this, group,
-				"label.merge.word");
+				"label.merge.word", false);
 		this.mergeWordButton.setSelection(true);
-
-		this.mergeGroupButton = CompositeFactory.createCheckbox(this, group,
-				"label.merge.group");
-		this.mergeGroupButton.setSelection(true);
-
-	}
-
-	private void createAllObjectGroup(Composite composite) {
-		GridData gridData = new GridData();
-		gridData.heightHint = 300;
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		this.viewer = new ContainerCheckedTreeViewer(composite, SWT.MULTI
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		Tree tree = this.viewer.getTree();
-		tree.setLayoutData(gridData);
-
-		this.viewer.setContentProvider(new TreeNodeContentProvider());
-		this.viewer.setLabelProvider(new ViewLabelProvider());
-	}
-
-	private void setListener() {
-		this.viewer.addCheckStateListener(new ICheckStateListener() {
-
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				validate();
-			}
-
-		});
 	}
 
 	/**
@@ -163,7 +124,6 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 		}
 
 		this.resultMergeWord = this.mergeWordButton.getSelection();
-		this.resultMergeGroup = this.mergeGroupButton.getSelection();
 	}
 
 	/**
@@ -280,7 +240,7 @@ public abstract class AbstractSelectImportedObjectDialog extends AbstractDialog 
 	}
 
 	public boolean isMergeGroup() {
-		return resultMergeGroup;
+		return false;
 	}
 
 	public List<DBObject> getSelectedDbObjects() {

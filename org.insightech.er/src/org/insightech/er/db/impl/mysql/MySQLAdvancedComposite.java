@@ -10,7 +10,7 @@ import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
-import org.insightech.er.editor.view.dialog.element.table.tab.AdvancedComposite;
+import org.insightech.er.editor.view.dialog.element.table_view.tab.AdvancedComposite;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
@@ -43,7 +43,8 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 		this.collationCombo.setVisibleItemCount(20);
 
 		this.primaryKeyLengthOfText = CompositeFactory.createNumText(
-				this.dialog, this, "label.primary.key.length.of.text", 30);
+				this.dialog, this, "label.primary.key.length.of.text", 1, 30,
+				true);
 	}
 
 	public static Combo createEngineCombo(Composite parent,
@@ -86,10 +87,10 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 		this.initCharacterSetCombo();
 
 		this.engineCombo.setText(Format
-				.toString(((MySQLTableProperties) this.tableProperties)
+				.toString(((MySQLTableProperties) this.tableViewProperties)
 						.getStorageEngine()));
 
-		String characterSet = ((MySQLTableProperties) this.tableProperties)
+		String characterSet = ((MySQLTableProperties) this.tableViewProperties)
 				.getCharacterSet();
 
 		this.characterSetCombo.setText(Format.toString(characterSet));
@@ -102,11 +103,11 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 		}
 
 		this.collationCombo.setText(Format
-				.toString(((MySQLTableProperties) this.tableProperties)
+				.toString(((MySQLTableProperties) this.tableViewProperties)
 						.getCollation()));
 
 		this.primaryKeyLengthOfText.setText(Format
-				.toString(((MySQLTableProperties) this.tableProperties)
+				.toString(((MySQLTableProperties) this.tableViewProperties)
 						.getPrimaryKeyLengthOfText()));
 	}
 
@@ -114,18 +115,18 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void validate() throws InputException {
-		super.validate();
-
+	public boolean validate() throws InputException {
 		String engine = this.engineCombo.getText();
-		((MySQLTableProperties) this.tableProperties).setStorageEngine(engine);
+		((MySQLTableProperties) this.tableViewProperties)
+				.setStorageEngine(engine);
 
 		String characterSet = this.characterSetCombo.getText();
-		((MySQLTableProperties) this.tableProperties)
+		((MySQLTableProperties) this.tableViewProperties)
 				.setCharacterSet(characterSet);
 
 		String collation = this.collationCombo.getText();
-		((MySQLTableProperties) this.tableProperties).setCollation(collation);
+		((MySQLTableProperties) this.tableViewProperties)
+				.setCollation(collation);
 
 		String str = this.primaryKeyLengthOfText.getText();
 		Integer length = null;
@@ -138,7 +139,7 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 			throw new InputException("error.column.length.degit");
 		}
 
-		((MySQLTableProperties) this.tableProperties)
+		((MySQLTableProperties) this.tableViewProperties)
 				.setPrimaryKeyLengthOfText(length);
 
 		if (this.table != null) {
@@ -154,6 +155,8 @@ public class MySQLAdvancedComposite extends AdvancedComposite {
 				}
 			}
 		}
+
+		return super.validate();
 	}
 
 	@Override

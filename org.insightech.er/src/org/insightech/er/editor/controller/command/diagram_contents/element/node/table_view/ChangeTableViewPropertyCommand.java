@@ -25,15 +25,17 @@ public class ChangeTableViewPropertyCommand extends AbstractCommand {
 	@Override
 	protected void doExecute() {
 		this.newCopyTableView.restructureData(tableView);
-		
+
 		this.tableView.getDiagram().refreshVisuals();
-		this.tableView.getDiagram().getDiagramContents().getIndexSet().refresh();
-		
+		this.tableView.getDiagram().getDiagramContents().getIndexSet()
+				.refresh();
+
 		for (Relation relation : this.tableView.getIncomingRelations()) {
 			relation.refreshVisuals();
 		}
-		
+
 		this.tableView.getDiagram().getEditor().refreshPropertySheet();
+		this.tableView.getDiagram().refreshCategories();
 	}
 
 	/**
@@ -42,11 +44,14 @@ public class ChangeTableViewPropertyCommand extends AbstractCommand {
 	@Override
 	protected void doUndo() {
 		this.oldCopyTableView.restructureData(tableView);
-		
+
 		this.tableView.getDiagram().refreshVisuals();
-		this.tableView.getDiagram().getDiagramContents().getIndexSet().refresh();
-		
+		this.tableView.getDiagram().getDiagramContents().getIndexSet()
+				.refresh();
+
 		this.tableView.getDiagram().getEditor().refreshPropertySheet();
+
+		this.tableView.getDiagram().refresh();
 	}
 
 }

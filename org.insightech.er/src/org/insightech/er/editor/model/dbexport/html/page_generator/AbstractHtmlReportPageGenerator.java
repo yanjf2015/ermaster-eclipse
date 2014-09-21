@@ -8,6 +8,7 @@ import java.util.Map;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.ExportToHtmlManager;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
@@ -21,8 +22,14 @@ public abstract class AbstractHtmlReportPageGenerator implements
 
 	protected Map<Object, Integer> idMap;
 
+	protected ImageInfoSet imageInfoSet;
+
 	public AbstractHtmlReportPageGenerator(Map<Object, Integer> idMap) {
 		this.idMap = idMap;
+	}
+
+	public void setImageInfoSet(ImageInfoSet imageInfoSet) {
+		this.imageInfoSet = imageInfoSet;
 	}
 
 	public String getObjectId(Object object) {

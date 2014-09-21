@@ -12,17 +12,19 @@ import java.util.regex.Matcher;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.AbstractExportManager;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.editor.model.settings.export.ExportJavaSetting;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.io.FileUtils;
 import org.insightech.er.util.io.IOUtils;
 
-public class ExportToJavaManager {
+public class ExportToJavaManager extends AbstractExportManager {
 
 	private static final String TEMPLATE_DIR = "javasource/";
 
@@ -91,36 +93,36 @@ public class ExportToJavaManager {
 
 	private ExportJavaSetting exportJavaSetting;
 
-	protected ERDiagram diagram;
-
 	private String packageDir;
 
 	private Set<String> importClasseNames;
 
 	private Set<String> sets;
 
-	public ExportToJavaManager(ExportJavaSetting exportJavaSetting,
-			ERDiagram diagram) {
+	public ExportToJavaManager(ExportJavaSetting exportJavaSetting) {
+		super("dialog.message.export.java");
+
 		this.packageDir = exportJavaSetting.getPackageName().replaceAll("\\.",
 				"\\/");
 
 		this.exportJavaSetting = exportJavaSetting;
-		this.diagram = diagram;
 
 		this.importClasseNames = new TreeSet<String>();
 		this.sets = new TreeSet<String>();
 	}
 
-	protected void doPreTask(ERTable table) {
+	@Override
+	protected int getTotalTaskCount() {
+		return this.diagram.getDiagramContents().getContents().getTableSet()
+				.getList().size();
 	}
 
-	protected void doPostTask() throws InterruptedException {
-	}
-
-	public void doProcess() throws IOException, InterruptedException {
+	@Override
+	protected void doProcess(ProgressMonitor monitor) throws Exception {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet().getList()) {
-			this.doPreTask(table);
+
+			monitor.subTaskWithCounter("writing : " + this.getClassName(table));
 
 			String className = this.getClassName(table);
 			String compositeIdClassName = null;
@@ -151,6 +153,7 @@ public class ExportToJavaManager {
 			this.writeOut(File.separator + this.packageDir + File.separator
 					+ className + ".java", content);
 
+			monitor.worked(1);
 		}
 	}
 
@@ -605,13 +608,8 @@ public class ExportToJavaManager {
 	}
 
 	private void writeOut(String dstPath, String content) throws IOException {
-		dstPath = this.exportJavaSetting.getJavaOutput() + File.separator
-				+ "src" + dstPath;
-		File file = new File(dstPath);
-
-		if (!file.isAbsolute()) {
-			file = new File(this.diagram.getProjectRoot(), dstPath);
-		}
+		File file = new File(FileUtils.getFile(this.projectDir,
+				this.exportJavaSetting.getJavaOutput()), dstPath);
 
 		file.getParentFile().mkdirs();
 
@@ -698,4 +696,9 @@ public class ExportToJavaManager {
 
 		return content;
 	}
+
+	public File getOutputFileOrDir() {
+		return new File(this.exportJavaSetting.getJavaOutput());
+	}
+
 }

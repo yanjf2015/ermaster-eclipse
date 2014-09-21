@@ -1,14 +1,13 @@
 package org.insightech.er.editor.view.dialog.option.tab;
 
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.TabFolder;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.db.EclipseDBManagerFactory;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableProperties;
 import org.insightech.er.editor.model.settings.Settings;
-import org.insightech.er.editor.view.dialog.element.table.tab.AdvancedComposite;
+import org.insightech.er.editor.view.dialog.element.table_view.tab.AdvancedComposite;
 import org.insightech.er.editor.view.dialog.option.OptionSettingDialog;
 
 public class AdvancedTabWrapper extends ValidatableTabWrapper {
@@ -20,13 +19,11 @@ public class AdvancedTabWrapper extends ValidatableTabWrapper {
 	private AdvancedComposite composite;
 
 	public AdvancedTabWrapper(OptionSettingDialog dialog, TabFolder parent,
-			int style, Settings settings, ERDiagram diagram) {
-		super(dialog, parent, style, "label.advanced.settings");
+			Settings settings, ERDiagram diagram) {
+		super(dialog, parent, "label.advanced.settings");
 
 		this.diagram = diagram;
 		this.settings = settings;
-
-		this.init();
 	}
 
 	/**
@@ -42,8 +39,6 @@ public class AdvancedTabWrapper extends ValidatableTabWrapper {
 	 */
 	@Override
 	public void initComposite() {
-		this.setLayout(new GridLayout());
-
 		if (this.composite != null) {
 			this.composite.dispose();
 		}

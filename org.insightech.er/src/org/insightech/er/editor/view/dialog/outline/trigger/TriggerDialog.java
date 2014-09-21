@@ -27,7 +27,7 @@ public class TriggerDialog extends AbstractDialog {
 	private Trigger result;
 
 	public TriggerDialog(Shell parentShell, Trigger trigger) {
-		super(parentShell, 2);
+		super(parentShell);
 		this.setShellStyle(this.getShellStyle() | SWT.RESIZE);
 
 		this.trigger = trigger;
@@ -36,9 +36,9 @@ public class TriggerDialog extends AbstractDialog {
 	@Override
 	protected void initialize(Composite composite) {
 		this.nameText = CompositeFactory.createText(this, composite,
-				"label.trigger.name", false);
+				"label.trigger.name", false, true);
 		this.schemaText = CompositeFactory.createText(this, composite,
-				"label.schema", false);
+				"label.schema", false, true);
 		this.sqlText = CompositeFactory.createTextArea(this, composite,
 				"label.sql", Resources.DESCRIPTION_WIDTH, 300, 1, false);
 		this.descriptionText = CompositeFactory.createTextArea(this, composite,

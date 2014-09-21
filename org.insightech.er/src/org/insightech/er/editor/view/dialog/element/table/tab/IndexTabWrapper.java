@@ -18,22 +18,18 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.ResourceString;
-import org.insightech.er.common.dialog.AbstractDialog;
+import org.insightech.er.common.dialog.AbstractTabbedDialog;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.CopyIndex;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
-import org.insightech.er.editor.view.dialog.common.ERTableComposite;
 import org.insightech.er.editor.view.dialog.element.table.sub.IndexDialog;
 import org.insightech.er.util.Format;
 
 public class IndexTabWrapper extends ValidatableTabWrapper {
-
-	private static final int BUTTON_WIDTH = 60;
 
 	private ERTable copyData;
 
@@ -49,16 +45,14 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 
 	private Button deleteButton;
 
-	public IndexTabWrapper(AbstractDialog dialog, TabFolder parent, int style,
+	public IndexTabWrapper(AbstractTabbedDialog dialog, TabFolder parent,
 			ERTable copyData) {
-		super(dialog, parent, style, "label.index");
+		super(dialog, parent, "label.index");
 
 		this.copyData = copyData;
 
 		this.checkButtonList = new ArrayList<Button>();
 		this.editorList = new ArrayList<TableEditor>();
-
-		this.init();
 	}
 
 	/**
@@ -70,25 +64,15 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 	}
 
 	@Override
-	public void initComposite() {
-		this.setLayout(new GridLayout());
-
-		Composite content = new Composite(this, SWT.BORDER);
-
-		this.createBody(content);
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 3;
 	}
 
-	private void createBody(Composite content) {
-		GridData contentGridData = new GridData();
-		contentGridData.horizontalAlignment = GridData.FILL;
-		contentGridData.grabExcessHorizontalSpace = true;
-
-		content.setLayoutData(contentGridData);
-
-		content.setLayout(new GridLayout(3, false));
-
-		this.initTable(content);
-		this.initTableButton(content);
+	@Override
+	public void initComposite() {
+		this.initTable(this);
+		this.initTableButton(this);
 
 		this.setTableData();
 	}
@@ -107,30 +91,22 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 		this.indexTable.setLinesVisible(true);
 
 		CompositeFactory.createTableColumn(this.indexTable,
-				"label.column.name", ERTableComposite.NAME_WIDTH, SWT.NONE);
+				"label.column.name", -1);
 		TableColumn separatorColumn = CompositeFactory.createTableColumn(
-				this.indexTable, "", 3, SWT.NONE);
+				this.indexTable, "", 3);
 		separatorColumn.setResizable(false);
 	}
 
 	private void initTableButton(Composite parent) {
-		GridData gridData = new GridData();
-		gridData.widthHint = BUTTON_WIDTH;
+		Composite buttonComposite = CompositeFactory.createChildComposite(
+				parent, 1, 3);
 
-		this.addButton = new Button(parent, SWT.NONE);
-		this.addButton.setText(ResourceString
-				.getResourceString("label.button.add"));
-		this.addButton.setLayoutData(gridData);
-
-		this.editButton = new Button(parent, SWT.NONE);
-		this.editButton.setText(ResourceString
-				.getResourceString("label.button.edit"));
-		this.editButton.setLayoutData(gridData);
-
-		this.deleteButton = new Button(parent, SWT.NONE);
-		this.deleteButton.setText(ResourceString
-				.getResourceString("label.button.delete"));
-		this.deleteButton.setLayoutData(gridData);
+		this.addButton = CompositeFactory.createSmallButton(buttonComposite,
+				"label.button.add");
+		this.editButton = CompositeFactory.createSmallButton(buttonComposite,
+				"label.button.edit");
+		this.deleteButton = CompositeFactory.createSmallButton(buttonComposite,
+				"label.button.delete");
 	}
 
 	@Override
@@ -191,11 +167,9 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 		TableItem radioTableItem = new TableItem(this.indexTable, SWT.NONE);
 
 		for (int i = 0; i < indexes.size(); i++) {
-			TableColumn tableColumn = new TableColumn(this.indexTable,
-					SWT.CENTER);
-			tableColumn.setWidth(60);
+			TableColumn tableColumn = CompositeFactory.createTableColumn(
+					this.indexTable, "Index" + (i + 1), -1, SWT.CENTER);
 			tableColumn.setResizable(false);
-			tableColumn.setText("Index" + (i + 1));
 
 			TableEditor editor = new TableEditor(this.indexTable);
 
@@ -239,6 +213,8 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 				}
 			}
 		}
+
+		this.indexTable.getColumns()[0].pack();
 
 		setButtonEnabled(false);
 	}
@@ -289,6 +265,7 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 		this.restruct();
 	}
 
+	@Override
 	public void restruct() {
 		this.clearButtonAndEditor();
 

@@ -16,18 +16,18 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.insightech.er.Activator;
-import org.insightech.er.common.dialog.AbstractDialog;
+import org.insightech.er.common.dialog.AbstractTabbedDialog;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.ComplexUniqueKey;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.CopyComplexUniqueKey;
-import org.insightech.er.editor.view.dialog.common.ERTableComposite;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
@@ -51,50 +51,49 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 
 	private Map<TableEditor, NormalColumn> editorColumnMap;
 
-	public ComplexUniqueKeyTabWrapper(AbstractDialog dialog, TabFolder parent,
-			int style, ERTable copyData) {
-		super(dialog, parent, style, "label.complex.unique.key");
+	public ComplexUniqueKeyTabWrapper(AbstractTabbedDialog dialog,
+			TabFolder parent, ERTable copyData) {
+		super(dialog, parent, "label.complex.unique.key");
 
 		this.copyData = copyData;
 		this.tableEditorList = new ArrayList<TableEditor>();
 		this.editorColumnMap = new HashMap<TableEditor, NormalColumn>();
+	}
 
-		this.init();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 2;
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout gridLayout = new GridLayout();
-		// gridLayout.verticalSpacing = 20;
-		this.setLayout(gridLayout);
-
 		this.complexUniqueKeyCombo = CompositeFactory.createReadOnlyCombo(null,
 				this, "label.complex.unique.key");
 
 		this.nameText = CompositeFactory.createText(null, this,
-				"label.unique.key.name", false);
+				"label.unique.key.name", false, true);
 
-		CompositeFactory.filler(this, 1);
+		CompositeFactory.fillLine(this);
 
-		this.columnTable = CompositeFactory.createTable(this, 200, 1);
+		this.columnTable = CompositeFactory.createTable(this, 200, 2);
+
+		TableColumn tableColumn = CompositeFactory.createTableColumn(
+				this.columnTable, "label.unique.key", -1, SWT.CENTER);
+		tableColumn.setResizable(false);
 
 		CompositeFactory.createTableColumn(this.columnTable,
-				"label.logical.name", ERTableComposite.NAME_WIDTH, SWT.NONE);
-		CompositeFactory
-				.createTableColumn(this.columnTable, "label.unique.key",
-						ERTableComposite.UNIQUE_KEY_WIDTH, SWT.NONE);
+				"label.column.name", -1, SWT.NONE);
 
-		GridLayout buttonGridLayout = new GridLayout();
-		buttonGridLayout.numColumns = 3;
+		Composite buttonComposite = CompositeFactory.createChildComposite(this,
+				1, 3);
 
-		Composite buttonComposite = new Composite(this, SWT.NONE);
-		buttonComposite.setLayout(buttonGridLayout);
-
-		this.addButton = CompositeFactory.createButton(buttonComposite,
+		this.addButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.button.add");
-		this.updateButton = CompositeFactory.createButton(buttonComposite,
+		this.updateButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.button.update");
-		this.deleteButton = CompositeFactory.createButton(buttonComposite,
+		this.deleteButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.button.delete");
 	}
 
@@ -110,6 +109,7 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 		this.complexUniqueKeyCombo.setFocus();
 	}
 
+	@Override
 	public void restruct() {
 		this.columnTable.removeAll();
 
@@ -117,16 +117,20 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 
 		for (NormalColumn normalColumn : this.copyData.getNormalColumns()) {
 			TableItem tableItem = new TableItem(this.columnTable, SWT.NONE);
-			tableItem.setText(0, Format.null2blank(normalColumn.getName()));
 
 			TableEditor tableEditor = CompositeFactory
-					.createCheckBoxTableEditor(tableItem, false, 1);
+					.createCheckBoxTableEditor(tableItem, false, 0);
 			this.tableEditorList.add(tableEditor);
 			this.editorColumnMap.put(tableEditor, normalColumn);
+
+			tableItem.setText(1, Format.null2blank(normalColumn.getName()));
 		}
 
 		this.setComboData();
 		this.setButtonStatus(false);
+		this.nameText.setText("");
+
+		this.columnTable.getColumns()[1].pack();
 	}
 
 	@Override
@@ -350,8 +354,8 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 
 	private void setButtonStatus(boolean enabled) {
 		if (enabled) {
-			if (this.copyData.getComplexUniqueKeyList().get(
-					this.complexUniqueKeyCombo.getSelectionIndex())
+			if (this.copyData.getComplexUniqueKeyList()
+					.get(this.complexUniqueKeyCombo.getSelectionIndex())
 					.isReferenced(copyData)) {
 				enabled = false;
 			}

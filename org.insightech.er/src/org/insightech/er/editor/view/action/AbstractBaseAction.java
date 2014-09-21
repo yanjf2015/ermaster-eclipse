@@ -10,6 +10,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.insightech.er.Activator;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -32,15 +33,19 @@ public abstract class AbstractBaseAction extends Action {
 	}
 
 	protected void refreshProject() {
-		IFile iFile = ((IFileEditorInput) this.getEditorPart().getEditorInput())
-				.getFile();
-		IProject project = iFile.getProject();
+		IEditorInput input = this.getEditorPart().getEditorInput();
 
-		try {
-			project.refreshLocal(IResource.DEPTH_INFINITE, null);
+		if (input instanceof IFileEditorInput) {
+			IFile iFile = ((IFileEditorInput) this.getEditorPart()
+					.getEditorInput()).getFile();
+			IProject project = iFile.getProject();
 
-		} catch (CoreException e) {
-			Activator.showExceptionDialog(e);
+			try {
+				project.refreshLocal(IResource.DEPTH_INFINITE, null);
+
+			} catch (CoreException e) {
+				Activator.showExceptionDialog(e);
+			}
 		}
 	}
 
@@ -49,6 +54,10 @@ public abstract class AbstractBaseAction extends Action {
 		ERDiagram diagram = (ERDiagram) editPart.getModel();
 
 		return diagram;
+	}
+
+	protected String getBasePath() {
+		return this.getDiagram().getEditor().getBasePath();
 	}
 
 	protected GraphicalViewer getGraphicalViewer() {

@@ -1,5 +1,6 @@
 package org.insightech.er.editor.view.contributor;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.draw2d.PositionConstants;
@@ -27,9 +28,11 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
+import org.eclipse.ui.part.EditorPart;
 import org.insightech.er.Activator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
+import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ViewableModel;
 import org.insightech.er.editor.view.action.dbexport.ExportToDBAction;
 import org.insightech.er.editor.view.action.dbexport.ExportToDBAction.ExportToDBRetargetAction;
@@ -166,7 +169,8 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 		this.addRetargetAction(new ChangeBackgroundColorRetargetAction());
 	}
 
-	public void contributeToToolBar(IToolBarManager toolBarManager,
+	public void contributeToToolBar(ERDiagram diagram,
+			IToolBarManager toolBarManager,
 			ZoomComboContributionItem zoomComboContributionItem) {
 		toolBarManager.add(this.getAction(ActionFactory.DELETE.getId()));
 		toolBarManager.add(this.getAction(ActionFactory.UNDO.getId()));
@@ -263,11 +267,12 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 									fontNameContributionItem.setText(fontName);
 
 								} else {
-									FontData fonData = Display.getCurrent()
+									FontData fontData = Display.getCurrent()
 											.getSystemFont().getFontData()[0];
-									fontNameContributionItem.setText(fonData
+									fontNameContributionItem.setText(fontData
 											.getName());
-									viewableModel.setFontName(fonData.getName());
+									viewableModel.setFontName(fontData
+											.getName());
 								}
 
 								if (fontSize > 0) {
@@ -295,4 +300,14 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 		addGlobalActionKey(IWorkbenchActionConstants.PRINT_EXT);
 	}
 
+	public void initRetargetActions(EditorPart newEditor) {
+		Iterator iter = this.getActionRegistry().getActions();
+
+		while (iter.hasNext()) {
+			IAction action = (IAction) iter.next();
+			if (action instanceof RetargetAction) {
+				((RetargetAction) action).partActivated(newEditor);
+			}
+		}
+	}
 }

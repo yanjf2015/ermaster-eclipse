@@ -6,10 +6,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.RowHeaderTable;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.common.widgets.table.CellEditWorker;
 import org.insightech.er.common.widgets.table.HeaderClickListener;
 import org.insightech.er.editor.model.dbexport.testdata.TestDataCreator;
@@ -36,30 +36,31 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 
 	private ERTable table;
 
-	public RepeatTestDataTabWrapper(TestDataDialog dialog, TabFolder parent,
-			int style) {
-		super(dialog, parent, style, "label.testdata.repeat.input");
+	public RepeatTestDataTabWrapper(TestDataDialog dialog, TabFolder parent) {
+		super(dialog, parent, "label.testdata.repeat.input");
 
 		this.dialog = dialog;
+	}
 
-		this.init();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 2;
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		this.setLayout(layout);
-
 		this.testDataNumText = CompositeFactory.createNumText(this.dialog,
 				this, "label.record.num", 50);
+		this.testDataNumText.setEnabled(false);
+
 		this.createEditTable(this);
 	}
 
 	private void createEditTable(Composite composite) {
 		this.editColumnTable = CompositeFactory.createRowHeaderTable(composite,
-				TestDataDialog.WIDTH - 20, TestDataDialog.TABLE_HEIGHT, 75, 25,
-				2, true, true);
+				TestDataDialog.TABLE_WIDTH, TestDataDialog.TABLE_HEIGHT, 75,
+				25, 2, true, true);
 
 		this.editColumnTable.setCellEditWorker(new CellEditWorker() {
 
@@ -72,7 +73,7 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 
 			public boolean isModified(int row, int column) {
 				TestDataCreator testDataCreator = new SQLTestDataCreator();
-				testDataCreator.init(dialog.getTestData());
+				testDataCreator.init(dialog.getTestData(), null);
 
 				if (column >= table.getExpandedColumns().size()) {
 					return false;
@@ -137,7 +138,8 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 
 			} else {
 				type = Format.formatType(normalColumn.getType(), normalColumn
-						.getTypeData(), this.dialog.getDiagram().getDatabase(), true);
+						.getTypeData(), this.dialog.getDiagram().getDatabase(),
+						true);
 			}
 
 			this.editColumnTable.addColumnHeader(name + "\r\n" + type, 100);
@@ -156,13 +158,25 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 
 		this.table = dialog.getTargetTable();
 
-		this.repeatTestData = dialog.getTestData().getTableTestDataMap().get(
-				this.table).getRepeatTestData();
-		this.testDataNumText.setText(Format.toString(this.repeatTestData
-				.getTestDataNum()));
+		if (this.table != null) {
+			this.repeatTestData = dialog.getTestData().getTableTestDataMap()
+					.get(this.table).getRepeatTestData();
+			this.testDataNumText.setText(Format.toString(this.repeatTestData
+					.getTestDataNum()));
 
-		// �e�[�u���ύX
-		this.initTable();
+			this.testDataNumText.setEnabled(true);
+
+			this.initTable();
+
+		} else {
+			this.repeatTestData = null;
+			this.testDataNumText.setText("");
+			this.testDataNumText.setEnabled(false);
+
+			this.editColumnTable.removeData();
+
+		}
+
 	}
 
 	/**
@@ -200,7 +214,7 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 			this.editColumnTable.setVisible(false);
 
 			TestDataCreator testDataCreator = new SQLTestDataCreator();
-			testDataCreator.init(dialog.getTestData());
+			testDataCreator.init(dialog.getTestData(), null);
 
 			this.editColumnTable.removeAllRow();
 
@@ -218,12 +232,13 @@ public class RepeatTestDataTabWrapper extends ValidatableTabWrapper {
 
 				for (NormalColumn column : this.table.getExpandedColumns()) {
 					values[columnIndex++] = testDataCreator
-							.getMergedRepeatTestDataValue(i, repeatTestData
-									.getDataDef(column), column);
+							.getMergedRepeatTestDataValue(i,
+									repeatTestData.getDataDef(column), column);
 				}
 
-				this.editColumnTable.addRow(String.valueOf(this.editColumnTable
-						.getItemCount() + 1), values);
+				this.editColumnTable
+						.addRow(String.valueOf(this.editColumnTable
+								.getItemCount() + 1), values);
 			}
 
 			this.editColumnTable.setVisible(true);

@@ -29,14 +29,25 @@ public abstract class AbstractErrorDialog extends Dialog {
 
 		Composite composite = (Composite) super.createDialogArea(parent);
 
-		this.textArea = CompositeFactory.createTextArea(null, composite, this
-				.getMessage(), 400, 200, 1, false, false);
+		GridLayout layout = new GridLayout();
+		this.initLayout(layout);
+		composite.setLayout(layout);
 
-		composite.setLayout(new GridLayout());
+		this.textArea = CompositeFactory.createTextArea(null, composite,
+				this.getMessage(), 400, 200, 1, false, false);
 
 		this.textArea.setText(Format.null2blank(this.getData()));
 
 		return composite;
+	}
+
+	protected void initLayout(GridLayout layout) {
+		layout.numColumns = 1;
+		layout.marginLeft = 20;
+		layout.marginRight = 20;
+		layout.marginBottom = 20;
+		layout.marginTop = 10;
+		layout.verticalSpacing = 15;
 	}
 
 	protected abstract String getData();

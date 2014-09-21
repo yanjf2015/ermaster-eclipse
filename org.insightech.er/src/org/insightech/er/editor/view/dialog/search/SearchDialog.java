@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.insightech.er.ResourceString;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.editor.controller.command.edit.ReplaceCommand;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.search.ReplaceManager;
@@ -40,6 +41,8 @@ public class SearchDialog extends Dialog {
 	public static final int SEARCH_ALL_ID = 101;
 
 	public static final int SEARCH_NEXT_ID = 102;
+
+	private static final int NUM_COLUMNS = 4;
 
 	private Button replaceButton;
 
@@ -148,25 +151,35 @@ public class SearchDialog extends Dialog {
 
 		Composite composite = null;
 		composite = (Composite) super.createDialogArea(parent);
-		composite.setLayout(new GridLayout());
+
+		GridLayout layout = new GridLayout();
+		this.initLayout(layout);
+		composite.setLayout(layout);
 
 		this.initialize(composite);
 
 		return composite;
 	}
 
+	protected void initLayout(GridLayout layout) {
+		layout.numColumns = 2;
+		layout.verticalSpacing = 15;
+		layout.marginLeft = 20;
+		layout.marginRight = 20;
+		layout.marginBottom = 15;
+		layout.marginTop = 20;
+	}
+
 	private void initialize(Composite parent) {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
-		gridLayout.verticalSpacing = 15;
+		this.keywordCombo = CompositeFactory.createCombo(null, parent,
+				"label.search.keyword", 1);
 
-		createKeywordCombo(parent);
-
-		createReplaceCombo(parent);
+		this.replaceCombo = CompositeFactory.createCombo(null, parent,
+				"label.search.replace.word", 1);
 
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
-		gridData.horizontalSpan = 3;
+		gridData.horizontalSpan = 2;
 		gridData.grabExcessHorizontalSpace = true;
 
 		this.tabFolder = new TabFolder(parent, SWT.NONE);
@@ -175,8 +188,6 @@ public class SearchDialog extends Dialog {
 		createRegionGroup(this.tabFolder);
 		createResultGroup(this.tabFolder);
 
-		parent.setLayout(gridLayout);
-
 		this.selectAllCheckBox(true);
 	}
 
@@ -184,19 +195,24 @@ public class SearchDialog extends Dialog {
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
 		tabItem.setText(ResourceString.getResourceString("label.search.range"));
 
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
+		GridLayout layout = new GridLayout();
+		layout.numColumns = NUM_COLUMNS;
+		layout.verticalSpacing = 0;
+		layout.marginLeft = 10;
+		layout.marginRight = 10;
+		layout.marginBottom = 10;
+		layout.marginTop = 10;
 
 		Composite group = new Composite(tabFolder, SWT.NONE);
-		group.setLayout(gridLayout);
+		group.setLayout(layout);
 
 		allCheckBox = new Button(group, SWT.CHECK);
 		allCheckBox.setText(ResourceString
 				.getResourceString("label.search.range.all"));
 
 		GridData allCheckBoxGridData = new GridData();
+		allCheckBoxGridData.horizontalSpan = NUM_COLUMNS;
 		allCheckBoxGridData.horizontalAlignment = GridData.FILL;
-		allCheckBoxGridData.horizontalSpan = 3;
 		allCheckBoxGridData.grabExcessHorizontalSpace = true;
 
 		allCheckBox.setLayoutData(allCheckBoxGridData);
@@ -212,7 +228,12 @@ public class SearchDialog extends Dialog {
 			}
 		});
 
+		GridData gridData = new GridData();
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.verticalIndent = 15;
+
 		wordCheckBox = new Button(group, SWT.CHECK);
+		wordCheckBox.setLayoutData(gridData);
 		wordCheckBox.setText(ResourceString
 				.getResourceString("label.search.range.word"));
 		this.wordCheckBox.addSelectionListener(new SelectionAdapter() {
@@ -229,6 +250,7 @@ public class SearchDialog extends Dialog {
 		this.createWordCheckboxGroup(group);
 
 		tableCheckBox = new Button(group, SWT.CHECK);
+		tableCheckBox.setLayoutData(gridData);
 		tableCheckBox.setText(ResourceString
 				.getResourceString("label.search.range.table"));
 		this.tableCheckBox.addSelectionListener(new SelectionAdapter() {
@@ -245,6 +267,7 @@ public class SearchDialog extends Dialog {
 		this.createTableCheckboxGroup(group);
 
 		groupCheckBox = new Button(group, SWT.CHECK);
+		groupCheckBox.setLayoutData(gridData);
 		groupCheckBox.setText(ResourceString
 				.getResourceString("label.search.range.group"));
 		this.groupCheckBox.addSelectionListener(new SelectionAdapter() {
@@ -259,6 +282,8 @@ public class SearchDialog extends Dialog {
 		});
 
 		this.createGroupCheckboxGroup(group);
+
+		CompositeFactory.fillLine(group);
 
 		modelPropertiesCheckBox = new Button(group, SWT.CHECK);
 		modelPropertiesCheckBox.setText(ResourceString
@@ -278,12 +303,16 @@ public class SearchDialog extends Dialog {
 
 	private void createWordCheckboxGroup(Composite parent) {
 		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 4;
+		gridData.verticalAlignment = SWT.TOP;
+		gridData.horizontalSpan = NUM_COLUMNS - 1;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 4;
 
 		Group group = new Group(parent, SWT.NONE);
-		group.setLayout(gridLayout);
+		group.setLayout(layout);
 		group.setLayoutData(gridData);
 
 		physicalWordNameCheckBox = new Button(group, SWT.CHECK);
@@ -313,7 +342,10 @@ public class SearchDialog extends Dialog {
 
 	private void createTableCheckboxGroup(Composite parent) {
 		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = NUM_COLUMNS - 1;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 4;
 
@@ -366,7 +398,10 @@ public class SearchDialog extends Dialog {
 
 	private void createGroupCheckboxGroup(Composite parent) {
 		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
+		gridData.horizontalSpan = NUM_COLUMNS - 1;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 4;
 
@@ -496,49 +531,6 @@ public class SearchDialog extends Dialog {
 		groupColumnDescriptionCheckBox.setEnabled(!checked);
 	}
 
-	private void createKeywordCombo(Composite parent) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setText(ResourceString.getResourceString("label.search.keyword"));
-
-		GridData fillerGridData = new GridData();
-		fillerGridData.widthHint = 10;
-
-		label = new Label(parent, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(fillerGridData);
-
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-
-		keywordCombo = new Combo(parent, SWT.NONE);
-		keywordCombo.setLayoutData(gridData);
-		keywordCombo.setVisibleItemCount(20);
-
-		this.initKeywordCombo();
-	}
-
-	private void createReplaceCombo(Composite parent) {
-		Label label = new Label(parent, SWT.NONE);
-		label.setText(ResourceString
-				.getResourceString("label.search.replace.word"));
-
-		GridData fillerGridData = new GridData();
-		fillerGridData.widthHint = 10;
-
-		label = new Label(parent, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(fillerGridData);
-
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-
-		replaceCombo = new Combo(parent, SWT.NONE);
-		replaceCombo.setLayoutData(gridData);
-		replaceCombo.setVisibleItemCount(20);
-
-		this.initReplaceWordCombo();
-	}
-
 	private void initKeywordCombo() {
 		this.keywordCombo.removeAll();
 
@@ -559,23 +551,17 @@ public class SearchDialog extends Dialog {
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
 		tabItem.setText(ResourceString.getResourceString("label.search.result"));
 
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 4;
-
-		Composite resultGroup = new Composite(tabFolder, SWT.NONE);
-		resultGroup.setLayout(layout);
-
 		GridData gridData = new GridData();
-		gridData.widthHint = -1;
 		gridData.grabExcessVerticalSpace = true;
 		gridData.verticalAlignment = SWT.FILL;
-		gridData.horizontalSpan = 4;
-
-		resultTable = new Table(resultGroup, SWT.BORDER | SWT.FULL_SELECTION
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.horizontalAlignment = SWT.FILL;
+		
+		this.resultTable = new Table(tabFolder, SWT.NONE | SWT.FULL_SELECTION
 				| SWT.MULTI);
-		resultTable.setHeaderVisible(true);
-		resultTable.setLayoutData(gridData);
-		resultTable.setLinesVisible(true);
+		this.resultTable.setHeaderVisible(true);
+		this.resultTable.setLayoutData(gridData);
+		this.resultTable.setLinesVisible(true);
 
 		this.resultTable.addSelectionListener(new SelectionAdapter() {
 
@@ -589,7 +575,7 @@ public class SearchDialog extends Dialog {
 				if (index == -1) {
 					replaceButton.setEnabled(false);
 					replaceCombo.setEnabled(false);
-					
+
 				} else {
 					replaceButton.setEnabled(true);
 					replaceCombo.setEnabled(true);
@@ -621,20 +607,20 @@ public class SearchDialog extends Dialog {
 				SearchResult.SORT_TYPE_TYPE));
 
 		TableColumn tableColumn2 = new TableColumn(resultTable, SWT.LEFT);
-		tableColumn2.setWidth(100);
+		tableColumn2.setWidth(200);
 		tableColumn2.setText(ResourceString
 				.getResourceString("label.search.result.table.name"));
 		tableColumn2.addSelectionListener(new SearchResultSortListener(
 				SearchResult.SORT_TYPE_NAME));
 
-		TableColumn tableColumn3 = new TableColumn(resultTable, SWT.LEFT);
+		TableColumn tableColumn3 = new TableColumn(this.resultTable, SWT.LEFT);
 		tableColumn3.setWidth(200);
 		tableColumn3.setText(ResourceString
 				.getResourceString("label.search.result.table.value"));
 		tableColumn3.addSelectionListener(new SearchResultSortListener(
 				SearchResult.SORT_TYPE_VALUE));
 
-		tabItem.setControl(resultGroup);
+		tabItem.setControl(this.resultTable);
 	}
 
 	/**
@@ -719,7 +705,7 @@ public class SearchDialog extends Dialog {
 			return;
 
 		} else if (buttonId == REPLACE_ID) {
-			//this.tabFolder.setSelection(1);
+			// this.tabFolder.setSelection(1);
 
 			List<SearchResultRow> replaceRows = getReplaceRows();
 
@@ -753,7 +739,7 @@ public class SearchDialog extends Dialog {
 
 			this.replaceCombo.setEnabled(false);
 			this.replaceButton.setEnabled(false);
-			
+
 			return;
 		}
 

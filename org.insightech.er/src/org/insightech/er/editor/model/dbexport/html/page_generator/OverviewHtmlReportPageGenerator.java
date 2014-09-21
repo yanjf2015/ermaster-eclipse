@@ -8,7 +8,7 @@ import java.util.Map;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.html.ExportToHtmlManager;
 import org.insightech.er.editor.model.dbexport.html.part_generator.ImagePartGenerator;
-import org.insightech.er.editor.model.dbexport.image.ImageInfo;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 
 public class OverviewHtmlReportPageGenerator {
 
@@ -58,7 +58,7 @@ public class OverviewHtmlReportPageGenerator {
 		return sb.toString();
 	}
 
-	public String generateSummary(ImageInfo imageInfo,
+	public String generateSummary(ImageInfoSet imageInfoSet,
 			List<HtmlReportPageGenerator> htmlReportPageGeneratorList)
 			throws IOException {
 
@@ -67,11 +67,13 @@ public class OverviewHtmlReportPageGenerator {
 
 		String imagePart = "";
 
-		if (imageInfo != null) {
+		if (imageInfoSet != null) {
 			ImagePartGenerator imagePartGenerator = new ImagePartGenerator(
 					this.idMap);
 
-			imagePart = imagePartGenerator.generateImage(imageInfo, "");
+			imagePart = imagePartGenerator.generateImage(
+					imageInfoSet.getDiagramImageInfo(),
+					ExportToHtmlManager.IMAGE_DIR);
 		}
 
 		Object[] args = { imagePart,

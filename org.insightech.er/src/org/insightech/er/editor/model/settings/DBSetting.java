@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
 public class DBSetting implements Serializable, Comparable<DBSetting> {
@@ -141,17 +142,32 @@ public class DBSetting implements Serializable, Comparable<DBSetting> {
 	}
 
 	public String getTableNameWithSchema(String tableName, String schema) {
-		if (schema == null) {
-			return Format.null2blank(tableName);
+		return getTableNameWithSchema(tableName, schema, false);
+	}
+
+	public String getTableNameWithSchema(String tableName, String schema,
+			boolean toUpperCase) {
+		String name = null;
+		
+		if (Check.isEmpty(schema)) {
+			name = Format.null2blank(tableName);
+
+		} else {
+			DBManager dbManager = DBManagerFactory.getDBManager(this.dbsystem);
+	
+			if (!dbManager.isSupported(DBManager.SUPPORT_SCHEMA)) {
+				name = Format.null2blank(tableName);
+
+			} else {
+				name = schema + "." + Format.null2blank(tableName);
+			}
+		}
+		
+		if (toUpperCase) {
+			name = name.toUpperCase();
 		}
 
-		DBManager dbManager = DBManagerFactory.getDBManager(this.dbsystem);
-
-		if (!dbManager.isSupported(DBManager.SUPPORT_SCHEMA)) {
-			return Format.null2blank(tableName);
-		}
-
-		return schema + "." + Format.null2blank(tableName);
+		return name;
 	}
 
 	public Connection connect() throws InputException, InstantiationException,

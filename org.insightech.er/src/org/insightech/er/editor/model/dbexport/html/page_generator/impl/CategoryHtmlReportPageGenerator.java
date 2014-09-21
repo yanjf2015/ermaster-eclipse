@@ -5,22 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.html.ExportToHtmlManager;
 import org.insightech.er.editor.model.dbexport.html.page_generator.AbstractHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.part_generator.ImagePartGenerator;
-import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 
 public class CategoryHtmlReportPageGenerator extends
 		AbstractHtmlReportPageGenerator {
 
-	private ImageInfoSet imageInfoSet;
-
-	public CategoryHtmlReportPageGenerator(Map<Object, Integer> idMap,
-			ImageInfoSet imageInfoSet) {
+	public CategoryHtmlReportPageGenerator(Map<Object, Integer> idMap) {
 		super(idMap);
-
-		this.imageInfoSet = imageInfoSet;
 	}
 
 	public String getType() {
@@ -58,7 +53,8 @@ public class CategoryHtmlReportPageGenerator extends
 					this.idMap);
 
 			imagePart = imagePartGenerator.generateImage(
-					this.imageInfoSet.getImageInfo(category), "../");
+					this.imageInfoSet.getImageInfo(category), "../"
+							+ ExportToHtmlManager.IMAGE_DIR);
 		}
 
 		return new String[] { imagePart, usedTableTable };

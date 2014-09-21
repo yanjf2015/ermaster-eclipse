@@ -35,7 +35,7 @@ public class AutoIncrementSettingDialog extends AbstractDialog {
 
 	public AutoIncrementSettingDialog(Shell parentShell, Sequence sequence,
 			String database) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.sequence = sequence;
 		this.database = database;
@@ -44,23 +44,23 @@ public class AutoIncrementSettingDialog extends AbstractDialog {
 	@Override
 	protected void initialize(Composite composite) {
 		this.incrementText = CompositeFactory.createNumText(this, composite,
-				"Increment");
+				"Increment", true);
 
 		if (PostgresDBManager.ID.equals(this.database)) {
 			this.minValueText = CompositeFactory.createNumText(this, composite,
-					"MinValue");
+					"MinValue", true);
 			this.maxValueText = CompositeFactory.createNumText(this, composite,
-					"MaxValue");
+					"MaxValue", true);
 		}
 
 		this.startText = CompositeFactory.createNumText(this, composite,
-				"Start");
+				"Start", true);
 
 		if (PostgresDBManager.ID.equals(this.database)) {
 			this.cacheText = CompositeFactory.createNumText(this, composite,
-					"Cache");
+					"Cache", true);
 			this.cycleCheckBox = CompositeFactory.createCheckbox(this,
-					composite, "Cycle", 2);
+					composite, "Cycle", false, 2);
 		}
 	}
 
@@ -202,8 +202,8 @@ public class AutoIncrementSettingDialog extends AbstractDialog {
 			}
 			this.startText.setText(Format.toString(this.sequence.getStart()));
 			if (maxValueText != null) {
-				this.cacheText.setText(Format
-						.toString(this.sequence.getCache()));
+				this.cacheText
+						.setText(Format.toString(this.sequence.getCache()));
 			}
 			if (cycleCheckBox != null) {
 				this.cycleCheckBox.setSelection(this.sequence.isCycle());

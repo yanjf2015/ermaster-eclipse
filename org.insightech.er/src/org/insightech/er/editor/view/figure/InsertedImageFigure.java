@@ -31,6 +31,8 @@ public class InsertedImageFigure extends Figure {
 
 		this.imageSize = new Dimension(this.image.getBounds().width, this.image
 				.getBounds().height);
+		
+		this.repaint();
 	}
 
 	@Override

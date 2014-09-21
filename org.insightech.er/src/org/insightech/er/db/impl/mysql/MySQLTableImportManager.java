@@ -17,6 +17,7 @@ import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableViewProperties;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.Format;
 
 public class MySQLTableImportManager extends ImportFromDBManagerEclipseBase {

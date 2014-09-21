@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Resources;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -25,7 +25,8 @@ import org.insightech.er.util.Format;
 
 public class SequenceDialog extends AbstractDialog {
 
-	private static final int TEXT_SIZE = 200;
+	private int NUMBER_TEXT_SIZE = -1;
+
 	private Text nameText;
 
 	private Text schemaText;
@@ -60,10 +61,17 @@ public class SequenceDialog extends AbstractDialog {
 
 	public SequenceDialog(Shell parentShell, Sequence sequence,
 			ERDiagram diagram) {
-		super(parentShell, 5);
+		super(parentShell);
 
 		this.sequence = sequence;
 		this.diagram = diagram;
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 5;
 	}
 
 	@Override
@@ -71,77 +79,69 @@ public class SequenceDialog extends AbstractDialog {
 		String database = this.diagram.getDatabase();
 
 		this.nameText = CompositeFactory.createText(this, composite,
-				"label.sequence.name", 4, false);
+				"label.sequence.name", 4, false, true);
 		this.schemaText = CompositeFactory.createText(this, composite,
-				"label.schema", 4, false);
+				"label.schema", 4, false, true);
 
-		if (DB2DBManager.ID.equals(database)
-				|| HSQLDBDBManager.ID.equals(database)) {
+		if (DB2DBManager.ID.equals(diagram.getDatabase())) {
 			this.dataTypeCombo = CompositeFactory.createReadOnlyCombo(this,
-					composite, "Data Type", 1, TEXT_SIZE);
+					composite, "Data Type", 2);
+			this.dataTypeCombo.add("BIGINT");
+			this.dataTypeCombo.add("INTEGER");
+			this.dataTypeCombo.add("SMALLINT");
+			this.dataTypeCombo.add("DECIMAL(p)");
+
+			this.decimalSizeText = CompositeFactory.createNumText(this,
+					composite, "Size", 1, 30, false);
+			this.decimalSizeText.setEnabled(false);
+
+		} else if (HSQLDBDBManager.ID.equals(database)) {
+			this.dataTypeCombo = CompositeFactory.createReadOnlyCombo(this,
+					composite, "Data Type", 4);
 			this.dataTypeCombo.add("BIGINT");
 			this.dataTypeCombo.add("INTEGER");
 
-			if (DB2DBManager.ID.equals(diagram.getDatabase())) {
-				this.dataTypeCombo.add("SMALLINT");
-				this.dataTypeCombo.add("DECIMAL(p)");
-
-				this.decimalSizeText = CompositeFactory.createNumText(this,
-						composite, "Size", 30);
-				this.decimalSizeText.setEnabled(false);
-
-			} else {
-				CompositeFactory.filler(composite, 2);
-
-			}
-
-			CompositeFactory.filler(composite, 1);
 		}
+
 		this.incrementText = CompositeFactory.createNumText(this, composite,
-				"Increment", TEXT_SIZE);
-		CompositeFactory.filler(composite, 3);
+				"Increment", 4, NUMBER_TEXT_SIZE, true);
 
 		if (!H2DBManager.ID.equals(database)) {
 			this.startText = CompositeFactory.createNumText(this, composite,
-					"Start", TEXT_SIZE);
-			CompositeFactory.filler(composite, 3);
+					"Start", 4, NUMBER_TEXT_SIZE, true);
 
 			this.minValueText = CompositeFactory.createNumText(this, composite,
-					"MinValue", TEXT_SIZE);
-			CompositeFactory.filler(composite, 3);
+					"MinValue", 4, NUMBER_TEXT_SIZE, true);
 
 			this.maxValueText = CompositeFactory.createNumText(this, composite,
-					"MaxValue", TEXT_SIZE);
-			CompositeFactory.filler(composite, 3);
+					"MaxValue", 4, NUMBER_TEXT_SIZE, true);
 		}
 
 		if (!HSQLDBDBManager.ID.equals(diagram.getDatabase())) {
-			this.cacheText = CompositeFactory.createNumText(this, composite,
-					"Cache", TEXT_SIZE);
-
 			if (DB2DBManager.ID.equals(diagram.getDatabase())) {
+				this.cacheText = CompositeFactory.createNumText(this,
+						composite, "Cache", 1, NUMBER_TEXT_SIZE, true);
 				this.nocacheCheckBox = CompositeFactory.createCheckbox(this,
-						composite, "nocache", 2);
+						composite, "nocache", false, 3);
 			} else {
-				CompositeFactory.filler(composite, 3);
+				this.cacheText = CompositeFactory.createNumText(this,
+						composite, "Cache", 4, NUMBER_TEXT_SIZE, true);
 
 			}
 		}
 
 		if (!H2DBManager.ID.equals(database)) {
 			this.cycleCheckBox = CompositeFactory.createCheckbox(this,
-					composite, "Cycle", 2);
-			CompositeFactory.filler(composite, 3);
+					composite, "Cycle", false, 5);
 		}
 
 		if (DB2DBManager.ID.equals(diagram.getDatabase())) {
 			this.orderCheckBox = CompositeFactory.createCheckbox(this,
-					composite, "Order", 2);
-			CompositeFactory.filler(composite, 3);
+					composite, "Order", false, 5);
 		}
 
 		this.descriptionText = CompositeFactory.createTextArea(this, composite,
-				"label.description", Resources.DESCRIPTION_WIDTH, 100, 4, true);
+				"label.description", -1, 100, 4, true);
 	}
 
 	@Override

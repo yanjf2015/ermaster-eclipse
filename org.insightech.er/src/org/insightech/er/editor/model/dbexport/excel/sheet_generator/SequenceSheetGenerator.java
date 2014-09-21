@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.db.impl.h2.H2DBManager;
@@ -12,6 +11,7 @@ import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.POIUtils;
 
@@ -87,11 +87,12 @@ public class SequenceSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 
 		for (Sequence sequence : diagram.getDiagramContents().getSequenceSet()) {
 			String name = sequence.getName();
@@ -99,9 +100,11 @@ public class SequenceSheetGenerator extends AbstractSheetGenerator {
 			HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
 					sheetNameMap);
 
-			sheetObjectMap.put(
-					workbook.getSheetName(workbook.getSheetIndex(newSheet)),
-					sequence);
+			String sheetName = workbook.getSheetName(workbook
+					.getSheetIndex(newSheet));
+			monitor.subTaskWithCounter("[Sequence] " + sheetName);
+
+			sheetObjectMap.put(sheetName, sequence);
 
 			this.setSequenceData(workbook, newSheet, sequence, diagram);
 			monitor.worked(1);

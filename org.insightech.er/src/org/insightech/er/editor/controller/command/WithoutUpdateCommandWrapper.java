@@ -30,7 +30,7 @@ public class WithoutUpdateCommandWrapper extends Command {
 
 		ERDiagram.setUpdateable(true);
 
-		this.diagram.refreshChildren();
+		this.diagram.refresh();
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class WithoutUpdateCommandWrapper extends Command {
 
 		ERDiagram.setUpdateable(true);
 
-		this.diagram.refreshChildren();
+		this.diagram.refresh();
 	}
 
 	/**

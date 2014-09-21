@@ -3,19 +3,18 @@ package org.insightech.er.editor.view.tool;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.tools.PanningSelectionTool;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseEvent;
-import org.insightech.er.editor.controller.command.diagram_contents.element.node.MoveElementCommand;
 import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPart;
-import org.insightech.er.editor.controller.editpart.element.node.ERTableEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
-import org.insightech.er.editor.controller.editpart.element.node.NoteEditPart;
+import org.insightech.er.editor.controller.editpolicy.ERDiagramLayoutEditPolicy;
 import org.insightech.er.editor.model.ERDiagram;
-import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 
 public class MovablePanningSelectionTool extends PanningSelectionTool {
 
@@ -56,37 +55,37 @@ public class MovablePanningSelectionTool extends PanningSelectionTool {
 		}
 
 		if (dx != 0 || dy != 0) {
+			CompoundCommand compoundCommand = new CompoundCommand();
+
 			ERDiagram diagram = (ERDiagram) this.getCurrentViewer()
 					.getContents().getModel();
 
-			List selectedObject = this.getCurrentViewer()
+			List selectedEditParts = this.getCurrentViewer()
 					.getSelectedEditParts();
-			if (!selectedObject.isEmpty()) {
 
-				CompoundCommand command = new CompoundCommand();
-
-				for (Object object : selectedObject) {
-
-					if (object instanceof ERTableEditPart
-							|| object instanceof NoteEditPart) {
-						NodeElementEditPart editPart = (NodeElementEditPart) object;
-
-						NodeElement nodeElement = (NodeElement) editPart
-								.getModel();
-
-						MoveElementCommand moveElementCommand = new MoveElementCommand(
-								diagram, editPart.getFigure().getBounds(),
-								nodeElement.getX() + dx, nodeElement.getY()
-										+ dy, nodeElement.getWidth(),
-								nodeElement.getHeight(), nodeElement);
-
-						command.add(moveElementCommand);
-					}
+			for (Object object : selectedEditParts) {
+				if (!(object instanceof NodeElementEditPart)) {
+					continue;
 				}
 
-				this.getCurrentViewer().getEditDomain().getCommandStack()
-						.execute(command.unwrap());
+				NodeElementEditPart editPart = (NodeElementEditPart) object;
+
+				Rectangle rectangle = editPart.getFigure().getBounds().getCopy();
+				
+				rectangle.x += dx;
+				rectangle.y += dy;
+
+				Command command = ERDiagramLayoutEditPolicy
+						.createChangeConstraintCommand(diagram,
+								selectedEditParts, editPart, rectangle);
+
+				if (command != null) {
+					compoundCommand.add(command);
+				}
 			}
+
+			this.getCurrentViewer().getEditDomain().getCommandStack()
+					.execute(compoundCommand.unwrap());
 		}
 
 		return super.handleKeyDown(event);

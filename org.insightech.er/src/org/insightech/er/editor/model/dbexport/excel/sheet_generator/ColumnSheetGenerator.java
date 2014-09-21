@@ -5,13 +5,13 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.ColumnSet;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.POIUtils.CellLocation;
 
@@ -25,8 +25,9 @@ public class ColumnSheetGenerator extends AbstractSheetGenerator {
 		this.columnTemplate = null;
 	}
 
-	public void setAllColumnsData(HSSFWorkbook workbook, HSSFSheet sheet,
-			ERDiagram diagram) {
+	public void setAllColumnsData(ProgressMonitor monitor,
+			HSSFWorkbook workbook, HSSFSheet sheet, ERDiagram diagram)
+			throws InterruptedException {
 		this.clear();
 
 		CellLocation cellLocation = POIUtils.findCell(sheet,
@@ -51,12 +52,18 @@ public class ColumnSheetGenerator extends AbstractSheetGenerator {
 					continue;
 				}
 
+				monitor.subTaskWithCounter(sheet.getSheetName() + " - "
+						+ table.getName());
+
 				for (NormalColumn normalColumn : table.getExpandedColumns()) {
+
 					HSSFRow row = POIUtils.insertRow(sheet, rowNum++);
 					this.setColumnData(this.keywordsValueMap, columnTemplate,
 							row, normalColumn, table, order);
 					order++;
 				}
+
+				monitor.worked(1);
 			}
 
 			this.setCellStyle(columnTemplate, sheet, cellLocation.r, rowNum
@@ -75,20 +82,22 @@ public class ColumnSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 		String name = this.getSheetName();
 		HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
 				sheetNameMap);
 
-		sheetObjectMap.put(workbook.getSheetName(workbook
-				.getSheetIndex(newSheet)), new ColumnSet());
+		String sheetName = workbook.getSheetName(workbook
+				.getSheetIndex(newSheet));
 
-		this.setAllColumnsData(workbook, newSheet, diagram);
-		monitor.worked(1);
+		sheetObjectMap.put(sheetName, new ColumnSet());
+
+		this.setAllColumnsData(monitor, workbook, newSheet, diagram);
 	}
 
 	@Override
@@ -120,7 +129,20 @@ public class ColumnSheetGenerator extends AbstractSheetGenerator {
 
 	@Override
 	public int count(ERDiagram diagram) {
-		return 1;
+		int count = 0;
+
+		for (ERTable table : diagram.getDiagramContents().getContents()
+				.getTableSet()) {
+
+			if (diagram.getCurrentCategory() != null
+					&& !diagram.getCurrentCategory().contains(table)) {
+				continue;
+			}
+
+			count++;
+		}
+
+		return count;
 	}
 
 }

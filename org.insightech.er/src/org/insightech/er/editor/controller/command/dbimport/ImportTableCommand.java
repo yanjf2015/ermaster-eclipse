@@ -9,7 +9,7 @@ import org.eclipse.draw2d.graph.DirectedGraph;
 import org.eclipse.draw2d.graph.DirectedGraphLayout;
 import org.eclipse.draw2d.graph.Edge;
 import org.eclipse.draw2d.graph.Node;
-import org.insightech.er.editor.controller.command.AbstractCommand;
+import org.insightech.er.editor.controller.command.diagram_contents.element.node.AbstractCreateElementCommand;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.DiagramContents;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Bendpoint;
@@ -28,9 +28,15 @@ import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.Ta
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.TriggerSet;
 
-public class ImportTableCommand extends AbstractCommand {
+public class ImportTableCommand extends AbstractCreateElementCommand {
 
-	private ERDiagram diagram;
+	private static final int AUTO_GRAPH_LIMIT = 100;
+
+	private static final int ORIGINAL_X = 20;
+	private static final int ORIGINAL_Y = 20;
+
+	private static final int DISTANCE_X = 300;
+	private static final int DISTANCE_Y = 300;
 
 	private SequenceSet sequenceSet;
 
@@ -50,19 +56,12 @@ public class ImportTableCommand extends AbstractCommand {
 
 	private List<ColumnGroup> columnGroups;
 
-	private static final int AUTO_GRAPH_LIMIT = 100;
-
-	private static final int ORIGINAL_X = 20;
-	private static final int ORIGINAL_Y = 20;
-
-	private static final int DISTANCE_X = 300;
-	private static final int DISTANCE_Y = 300;
-
 	public ImportTableCommand(ERDiagram diagram,
 			List<NodeElement> nodeElementList, List<Sequence> sequences,
 			List<Trigger> triggers, List<Tablespace> tablespaces,
 			List<ColumnGroup> columnGroups) {
-		this.diagram = diagram;
+		super(diagram);
+
 		this.nodeElementList = nodeElementList;
 		this.sequences = sequences;
 		this.triggers = triggers;
@@ -161,6 +160,7 @@ public class ImportTableCommand extends AbstractCommand {
 
 		for (NodeElement nodeElement : this.nodeElementList) {
 			this.diagram.addNewContent(nodeElement);
+			this.addToCategory(nodeElement);
 
 			if (nodeElement instanceof TableView) {
 				for (NormalColumn normalColumn : ((TableView) nodeElement)
@@ -190,6 +190,10 @@ public class ImportTableCommand extends AbstractCommand {
 
 		this.diagram.refreshChildren();
 		this.diagram.refreshOutline();
+		
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 
 	private void setSelfRelation(Relation relation) {
@@ -236,6 +240,7 @@ public class ImportTableCommand extends AbstractCommand {
 
 		for (NodeElement nodeElement : this.nodeElementList) {
 			this.diagram.removeContent(nodeElement);
+			this.removeFromCategory(nodeElement);
 
 			if (nodeElement instanceof TableView) {
 				for (NormalColumn normalColumn : ((TableView) nodeElement)
@@ -266,5 +271,9 @@ public class ImportTableCommand extends AbstractCommand {
 
 		this.diagram.refreshChildren();
 		this.diagram.refreshOutline();
+		
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 }

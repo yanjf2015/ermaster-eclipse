@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
+import org.insightech.er.Resources;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
@@ -34,8 +35,6 @@ import org.insightech.er.editor.view.dialog.element.relation.RelationDialog.Colu
 import org.insightech.er.util.Format;
 
 public class RelationByExistingColumnsDialog extends AbstractDialog {
-
-	private static final int COLUMN_WIDTH = 200;
 
 	private Combo columnCombo;
 
@@ -69,7 +68,7 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 			List<NormalColumn> candidateForeignKeyColumns,
 			Map<NormalColumn, List<NormalColumn>> referencedMap,
 			Map<Relation, Set<NormalColumn>> foreignKeySetMap) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.source = source;
 		this.referencedColumnList = new ArrayList<NormalColumn>();
@@ -87,7 +86,7 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 	protected void initLayout(GridLayout layout) {
 		super.initLayout(layout);
 
-		layout.verticalSpacing = 20;
+		layout.verticalSpacing = Resources.VERTICAL_SPACING;
 	}
 
 	/**
@@ -100,11 +99,14 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 
 		Label label = new Label(composite, SWT.NONE);
 		label.setLayoutData(gridData);
-		label
-				.setText(ResourceString
-						.getResourceString("dialog.message.create.relation.by.existing.columns"));
+		label.setText(ResourceString
+				.getResourceString("dialog.message.create.relation.by.existing.columns"));
+
+		CompositeFactory.fillLine(composite, 10);
 
 		this.createColumnCombo(composite);
+
+		CompositeFactory.fillLine(composite, 10);
 
 		this.createComparisonTable(composite);
 	}
@@ -114,17 +116,8 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 	 * 
 	 */
 	private void createColumnCombo(Composite composite) {
-		Label label = new Label(composite, SWT.NONE);
-		label.setText(ResourceString
-				.getResourceString("label.reference.column"));
-
-		GridData gridData = new GridData();
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		this.columnCombo = new Combo(composite, SWT.READ_ONLY);
-		this.columnCombo.setLayoutData(gridData);
-
+		this.columnCombo = CompositeFactory.createReadOnlyCombo(this,
+				composite, "label.reference.column");
 		this.columnCombo.setVisibleItemCount(20);
 	}
 
@@ -141,15 +134,19 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 		this.comparisonTable.setHeaderVisible(true);
 		this.comparisonTable.setLinesVisible(true);
 
+		composite.pack();
+
+		int width = this.comparisonTable.getBounds().width;
+
 		TableColumn referencedColumn = new TableColumn(this.comparisonTable,
 				SWT.NONE);
-		referencedColumn.setWidth(COLUMN_WIDTH);
+		referencedColumn.setWidth(width / 2);
 		referencedColumn.setText(ResourceString
 				.getResourceString("label.reference.column"));
 
 		TableColumn foreignKeyColumn = new TableColumn(this.comparisonTable,
 				SWT.NONE);
-		foreignKeyColumn.setWidth(COLUMN_WIDTH);
+		foreignKeyColumn.setWidth(width / 2);
 		foreignKeyColumn.setText(ResourceString
 				.getResourceString("label.foreign.key"));
 	}
@@ -180,9 +177,8 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 		} else if (index < this.columnComboInfo.columnStartIndex) {
 			ComplexUniqueKey complexUniqueKey = this.source
 					.getComplexUniqueKeyList()
-					.get(
-							index
-									- this.columnComboInfo.complexUniqueKeyStartIndex);
+					.get(index
+							- this.columnComboInfo.complexUniqueKeyStartIndex);
 
 			this.referencedComplexUniqueKey = complexUniqueKey;
 
@@ -307,9 +303,8 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 			} else if (index < this.columnComboInfo.columnStartIndex) {
 				ComplexUniqueKey complexUniqueKey = this.source
 						.getComplexUniqueKeyList()
-						.get(
-								index
-										- this.columnComboInfo.complexUniqueKeyStartIndex);
+						.get(index
+								- this.columnComboInfo.complexUniqueKeyStartIndex);
 
 				this.referencedColumnList = complexUniqueKey.getColumnList();
 
@@ -333,8 +328,8 @@ public class RelationByExistingColumnsDialog extends AbstractDialog {
 	private void column2TableItem(NormalColumn referencedColumn) {
 		TableItem tableItem = new TableItem(this.comparisonTable, SWT.NONE);
 
-		tableItem.setText(0, Format.null2blank(referencedColumn
-				.getLogicalName()));
+		tableItem.setText(0,
+				Format.null2blank(referencedColumn.getLogicalName()));
 
 		List<NormalColumn> foreignKeyList = this.referencedMap
 				.get(referencedColumn.getRootReferencedColumn());

@@ -13,11 +13,8 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -27,6 +24,7 @@ import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.editor.TranslationResources;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.DiagramContents;
@@ -45,7 +43,7 @@ public class ExportToTranslationDictionaryDialog extends AbstractDialog {
 
 	public ExportToTranslationDictionaryDialog(Shell parentShell,
 			ERDiagram diagram) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.diagram = diagram;
 	}
@@ -55,33 +53,20 @@ public class ExportToTranslationDictionaryDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void initialize(Composite parent) {
-		GridData gridData2 = new GridData();
-		gridData2.horizontalSpan = 2;
+		this.dictionaryNameText = CompositeFactory.createText(this, parent,
+				"label.translation.dictionary.name", false, true);
 
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
+		CompositeFactory.fillLine(parent);
 
-		Label label = new Label(parent, SWT.NONE);
-		label
-				.setText(ResourceString
-						.getResourceString("dialog.message.export.translation.dictionary"));
-		label.setLayoutData(gridData2);
+		CompositeFactory.createLeftLabel(parent,
+				"dialog.message.export.translation.dictionary1", 2);
 
-		label = new Label(parent, SWT.NONE);
-		label = new Label(parent, SWT.NONE);
+		CompositeFactory.fillLine(parent);
 
-		label = new Label(parent, SWT.NONE);
-		label.setText(ResourceString
-				.getResourceString("label.translation.dictionary.name"));
+		CompositeFactory.createLeftLabel(parent,
+				"dialog.message.export.translation.dictionary2", 2);
 
-		this.dictionaryNameText = new Text(parent, SWT.BORDER);
-		this.dictionaryNameText.setLayoutData(gridData);
-
-		this.dictionaryNameText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				validate();
-			}
-		});
+		CompositeFactory.fillLine(parent);
 
 		this.createTable(parent);
 	}
@@ -99,18 +84,22 @@ public class ExportToTranslationDictionaryDialog extends AbstractDialog {
 		this.dictionaryTable.setLinesVisible(true);
 		this.dictionaryTable.setLayoutData(gridData);
 
-		TableColumn tableColumn = new TableColumn(this.dictionaryTable,
-				SWT.LEFT);
-		tableColumn.setWidth(250);
-		tableColumn.setText(ResourceString
+		parent.pack();
+
+		int width = this.dictionaryTable.getBounds().width;
+
+		TableColumn physicalNameTableColumn = new TableColumn(
+				this.dictionaryTable, SWT.LEFT);
+		physicalNameTableColumn.setText(ResourceString
 				.getResourceString("label.physical.name"));
+		physicalNameTableColumn.setWidth(width / 2 - 5);
 
-		TableColumn tableColumn1 = new TableColumn(this.dictionaryTable,
-				SWT.LEFT);
-		tableColumn1.setWidth(250);
-		tableColumn1.setText(ResourceString
+		TableColumn logicalNameTableColumn = new TableColumn(
+				this.dictionaryTable, SWT.LEFT);
+
+		logicalNameTableColumn.setText(ResourceString
 				.getResourceString("label.logical.name"));
-
+		logicalNameTableColumn.setWidth(width / 2 - 5);
 	}
 
 	@Override
@@ -186,9 +175,7 @@ public class ExportToTranslationDictionaryDialog extends AbstractDialog {
 			String physicalName = tableView.getPhysicalName();
 			String logicalName = tableView.getLogicalName();
 
-			this
-					.addNewWord(physicalName, logicalName, resources,
-							newDictionary);
+			this.addNewWord(physicalName, logicalName, resources, newDictionary);
 
 			for (NormalColumn normalColumn : tableView.getExpandedColumns()) {
 				physicalName = normalColumn.getPhysicalName();

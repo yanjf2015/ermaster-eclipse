@@ -1,104 +1,49 @@
 package org.insightech.er.common.widgets;
 
 import java.io.File;
-import java.io.IOException;
 
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.insightech.er.Activator;
 
-public class FileText {
-
-	private Text text;
-
-	private Button openBrowseButton;
+public class FileText extends AbstractPathText {
 
 	private String[] filterExtensions;
 
-	public FileText(Composite parent, int style, String projectPath,
-			String defaultFileName, String filterExtension) {
-		this(parent, style, projectPath, defaultFileName,
-				new String[] { filterExtension });
+	private String defaultFileName;
+
+	public FileText(Composite parent, File projectDir, String defaultFileName,
+			String filterExtension) {
+		this(parent, projectDir, defaultFileName, filterExtension, true);
 	}
 
-	public FileText(Composite parent, int style, final String projectPath,
-			final String defaultFileName, String[] filterExtensions) {
-		final File projectDir = new File(projectPath).getParentFile();
+	public FileText(Composite parent, File projectDir, String defaultFileName,
+			String filterExtension, boolean indent) {
+		this(parent, projectDir, defaultFileName,
+				new String[] { filterExtension }, indent);
+	}
 
-		this.text = new Text(parent, style);
+	public FileText(Composite parent, final File projectDir,
+			final String defaultFileName, String[] filterExtensions) {
+		this(parent, projectDir, defaultFileName, filterExtensions, true);
+	}
+
+	public FileText(Composite parent, final File projectDir,
+			final String defaultFileName, String[] filterExtensions,
+			boolean indent) {
+		super(parent, projectDir, indent);
 
 		this.filterExtensions = filterExtensions;
-
-		this.openBrowseButton = new Button(parent, SWT.NONE);
-		this.openBrowseButton.setText(JFaceResources.getString("openBrowse"));
-
-		this.openBrowseButton.addSelectionListener(new SelectionAdapter() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String saveFilePath = Activator.showSaveDialog(projectDir,
-						defaultFileName, text.getText(),
-						FileText.this.filterExtensions);
-				if (saveFilePath != null) {
-					try {
-						File saveFile = new File(saveFilePath);
-						File projectFile = new File(projectPath);
-
-						saveFilePath = saveFile.getCanonicalPath();
-						String canonicalProjectPath = projectFile
-								.getCanonicalPath();
-
-						if (saveFilePath.startsWith(canonicalProjectPath)) {
-							saveFilePath = saveFilePath
-									.substring(canonicalProjectPath.length() + 1);
-						}
-
-						text.setText(saveFilePath);
-
-					} catch (IOException ioe) {
-						Activator.showExceptionDialog(ioe);
-					}
-				}
-			}
-		});
-	}
-
-	public void setLayoutData(Object layoutData) {
-		this.text.setLayoutData(layoutData);
-	}
-
-	public void setText(String text) {
-		this.text.setText(text);
-		this.text.setSelection(text.length());
-	}
-
-	public boolean isBlank() {
-		if (this.text.getText().trim().length() == 0) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public String getFilePath() {
-		return this.text.getText().trim();
-	}
-
-	public void addModifyListener(ModifyListener listener) {
-		this.text.addModifyListener(listener);
+		this.defaultFileName = defaultFileName;
 	}
 
 	public void setFilterExtension(String filterExtension) {
 		this.filterExtensions = new String[] { filterExtension };
+	}
+
+	@Override
+	protected String selectPathByDilaog() {
+		return Activator.showSaveDialog(this.projectDir, this.defaultFileName,
+				this.getFilePath(), this.filterExtensions);
 	}
 
 }

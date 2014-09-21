@@ -2,7 +2,7 @@ package org.insightech.er;
 
 /**
  * {@link Activator#getImage(String)},
- * {@link Activator#getImageDescriptor(String)} のキーとなる定数を定義したクラス
+ * {@link Activator#getImageDescriptor(String)}
  */
 public interface ImageKey {
 
@@ -51,6 +51,7 @@ public interface ImageKey {
 	public String PAGE_SETTING_V = "PAGE_SETTING_V";
 	public String PALETTE = "PALETTE";
 	public String PRIMARY_KEY = "PRIMARY_KEY";
+	public String PRINTER = "PRINTER";
 	public String RELATION_1_N = "RELATION_1_N";
 	public String RELATION_N_N = "RELATION_N_N";
 	public String RELATION_SELF = "RELATION_SELF";

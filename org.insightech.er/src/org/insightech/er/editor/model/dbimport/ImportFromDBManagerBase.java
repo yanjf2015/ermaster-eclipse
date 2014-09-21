@@ -44,24 +44,12 @@ import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.Wo
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.Tablespace;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.editor.model.settings.DBSetting;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
 public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
-
-	public interface ProgressMonitor {
-
-		public void beginTask(String message, int counter);
-
-		public void worked(int counter);
-
-		public boolean isCanceled();
-
-		public void done();
-
-		public void subTask(String message);
-	}
 
 	private static Logger logger = Logger
 			.getLogger(ImportFromDBManagerBase.class.getName());

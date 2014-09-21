@@ -49,7 +49,7 @@ public class ModelPropertiesDialog extends AbstractDialog {
 
 	public ModelPropertiesDialog(Shell parentShell,
 			ModelProperties modelProperties) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.modelProperties = modelProperties;
 	}

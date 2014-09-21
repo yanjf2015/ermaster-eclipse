@@ -9,6 +9,7 @@ import org.insightech.er.db.impl.mysql.tablespace.MySQLTablespaceProperties;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
@@ -18,8 +19,9 @@ import org.insightech.er.util.Format;
 
 public class MySQLDDLCreator extends DDLCreator {
 
-	public MySQLDDLCreator(ERDiagram diagram, boolean semicolon) {
-		super(diagram, semicolon);
+	public MySQLDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		super(diagram, targetCategory, semicolon);
 	}
 
 	/**
@@ -123,8 +125,8 @@ public class MySQLDDLCreator extends DDLCreator {
 					.equals(defaultValue)) {
 				defaultValue = this.getDBManager().getCurrentTimeValue()[0];
 
-			} else if (ResourceString.getResourceString(
-					"label.empty.string").equals(defaultValue)) {
+			} else if (ResourceString.getResourceString("label.empty.string")
+					.equals(defaultValue)) {
 				defaultValue = "";
 			}
 

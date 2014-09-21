@@ -28,8 +28,8 @@ import org.insightech.er.editor.view.action.dbexport.ExportToTranslationDictiona
 import org.insightech.er.editor.view.action.dbimport.ImportFromDBAction;
 import org.insightech.er.editor.view.action.dbimport.ImportFromFileAction;
 import org.insightech.er.editor.view.action.edit.EditAllAttributesAction;
-import org.insightech.er.editor.view.action.line.DefaultLineAction;
 import org.insightech.er.editor.view.action.line.AutoResizeModelAction;
+import org.insightech.er.editor.view.action.line.DefaultLineAction;
 import org.insightech.er.editor.view.action.line.RightAngleLineAction;
 import org.insightech.er.editor.view.action.option.OptionSettingAction;
 import org.insightech.er.editor.view.action.option.notation.ChangeCapitalAction;
@@ -125,26 +125,26 @@ public class ERDiagramPopupMenuManager extends MenuManager {
 
 		this.add(new Separator());
 
-		MenuManager displayMenu = new MenuManager(ResourceString
-				.getResourceString("label.display"));
+		MenuManager displayMenu = new MenuManager(
+				ResourceString.getResourceString("label.display"));
 
-		MenuManager viewModeMenu = new MenuManager(ResourceString
-				.getResourceString("label.view.mode"));
+		MenuManager viewModeMenu = new MenuManager(
+				ResourceString.getResourceString("label.view.mode"));
 		viewModeMenu.add(changeViewToPhysicalAction);
 		viewModeMenu.add(changeViewToLogicalAction);
 		viewModeMenu.add(changeViewToBothAction);
 
 		displayMenu.add(viewModeMenu);
 
-		MenuManager notationMenu = new MenuManager(ResourceString
-				.getResourceString("label.notation"));
+		MenuManager notationMenu = new MenuManager(
+				ResourceString.getResourceString("label.notation"));
 		notationMenu.add(changeToIENotationAction);
 		notationMenu.add(changeToIDEF1XNotationAction);
 
 		displayMenu.add(notationMenu);
 
-		MenuManager notationLevelMenu = new MenuManager(ResourceString
-				.getResourceString("label.notation.level"));
+		MenuManager notationLevelMenu = new MenuManager(
+				ResourceString.getResourceString("label.notation.level"));
 		notationLevelMenu.add(changeNotationLevelToOnlyTitleAction);
 		notationLevelMenu.add(changeNotationLevelToOnlyKeyAction);
 		notationLevelMenu.add(changeNotationLevelToColumnAction);
@@ -158,8 +158,8 @@ public class ERDiagramPopupMenuManager extends MenuManager {
 
 		displayMenu.add(notationLevelMenu);
 
-		MenuManager designMenu = new MenuManager(ResourceString
-				.getResourceString("label.design"));
+		MenuManager designMenu = new MenuManager(
+				ResourceString.getResourceString("label.design"));
 
 		designMenu.add(changeDesignToFunnyAction);
 		designMenu.add(changeDesignToFrameAction);
@@ -174,18 +174,20 @@ public class ERDiagramPopupMenuManager extends MenuManager {
 
 		this.add(new Separator());
 
-		MenuManager importMenu = new MenuManager(ResourceString
-				.getResourceString("action.title.import"), sharedImages
-				.getImageDescriptor("IMG_ETOOL_IMPORT_WIZ"), "Import");
+		MenuManager importMenu = new MenuManager(
+				ResourceString.getResourceString("action.title.import"),
+				sharedImages.getImageDescriptor("IMG_ETOOL_IMPORT_WIZ"),
+				"Import");
 
 		importMenu.add(this.getAction(ImportFromDBAction.ID));
 		importMenu.add(this.getAction(ImportFromFileAction.ID));
 
 		this.add(importMenu);
 
-		MenuManager exportMenu = new MenuManager(ResourceString
-				.getResourceString("action.title.export"), sharedImages
-				.getImageDescriptor("IMG_ETOOL_EXPORT_WIZ"), "Export");
+		MenuManager exportMenu = new MenuManager(
+				ResourceString.getResourceString("action.title.export"),
+				sharedImages.getImageDescriptor("IMG_ETOOL_EXPORT_WIZ"),
+				"Export");
 
 		exportMenu.add(this.getAction(ExportToDDLAction.ID));
 		exportMenu.add(this.getAction(ExportToExcelAction.ID));
@@ -206,8 +208,8 @@ public class ERDiagramPopupMenuManager extends MenuManager {
 		this.add(this.getAction(TranslationManageAction.ID));
 		this.add(this.getAction(TestDataCreateAction.ID));
 
-		MenuManager categoryMenu = new MenuManager(ResourceString
-				.getResourceString("label.category"));
+		MenuManager categoryMenu = new MenuManager(
+				ResourceString.getResourceString("label.category"));
 		categoryMenu.add(this.getAction(CategoryManageAction.ID));
 		// categoryMenu.add(changeFreeLayoutAction);
 		categoryMenu.add(changeShowReferredTablesAction);
@@ -296,22 +298,17 @@ public class ERDiagramPopupMenuManager extends MenuManager {
 					changeDesignToFunnyAction.setChecked(true);
 				}
 
-				if (settings.isCapital()) {
-					changeCapitalAction.setChecked(true);
-				}
-
-				if (settings.getModelProperties().isDisplay()) {
-					changeStampAction.setChecked(true);
-				}
+				changeCapitalAction.setChecked(settings.isCapital());
+				changeStampAction.setChecked(settings.getModelProperties()
+						.isDisplay());
 
 				CategorySetting categorySettings = settings
 						.getCategorySetting();
-				if (categorySettings.isFreeLayout()) {
-					changeFreeLayoutAction.setChecked(true);
-				}
-				if (categorySettings.isShowReferredTables()) {
-					changeShowReferredTablesAction.setChecked(true);
-				}
+
+				changeFreeLayoutAction.setChecked(categorySettings
+						.isFreeLayout());
+				changeShowReferredTablesAction.setChecked(categorySettings
+						.isShowReferredTables());
 			}
 
 		});

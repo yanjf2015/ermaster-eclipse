@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.eclipse.draw2d.geometry.Dimension;
 import org.insightech.er.ResourceString;
-import org.insightech.er.editor.controller.command.AbstractCommand;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.node.Location;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
@@ -12,9 +11,7 @@ import org.insightech.er.editor.model.diagram_contents.element.node.category.Cat
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.view.View;
 
-public class CreateElementCommand extends AbstractCommand {
-
-	private ERDiagram diagram;
+public class CreateElementCommand extends AbstractCreateElementCommand {
 
 	private NodeElement element;
 
@@ -22,7 +19,8 @@ public class CreateElementCommand extends AbstractCommand {
 
 	public CreateElementCommand(ERDiagram diagram, NodeElement element, int x,
 			int y, Dimension size, List<NodeElement> enclosedElementList) {
-		this.diagram = diagram;
+		super(diagram);
+
 		this.element = element;
 
 		if (this.element instanceof Category && size != null) {
@@ -43,7 +41,7 @@ public class CreateElementCommand extends AbstractCommand {
 			view.setLogicalName(View.NEW_LOGICAL_NAME);
 			view.setPhysicalName(View.NEW_PHYSICAL_NAME);
 		}
-		
+
 		this.enclosedElementList = enclosedElementList;
 	}
 
@@ -52,18 +50,23 @@ public class CreateElementCommand extends AbstractCommand {
 	 */
 	@Override
 	protected void doExecute() {
-		if (!(this.element instanceof Category)) {
-			this.diagram.addNewContent(this.element);
+		if (this.element instanceof Category) {
+			Category category = (Category) this.element;
+			category.setName(ResourceString.getResourceString("label.category"));
+			category.setContents(this.enclosedElementList);
+
+			this.diagram.addCategory(category);
 
 		} else {
-			Category category = (Category) this.element;
-			category
-					.setName(ResourceString.getResourceString("label.category"));
-			category.setContents(this.enclosedElementList);
-			this.diagram.addCategory(category);
+			this.diagram.addNewContent(this.element);
+			this.addToCategory(this.element);
+
 		}
 
 		this.diagram.refreshChildren();
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 
 	/**
@@ -71,16 +74,22 @@ public class CreateElementCommand extends AbstractCommand {
 	 */
 	@Override
 	protected void doUndo() {
-		if (!(this.element instanceof Category)) {
-			this.diagram.removeContent(this.element);
-
-		} else {
+		if (this.element instanceof Category) {
 			Category category = (Category) this.element;
 			category.getContents().clear();
 			this.diagram.removeCategory(category);
+
+		} else {
+			this.diagram.removeContent(this.element);
+			this.removeFromCategory(this.element);
+
 		}
-		
+
 		this.diagram.refreshChildren();
+		
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 
 	/**

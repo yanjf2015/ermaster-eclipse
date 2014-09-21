@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.viewers.CheckStateChangedEvent;
-import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TreeNode;
-import org.eclipse.jface.viewers.TreeNodeContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.dialogs.ContainerCheckedTreeViewer;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.StringObjectModel;
@@ -51,8 +48,6 @@ public class SelectImportedSchemaDialog extends AbstractDialog {
 	@Override
 	protected void initialize(Composite composite) {
 		this.createObjectListComposite(composite);
-
-		this.setListener();
 	}
 
 	private void createObjectListComposite(Composite parent) {
@@ -68,32 +63,8 @@ public class SelectImportedSchemaDialog extends AbstractDialog {
 		composite.setLayout(gridLayout);
 		composite.setLayoutData(gridData);
 
-		this.createAllSchemaGroup(composite);
-	}
-
-	private void createAllSchemaGroup(Composite composite) {
-		GridData gridData = new GridData();
-		gridData.heightHint = 300;
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.grabExcessHorizontalSpace = true;
-
-		this.viewer = new ContainerCheckedTreeViewer(composite, SWT.MULTI
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		Tree tree = this.viewer.getTree();
-		tree.setLayoutData(gridData);
-
-		this.viewer.setContentProvider(new TreeNodeContentProvider());
-		this.viewer.setLabelProvider(new ViewLabelProvider());
-	}
-
-	private void setListener() {
-		this.viewer.addCheckStateListener(new ICheckStateListener() {
-
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				validate();
-			}
-
-		});
+		this.viewer = CompositeFactory.createCheckedTreeViewer(this, composite,
+				300, 1);
 	}
 
 	/**
@@ -157,8 +128,10 @@ public class SelectImportedSchemaDialog extends AbstractDialog {
 
 		if (this.selectedSchemaList.isEmpty()) {
 			for (TreeNode schemaNode : schemaNodes) {
-				if (!DBManagerFactory.getDBManager(this.importDB)
-						.getSystemSchemaList().contains(
+				if (!DBManagerFactory
+						.getDBManager(this.importDB)
+						.getSystemSchemaList()
+						.contains(
 								String.valueOf(schemaNode.getValue())
 										.toLowerCase())) {
 					checkedList.add(schemaNode);
@@ -184,8 +157,8 @@ public class SelectImportedSchemaDialog extends AbstractDialog {
 
 		List<TreeNode> treeNodeList = new ArrayList<TreeNode>();
 
-		TreeNode topNode = new TreeNode(new StringObjectModel(ResourceString
-				.getResourceString("label.schema")));
+		TreeNode topNode = new TreeNode(new StringObjectModel(
+				ResourceString.getResourceString("label.schema")));
 		treeNodeList.add(topNode);
 
 		List<TreeNode> schemaNodeList = new ArrayList<TreeNode>();

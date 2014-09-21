@@ -7,6 +7,7 @@ import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.ViewableModel;
 import org.insightech.er.editor.model.diagram_contents.element.connection.ConnectionElement;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 
 public abstract class NodeElement extends ViewableModel implements ObjectModel {
 
@@ -52,6 +53,11 @@ public abstract class NodeElement extends ViewableModel implements ObjectModel {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public Location getLocation() {
+		return new Location(this.location.x, this.location.y,
+				this.location.width, this.location.height);
 	}
 
 	public Location getActualLocation() {
@@ -127,6 +133,20 @@ public abstract class NodeElement extends ViewableModel implements ObjectModel {
 	public void refreshTargetConnections() {
 		if (isUpdateable()) {
 			this.firePropertyChange("refreshTargetConnections", null, null);
+		}
+	}
+
+	public void refreshCategory() {
+		if (isUpdateable()) {
+			if (this.diagram != null) {
+				for (Category category : this.diagram.getDiagramContents()
+						.getSettings().getCategorySetting()
+						.getSelectedCategories()) {
+					if (category.contains(this)) {
+						category.refreshVisuals();
+					}
+				}
+			}
 		}
 	}
 

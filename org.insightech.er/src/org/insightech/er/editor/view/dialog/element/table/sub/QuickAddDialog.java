@@ -3,9 +3,6 @@ package org.insightech.er.editor.view.dialog.element.table.sub;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.insightech.er.ResourceString;
@@ -20,7 +17,6 @@ import org.insightech.er.editor.model.diagram_contents.element.node.table.column
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.CopyWord;
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.TypeData;
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.Word;
-import org.insightech.er.editor.view.dialog.testdata.detail.TestDataDialog;
 
 public class QuickAddDialog extends AbstractDialog {
 
@@ -39,24 +35,9 @@ public class QuickAddDialog extends AbstractDialog {
 
 	@Override
 	protected void initialize(Composite composite) {
-		Composite body = new Composite(composite, SWT.NONE);
-
-		GridLayout gridLayout = new GridLayout();
-		body.setLayout(gridLayout);
-
-		GridData gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.widthHint = 800;
-
-		body.setLayoutData(gridData);
-
-		this.createEditTable(body);
-	}
-
-	private void createEditTable(Composite composite) {
 		this.editColumnTable = CompositeFactory.createRowHeaderTable(composite,
-				700, TestDataDialog.TABLE_HEIGHT, 75, 25, 1, false, true);
+				695, 350, 75, 25, 1, false, true);
+
 		this.editColumnTable.setCellEditWorker(new CellEditWorker() {
 
 			public void addNewRow() {

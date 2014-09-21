@@ -1,65 +1,33 @@
 package org.insightech.er.common.widgets;
 
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
+import java.io.File;
+
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.insightech.er.Activator;
+import org.insightech.er.util.io.FileUtils;
 
-public class DirectoryText {
+public class DirectoryText extends AbstractPathText {
 
-	private Text text;
+	private String message;
 
-	private Button openBrowseButton;
-
-	public DirectoryText(Composite parent, int style) {
-		this.text = new Text(parent, style);
-
-		this.openBrowseButton = new Button(parent, SWT.NONE);
-		this.openBrowseButton.setText(JFaceResources.getString("openBrowse"));
-
-		this.openBrowseButton.addSelectionListener(new SelectionAdapter() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String filePath = Activator.showDirectoryDialog(text.getText());
-				if (filePath != null) {
-					text.setText(filePath);
-				}
-			}
-		});
+	public DirectoryText(Composite parent, final File projectDir,
+			final String message) {
+		this(parent, projectDir, message, true);
 	}
 
-	public void setLayoutData(Object layoutData) {
-		this.text.setLayoutData(layoutData);
+	public DirectoryText(Composite parent, final File projectDir,
+			final String message, boolean indent) {
+		super(parent, projectDir, indent);
+
+		this.message = message;
 	}
 
-	public void setText(String text) {
-		this.text.setText(text);
-		this.text.setSelection(text.length());
-	}
+	@Override
+	protected String selectPathByDilaog() {
+		String filePath = FileUtils.getFile(this.projectDir, getFilePath())
+				.getAbsolutePath();
 
-	public boolean isBlank() {
-		if (this.text.getText().trim().length() == 0) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public String getFilePath() {
-		return this.text.getText().trim();
-	}
-
-	public void addModifyListener(ModifyListener listener) {
-		this.text.addModifyListener(listener);
+		return Activator.showDirectoryDialog(filePath, this.message);
 	}
 
 }

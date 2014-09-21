@@ -79,7 +79,7 @@ public abstract class ColumnEditPart extends AbstractModelEditPart {
 
 			TableDialog dialog = new TableDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), this.getViewer(),
-					copyTable, diagram.getDiagramContents().getGroups());
+					copyTable);
 
 			if (dialog.open() == IDialogConstants.OK_ID) {
 				CompoundCommand command = ERTableEditPart
@@ -96,7 +96,7 @@ public abstract class ColumnEditPart extends AbstractModelEditPart {
 
 			ViewDialog dialog = new ViewDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), this.getViewer(),
-					copyView, diagram.getDiagramContents().getGroups());
+					copyView);
 
 			if (dialog.open() == IDialogConstants.OK_ID) {
 				CompoundCommand command = ViewEditPart

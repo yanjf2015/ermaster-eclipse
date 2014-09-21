@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.TreeNode;
 import org.eclipse.swt.graphics.Image;
 import org.insightech.er.editor.model.StringObjectModel;
 import org.insightech.er.editor.model.dbimport.DBObject;
+import org.insightech.er.editor.model.testdata.TestData;
 
 public class ViewLabelProvider extends LabelProvider implements
 		ITableLabelProvider {
@@ -22,6 +23,11 @@ public class ViewLabelProvider extends LabelProvider implements
 		} else if (value instanceof StringObjectModel) {
 			StringObjectModel object = (StringObjectModel) value;
 			return object.getName();
+
+		} else if (value instanceof TestData) {
+			TestData testData = (TestData) value;
+			return testData.getName();
+
 		}
 
 		return value.toString();

@@ -9,9 +9,9 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.ResourceString;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.view.dialog.option.OptionSettingDialog;
@@ -22,23 +22,21 @@ public class DBSelectTabWrapper extends ValidatableTabWrapper {
 
 	private Settings settings;
 
-	private OptionSettingDialog dialog;
-
 	public DBSelectTabWrapper(OptionSettingDialog dialog, TabFolder parent,
-			int style, Settings settings) {
-		super(dialog, parent, style, "label.database");
+			Settings settings) {
+		super(dialog, parent, "label.database");
 
 		this.settings = settings;
-		this.dialog = dialog;
+	}
 
-		this.init();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 2;
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		this.setLayout(layout);
 
 		this.databaseCombo = CompositeFactory.createReadOnlyCombo(null, this,
 				"label.database");
@@ -47,6 +45,13 @@ public class DBSelectTabWrapper extends ValidatableTabWrapper {
 		for (String db : DBManagerFactory.getAllDBList()) {
 			this.databaseCombo.add(db);
 		}
+
+		this.databaseCombo.setFocus();
+	}
+
+	@Override
+	protected void addListener() {
+		super.addListener();
 
 		this.databaseCombo.addSelectionListener(new SelectionAdapter() {
 
@@ -58,8 +63,6 @@ public class DBSelectTabWrapper extends ValidatableTabWrapper {
 				changeDatabase();
 			}
 		});
-
-		this.databaseCombo.setFocus();
 	}
 
 	@Override
@@ -93,7 +96,8 @@ public class DBSelectTabWrapper extends ValidatableTabWrapper {
 		if (messageBox.open() == SWT.OK) {
 			String database = this.databaseCombo.getText();
 			this.settings.setDatabase(database);
-			this.dialog.initTab();
+
+			this.dialog.resetTabs();
 
 		} else {
 			this.setData();

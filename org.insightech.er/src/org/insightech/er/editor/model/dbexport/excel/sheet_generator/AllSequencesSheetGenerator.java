@@ -5,21 +5,22 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 
 public class AllSequencesSheetGenerator extends SequenceSheetGenerator {
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 
 		LoopDefinition loopDefinition = loopDefinitionMap.get(this
 				.getTemplateSheetName());
@@ -27,8 +28,10 @@ public class AllSequencesSheetGenerator extends SequenceSheetGenerator {
 		HSSFSheet newSheet = createNewSheet(workbook, sheetNo,
 				loopDefinition.sheetName, sheetNameMap);
 
-		sheetObjectMap.put(workbook.getSheetName(workbook
-				.getSheetIndex(newSheet)), diagram.getDiagramContents()
+		String sheetName = workbook.getSheetName(workbook
+				.getSheetIndex(newSheet));
+
+		sheetObjectMap.put(sheetName, diagram.getDiagramContents()
 				.getSequenceSet());
 
 		HSSFSheet oldSheet = workbook.getSheetAt(sheetNo);
@@ -36,16 +39,15 @@ public class AllSequencesSheetGenerator extends SequenceSheetGenerator {
 		boolean first = true;
 
 		for (Sequence sequence : diagram.getDiagramContents().getSequenceSet()) {
+			monitor.subTaskWithCounter(sheetName + " - " + sequence.getName());
+
 			if (first) {
 				first = false;
 
 			} else {
-				POIUtils
-						.copyRow(oldSheet, newSheet,
-								loopDefinition.startLine - 1, oldSheet
-										.getLastRowNum(), newSheet
-										.getLastRowNum()
-										+ loopDefinition.spaceLine + 1);
+				POIUtils.copyRow(oldSheet, newSheet,
+						loopDefinition.startLine - 1, oldSheet.getLastRowNum(),
+						newSheet.getLastRowNum() + loopDefinition.spaceLine + 1);
 			}
 
 			this.setSequenceData(workbook, newSheet, sequence, diagram);

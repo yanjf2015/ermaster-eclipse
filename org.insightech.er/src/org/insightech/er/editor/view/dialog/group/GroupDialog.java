@@ -32,7 +32,7 @@ public class GroupDialog extends AbstractDialog implements
 
 	public GroupDialog(Shell parentShell, GroupSet columnGroups,
 			ERDiagram diagram, int editTargetIndex) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.copyColumnGroups = new ArrayList<CopyGroup>();
 
@@ -56,7 +56,7 @@ public class GroupDialog extends AbstractDialog implements
 	@SuppressWarnings("unchecked")
 	protected void initialize(Composite composite) {
 		this.groupNameText = CompositeFactory.createText(this, composite,
-				"label.group.name", 1, 200, true);
+				"label.group.name", 1, 200, true, false);
 
 		GroupColumnDialog columnDialog = new GroupColumnDialog(PlatformUI
 				.getWorkbench().getActiveWorkbenchWindow().getShell(), diagram);

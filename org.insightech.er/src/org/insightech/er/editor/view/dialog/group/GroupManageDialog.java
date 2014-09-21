@@ -10,7 +10,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
@@ -62,13 +61,9 @@ public class GroupManageDialog extends AbstractDialog implements
 
 	private ERTableComposite tableComposite;
 
-	private static final int HEIGHT = 365;
-
-	private static final int GROUP_LIST_HEIGHT = 230;
-
 	public GroupManageDialog(Shell parentShell, GroupSet columnGroups,
 			ERDiagram diagram, boolean globalGroup, int editTargetIndex) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.copyGroups = new ArrayList<CopyGroup>();
 
@@ -99,96 +94,45 @@ public class GroupManageDialog extends AbstractDialog implements
 	 * 
 	 */
 	private void createGroupListComposite(Composite parent) {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
-		gridLayout.verticalSpacing = 10;
+		Group composite = CompositeFactory.createGroup(parent,
+				"label.group.list", 1, 3);
 
-		GridData gridData = new GridData();
-		gridData.heightHint = HEIGHT;
+		this.createGroupList(composite);
 
-		Composite composite = new Composite(parent, SWT.BORDER);
-		composite.setLayoutData(gridData);
-		composite.setLayout(gridLayout);
-		createGroup(composite);
+		this.groupAddButton = CompositeFactory.createMiddleButton(composite,
+				"label.button.group.add");
 
-		groupAddButton = new Button(composite, SWT.NONE);
-		groupAddButton.setText(ResourceString
-				.getResourceString("label.button.group.add"));
+		this.groupEditButton = CompositeFactory.createMiddleButton(composite,
+				"label.button.group.edit");
 
-		groupEditButton = new Button(composite, SWT.NONE);
-		groupEditButton.setText(ResourceString
-				.getResourceString("label.button.group.edit"));
+		this.groupDeleteButton = CompositeFactory.createMiddleButton(composite,
+				"label.button.group.delete");
 
-		this.groupDeleteButton = new Button(composite, SWT.NONE);
-		this.groupDeleteButton.setText(ResourceString
-				.getResourceString("label.button.group.delete"));
-
-		this.addToGlobalGroupButton = new Button(composite, SWT.NONE);
-		this.addToGlobalGroupButton.setText(ResourceString
-				.getResourceString("label.button.add.to.global.group"));
-
-		GridData gridData3 = new GridData();
-		gridData3.horizontalSpan = 3;
-		this.addToGlobalGroupButton.setLayoutData(gridData3);
+		this.addToGlobalGroupButton = CompositeFactory.createLargeButton(
+				composite, "label.button.add.to.global.group", 3);
 
 		if (this.globalGroup) {
 			this.addToGlobalGroupButton.setVisible(false);
 		}
 
-		setButtonEnabled(false);
-	}
-
-	/**
-	 * This method initializes composite1
-	 * 
-	 */
-	private void createGroupDetailComposite(Composite parent) {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-
-		GridData gridData = new GridData();
-		gridData.heightHint = HEIGHT;
-
-		Composite composite = new Composite(parent, SWT.BORDER);
-		composite.setLayout(gridLayout);
-		composite.setLayoutData(gridData);
-
-		this.groupNameText = CompositeFactory.createText(this, composite,
-				"label.group.name", 1, 200, true);
-
-		GroupColumnDialog columnDialog = new GroupColumnDialog(PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow().getShell(), diagram);
-
-		this.tableComposite = new ERTableComposite(this, composite,
-				this.diagram, null, null, columnDialog, this, 2, true, true);
-
-		createComposite3(composite);
+		this.setButtonEnabled(false);
 	}
 
 	/**
 	 * This method initializes group
 	 * 
 	 */
-	private void createGroup(Composite parent) {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 3;
+	private void createGroupList(Composite parent) {
+		GridData listGridData = new GridData();
+		listGridData.grabExcessHorizontalSpace = true;
+		listGridData.horizontalAlignment = GridData.FILL;
+		listGridData.grabExcessVerticalSpace = true;
+		listGridData.verticalAlignment = GridData.FILL;
+		listGridData.horizontalSpan = 3;
 
-		GridData gridData1 = new GridData();
-		gridData1.horizontalSpan = 3;
-
-		GridData gridData2 = new GridData();
-		gridData2.widthHint = 200;
-		gridData2.horizontalSpan = 3;
-		gridData2.heightHint = GROUP_LIST_HEIGHT;
-
-		Group group = new Group(parent, SWT.NONE);
-		group.setText(ResourceString.getResourceString("label.group.list"));
-		group.setLayoutData(gridData1);
-		group.setLayout(gridLayout);
-
-		this.groupList = new org.eclipse.swt.widgets.List(group, SWT.BORDER
+		this.groupList = new org.eclipse.swt.widgets.List(parent, SWT.BORDER
 				| SWT.V_SCROLL);
-		this.groupList.setLayoutData(gridData2);
+		this.groupList.setLayoutData(listGridData);
 
 		this.initGroupList();
 	}
@@ -197,9 +141,41 @@ public class GroupManageDialog extends AbstractDialog implements
 		Collections.sort(this.copyGroups);
 
 		this.groupList.removeAll();
+
 		for (ColumnGroup columnGroup : this.copyGroups) {
 			this.groupList.add(columnGroup.getGroupName());
 		}
+	}
+
+	/**
+	 * This method initializes composite1
+	 * 
+	 */
+	private void createGroupDetailComposite(Composite parent) {
+		Group composite = CompositeFactory.createGroup(parent,
+				"label.group.info", 1, 2);
+
+		this.groupNameText = CompositeFactory.createText(this, composite,
+				"label.group.name", 1, 200, true, false);
+
+		GroupColumnDialog columnDialog = new GroupColumnDialog(this.getShell(),
+				this.diagram);
+
+		this.tableComposite = new ERTableComposite(this, composite,
+				this.diagram, null, null, columnDialog, this, 2, true, true);
+
+		this.createDetailButtonComposite(composite);
+	}
+
+	private void createDetailButtonComposite(Composite parent) {
+		Composite composite = CompositeFactory.createChildComposite(parent, 2,
+				2);
+
+		this.groupUpdateButton = CompositeFactory.createLargeButton(composite,
+				"label.button.update");
+
+		this.groupCancelButton = CompositeFactory.createLargeButton(composite,
+				"label.button.cancel");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -239,31 +215,6 @@ public class GroupManageDialog extends AbstractDialog implements
 		}
 
 		this.enabledButton(!enabled);
-	}
-
-	private void createComposite3(Composite parent) {
-		GridData gridData = new GridData();
-		gridData.horizontalSpan = 2;
-
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 2;
-
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(gridLayout);
-		composite.setLayoutData(gridData);
-
-		GridData gridData1 = new GridData();
-		gridData1.widthHint = 80;
-
-		this.groupUpdateButton = new Button(composite, SWT.NONE);
-		this.groupUpdateButton.setText(ResourceString
-				.getResourceString("label.button.update"));
-		this.groupUpdateButton.setLayoutData(gridData1);
-
-		this.groupCancelButton = new Button(composite, SWT.NONE);
-		this.groupCancelButton.setText(ResourceString
-				.getResourceString("label.button.cancel"));
-		this.groupCancelButton.setLayoutData(gridData1);
 	}
 
 	/**
@@ -415,12 +366,10 @@ public class GroupManageDialog extends AbstractDialog implements
 								.getWorkbench().getActiveWorkbenchWindow()
 								.getShell(), SWT.ICON_QUESTION | SWT.OK
 								| SWT.CANCEL);
-						messageBox
-								.setText(ResourceString
-										.getResourceString("label.button.add.to.global.group"));
-						messageBox
-								.setMessage(ResourceString
-										.getResourceString("dialog.message.add.to.global.group"));
+						messageBox.setText(ResourceString
+								.getResourceString("label.button.add.to.global.group"));
+						messageBox.setMessage(ResourceString
+								.getResourceString("dialog.message.add.to.global.group"));
 
 						if (messageBox.open() == SWT.OK) {
 							CopyGroup columnGroup = copyGroups

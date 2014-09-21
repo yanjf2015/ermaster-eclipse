@@ -52,8 +52,10 @@ public abstract class PreTableExportManager {
 
 		this.metaData = con.getMetaData();
 
-		this.ifExistsOption = DBManagerFactory.getDBManager(this.diagram)
-				.getDDLCreator(this.diagram, false).getIfExistsOption();
+		this.ifExistsOption = DBManagerFactory
+				.getDBManager(this.diagram)
+				.getDDLCreator(this.diagram, this.diagram.getCurrentCategory(),
+						false).getIfExistsOption();
 
 		this.prepareNewNames();
 	}
@@ -65,7 +67,7 @@ public abstract class PreTableExportManager {
 				.getTableSet()) {
 			this.newTableNames.add(this.dbSetting.getTableNameWithSchema(table
 					.getPhysicalName(), table.getTableViewProperties()
-					.getSchema()));
+					.getSchema(), true));
 		}
 
 		this.newViewNames = new HashSet<String>();
@@ -202,7 +204,7 @@ public abstract class PreTableExportManager {
 						schema);
 
 				if (this.newTableNames == null
-						|| this.newTableNames.contains(tableName)) {
+						|| this.newTableNames.contains(tableName.toUpperCase())) {
 					ddl.append(this.dropForeignKey(tableName, constraintName));
 					ddl.append("\r\n");
 				}
@@ -241,7 +243,7 @@ public abstract class PreTableExportManager {
 						schema);
 
 				if (this.newTableNames == null
-						|| this.newTableNames.contains(tableName)) {
+						|| this.newTableNames.contains(tableName.toUpperCase())) {
 					try {
 						this.checkTableExist(con, tableName);
 					} catch (SQLException e) {
@@ -270,7 +272,8 @@ public abstract class PreTableExportManager {
 
 	private String executeDDL() throws SQLException {
 		DDLCreator ddlCreator = DBManagerFactory.getDBManager(this.diagram)
-				.getDDLCreator(this.diagram, true);
+				.getDDLCreator(this.diagram, this.diagram.getCurrentCategory(),
+						true);
 		ddlCreator.init(this.environment, new DDLTarget());
 
 		return ddlCreator.getCreateDDL(this.diagram);

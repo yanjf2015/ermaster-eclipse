@@ -6,6 +6,8 @@ import org.insightech.er.editor.controller.editpart.element.node.TableViewEditPa
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.Location;
+import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 
 public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
@@ -26,10 +28,22 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 
 	private int targetY;
 
-	public CreateRelatedTableCommand() {
+	private Category category;
+
+	protected Location newCategoryLocation;
+
+	protected Location oldCategoryLocation;
+
+	public CreateRelatedTableCommand(ERDiagram diagram) {
 		super();
 
 		this.relatedTable = new ERTable();
+
+		this.diagram = diagram;
+		this.category = this.diagram.getCurrentCategory();
+		if (this.category != null) {
+			this.oldCategoryLocation = this.category.getLocation();
+		}
 	}
 
 	public void setSourcePoint(int x, int y) {
@@ -69,6 +83,7 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 		this.init();
 
 		this.diagram.addNewContent(this.relatedTable);
+		this.addToCategory(this.relatedTable);
 
 		this.relation1.setSource((ERTable) this.source.getModel());
 		this.relation1.setTargetTableView(this.relatedTable);
@@ -79,11 +94,7 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 		this.diagram.refreshChildren();
 		this.getTargetModel().refresh();
 		this.getSourceModel().refresh();
-
-		// ERDiagramEditPart.setUpdateable(true);
-
-		// this.diagram.getDiagramContents().getContents().getTableSet()
-		// .setDirty();
+		this.category.refresh();
 	}
 
 	/**
@@ -91,9 +102,8 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 	 */
 	@Override
 	protected void doUndo() {
-		// ERDiagramEditPart.setUpdateable(false);
-
 		this.diagram.removeContent(this.relatedTable);
+		this.removeFromCategory(this.category);
 
 		this.relation1.setSource(null);
 		this.relation1.setTargetTableView(null);
@@ -104,17 +114,11 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 		this.diagram.refreshChildren();
 		this.getTargetModel().refresh();
 		this.getSourceModel().refresh();
-
-		// ERDiagramEditPart.setUpdateable(true);
-
-		// this.diagram.getDiagramContents().getContents().getTableSet()
-		// .setDirty();
+		this.category.refresh();
 	}
 
 	private void init() {
 		ERTable sourceTable = (ERTable) this.getSourceModel();
-
-		this.diagram = sourceTable.getDiagram();
 
 		this.relation1 = sourceTable.createRelation();
 
@@ -128,7 +132,6 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 
 		this.relatedTable.setLogicalName(ERTable.NEW_LOGICAL_NAME);
 		this.relatedTable.setPhysicalName(ERTable.NEW_PHYSICAL_NAME);
-
 	}
 
 	/**
@@ -147,4 +150,28 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 
 		return true;
 	}
+
+	protected void addToCategory(NodeElement nodeElement) {
+		if (this.category != null) {
+			this.category.add(nodeElement);
+			Location newLocation = category
+					.getNewCategoryLocation(nodeElement);
+
+			if (newLocation != null) {
+				this.newCategoryLocation = newLocation;
+				this.category.setLocation(this.newCategoryLocation);
+			}
+		}
+	}
+
+	protected void removeFromCategory(NodeElement nodeElement) {
+		if (this.category != null) {
+			this.category.remove(nodeElement);
+
+			if (this.newCategoryLocation != null) {
+				this.category.setLocation(this.oldCategoryLocation);
+			}
+		}
+	}
+
 }

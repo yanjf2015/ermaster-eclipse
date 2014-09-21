@@ -31,23 +31,18 @@ public class ImageTest {
 	}
 
 	private static void main() throws FileNotFoundException {
-		// デフォルトDisplayを使用してシェルを作成
 		try {
-			shell.setSize(100, 100); // シェルのサイズを指定
+			shell.setSize(100, 100);
 
-			// 作成したシェルを使用したLightweightSystemの作成
 			LightweightSystem lws = new LightweightSystem(shell);
 
-			// ルート・フィギュアの作成
 			IFigure panel = new Figure();
 			panel.setLayoutManager(new ToolbarLayout());
 
 			initialize(panel);
 
-			// ルート・フィギュアの登録
 			lws.setContents(panel);
 
-			// 以下は、その他のSWTアプリケーションと同様
 			shell.open();
 
 			Display display = Display.getDefault();

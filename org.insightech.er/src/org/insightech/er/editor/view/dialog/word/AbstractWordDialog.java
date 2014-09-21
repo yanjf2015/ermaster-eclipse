@@ -83,24 +83,10 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 	}
 
 	protected Composite createRootComposite(Composite parent) {
-		GridLayout gridLayout = new GridLayout();
-
-		gridLayout.numColumns = this.getCompositeNumColumns();
-
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(gridLayout);
-
-		return composite;
+		return CompositeFactory.createComposite(parent, this.getCompositeNumColumns());
 	}
 
 	protected int getCompositeNumColumns() {
-		if (PostgresDBManager.ID.equals(this.diagram.getDatabase())) {
-			return 10;
-
-		} else if (MySQLDBManager.ID.equals(this.diagram.getDatabase())) {
-			return 6;
-		}
-
 		return 6;
 	}
 
@@ -108,30 +94,40 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 		int numColumns = this.getCompositeNumColumns();
 
 		this.physicalNameText = CompositeFactory.createText(this, composite,
-				"label.physical.name", numColumns - 1, WIDTH, false);
+				"label.physical.name", numColumns - 1, WIDTH, false, true);
 
 		this.logicalNameText = CompositeFactory.createText(this, composite,
-				"label.logical.name", numColumns - 1, WIDTH, true);
+				"label.logical.name", numColumns - 1, WIDTH, true, true);
 
 		this.typeCombo = CompositeFactory.createReadOnlyCombo(this, composite,
 				"label.column.type");
 
 		this.lengthText = CompositeFactory.createNumText(this, composite,
-				"label.column.length", 30);
+				"label.column.length", 1, 30, false);
 		this.lengthText.setEnabled(false);
 
 		this.decimalText = CompositeFactory.createNumText(this, composite,
-				"label.column.decimal", 30);
+				"label.column.decimal", 1, 30, false);
 		this.decimalText.setEnabled(false);
 
 		if (PostgresDBManager.ID.equals(this.diagram.getDatabase())) {
-			CompositeFactory.filler(composite, 1, 10);
+			CompositeFactory.filler(composite, 1);
 
-			this.arrayCheck = CompositeFactory.createCheckbox(this, composite,
-					"label.column.array");
+			Composite typeOptionComposite = new Composite(composite, SWT.NONE);
+			GridData gridData = new GridData();
+			gridData.horizontalSpan = this.getCompositeNumColumns() - 1;
+			typeOptionComposite.setLayoutData(gridData);
+
+			GridLayout layout = new GridLayout();
+			layout.numColumns = 5;
+			typeOptionComposite.setLayout(layout);
+
+			this.arrayCheck = CompositeFactory.createCheckbox(this,
+					typeOptionComposite, "label.column.array", true);
 			this.arrayCheck.setEnabled(true);
 			this.arrayDimensionText = CompositeFactory.createNumText(this,
-					composite, "label.column.array.dimension", 15);
+					typeOptionComposite, "label.column.array.dimension", 1, 30,
+					false);
 			this.arrayDimensionText.setEnabled(false);
 
 			this.arrayCheck.addSelectionListener(new SelectionAdapter() {
@@ -152,44 +148,27 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 		if (MySQLDBManager.ID.equals(this.diagram.getDatabase())) {
 			CompositeFactory.filler(composite, 1);
 
-			Composite childComposite = new Composite(composite, SWT.NONE);
-
-			GridData gridData = new GridData();
-			gridData.horizontalSpan = 5;
-			gridData.horizontalAlignment = GridData.FILL;
-			gridData.grabExcessHorizontalSpace = true;
-
-			childComposite.setLayoutData(gridData);
-
-			GridLayout layout = new GridLayout();
-			layout.numColumns = 3;
-
-			childComposite.setLayout(layout);
+			Composite childComposite = CompositeFactory.createChildComposite(composite, 5, 3);
 
 			this.unsignedCheck = CompositeFactory.createCheckbox(this,
-					childComposite, "label.column.unsigned");
+					childComposite, "label.column.unsigned", true);
 			this.unsignedCheck.setEnabled(false);
 
 			this.zerofillCheck = CompositeFactory.createCheckbox(this,
-					childComposite, "label.column.zerofill");
+					childComposite, "label.column.zerofill", false);
 			this.zerofillCheck.setEnabled(false);
 
 			this.binaryCheck = CompositeFactory.createCheckbox(this,
-					childComposite, "label.column.binary");
+					childComposite, "label.column.binary", false);
 			this.binaryCheck.setEnabled(false);
 
 			CompositeFactory.filler(composite, 1);
 
-			childComposite = new Composite(composite, SWT.NONE);
-			childComposite.setLayoutData(gridData);
-
-			layout = new GridLayout();
-			layout.numColumns = 3;
-			layout.marginHeight = 1;
-			childComposite.setLayout(layout);
-
+			childComposite = CompositeFactory.createChildComposite(composite, 5, 3);
+			CompositeFactory.createLabel(childComposite,
+					"label.column.type.enum.set", 1, -1, true, true);
 			this.argsText = CompositeFactory.createText(this, childComposite,
-					"label.column.type.enum.set", 2, false);
+					null, 1, false, false);
 			this.argsText.setEnabled(false);
 		}
 
@@ -303,13 +282,13 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 
 	protected SqlType getSelectedType() {
 		String database = this.diagram.getDatabase();
-		
+
 		SqlType selectedType = SqlType.valueOf(database,
 				this.typeCombo.getText());
 
 		return selectedType;
 	}
-	
+
 	protected void setEnabledBySqlType() {
 		String database = this.diagram.getDatabase();
 
@@ -464,40 +443,40 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 
 			if (text.equals("")) {
 				return "error.column.length.empty";
-				
+
 			} else {
 				try {
 					int len = Integer.parseInt(text);
 					if (len < 0) {
 						return "error.column.length.zero";
 					}
-	
+
 				} catch (NumberFormatException e) {
 					return "error.column.length.degit";
 				}
 			}
 		}
-		
+
 		if (this.decimalText.isEnabled()) {
-		
+
 			text = this.decimalText.getText();
-	
+
 			if (text.equals("")) {
 				return "error.column.decimal.empty";
-				
+
 			} else {
 				try {
 					int len = Integer.parseInt(text);
 					if (len < 0) {
 						return "error.column.decimal.zero";
 					}
-	
+
 				} catch (NumberFormatException e) {
 					return "error.column.decimal.degit";
 				}
 			}
 		}
-		
+
 		if (arrayDimensionText != null) {
 			text = arrayDimensionText.getText();
 

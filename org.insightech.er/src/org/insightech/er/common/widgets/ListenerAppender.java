@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.Activator;
 import org.insightech.er.common.dialog.AbstractDialog;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.view.dialog.common.EditableTable;
 
@@ -326,6 +327,7 @@ public class ListenerAppender {
 
 				ValidatableTabWrapper selectedTabWrapper = tabWrapperList
 						.get(index);
+				selectedTabWrapper.restruct();
 				selectedTabWrapper.setInitFocus();
 			}
 
@@ -357,4 +359,18 @@ public class ListenerAppender {
 			});
 		}
 	}
+
+	public static void addPathTextListener(final AbstractPathText pathText,
+			final AbstractDialog dialog) {
+
+		if (dialog != null) {
+			pathText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					dialog.validate();
+				}
+
+			});
+		}
+	}
+
 }

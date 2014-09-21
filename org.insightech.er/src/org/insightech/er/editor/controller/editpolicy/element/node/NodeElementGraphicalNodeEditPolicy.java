@@ -22,6 +22,7 @@ import org.insightech.er.editor.controller.command.diagram_contents.element.conn
 import org.insightech.er.editor.controller.editpart.element.node.ERTableEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.TableViewEditPart;
+import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.connection.CommentConnection;
 import org.insightech.er.editor.model.diagram_contents.element.connection.ConnectionElement;
 import org.insightech.er.editor.model.diagram_contents.element.connection.RelatedTable;
@@ -120,7 +121,11 @@ public class NodeElementGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy 
 			return command;
 
 		} else if (object instanceof RelatedTable) {
-			CreateRelatedTableCommand command = new CreateRelatedTableCommand();
+			ERDiagram diagram = (ERDiagram) this.getHost().getRoot()
+					.getContents().getModel();
+
+			CreateRelatedTableCommand command = new CreateRelatedTableCommand(
+					diagram);
 
 			ERTableEditPart sourceEditPart = (ERTableEditPart) request
 					.getTargetEditPart();

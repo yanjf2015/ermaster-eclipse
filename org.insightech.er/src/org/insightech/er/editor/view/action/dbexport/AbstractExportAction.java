@@ -3,7 +3,6 @@ package org.insightech.er.editor.view.action.dbexport;
 import java.io.File;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -68,14 +67,10 @@ public abstract class AbstractExportAction extends AbstractBaseAction {
 	protected String getSaveFilePath(IEditorPart editorPart,
 			GraphicalViewer viewer, ExportSetting exportSetting) {
 
-		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
-
 		FileDialog fileDialog = new FileDialog(editorPart.getEditorSite()
 				.getShell(), SWT.SAVE);
 
-		IProject project = file.getProject();
-
-		fileDialog.setFilterPath(project.getLocation().toString());
+		fileDialog.setFilterPath(this.getBasePath());
 
 		String[] filterExtensions = this.getFilterExtensions();
 		fileDialog.setFilterExtensions(filterExtensions);
@@ -90,6 +85,7 @@ public abstract class AbstractExportAction extends AbstractBaseAction {
 	protected String getDiagramFileName(IEditorPart editorPart) {
 		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
 		String fileName = file.getName();
+
 		return fileName.substring(0, fileName.lastIndexOf("."))
 				+ this.getDefaultExtension();
 	}
@@ -99,14 +95,10 @@ public abstract class AbstractExportAction extends AbstractBaseAction {
 	protected String getSaveDirPath(IEditorPart editorPart,
 			GraphicalViewer viewer) {
 
-		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
-
 		DirectoryDialog directoryDialog = new DirectoryDialog(editorPart
 				.getEditorSite().getShell(), SWT.SAVE);
 
-		IProject project = file.getProject();
-
-		directoryDialog.setFilterPath(project.getLocation().toString());
+		directoryDialog.setFilterPath(this.getBasePath());
 
 		return directoryDialog.open();
 	}

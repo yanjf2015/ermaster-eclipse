@@ -85,7 +85,7 @@ public class ViewOutlineEditPart extends AbstractOutlineEditPart implements
 
 			ViewDialog dialog = new ViewDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), this.getViewer(),
-					copyView, diagram.getDiagramContents().getGroups());
+					copyView);
 
 			if (dialog.open() == IDialogConstants.OK_ID) {
 				CompoundCommand command = ViewEditPart

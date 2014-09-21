@@ -1,91 +1,57 @@
 package org.insightech.er.editor.view.dialog.dbexport;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorRegistry;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
-import org.insightech.er.Activator;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.insightech.er.ResourceString;
-import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.FileText;
-import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.common.widgets.MultiLineCheckbox;
+import org.insightech.er.editor.model.dbexport.ExportWithProgressManager;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager;
-import org.insightech.er.editor.model.dbexport.image.ImageInfo;
-import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.settings.ExportSetting;
-import org.insightech.er.editor.model.settings.Settings;
-import org.insightech.er.editor.view.action.dbexport.ExportToImageAction;
+import org.insightech.er.editor.model.settings.export.ExportExcelSetting;
 import org.insightech.er.preference.PreferenceInitializer;
-import org.insightech.er.preference.template.TemplatePreferencePage;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.io.FileUtils;
 
 public class ExportToExcelDialog extends AbstractExportDialog {
 
-	private static final String DEFAULT_IMAGE_EXTENTION = ".png";
+	// private static final String DEFAULT_IMAGE_EXTENTION = ".png";
 
 	private Combo templateCombo;
 
+	private FileText templateFileText;
+
 	private FileText outputExcelFileText;
 
-	private FileText outputImageFileText;
+	// private FileText outputImageFileText;
 
-	private Combo categoryCombo;
+	// private Combo categoryCombo;
+	private Label categoryLabel;
 
-	private Button useLogicalNameAsSheetNameButton;
+	private MultiLineCheckbox useLogicalNameAsSheetNameButton;
 
-	private Button outputImageButton;
+	private MultiLineCheckbox outputImageButton;
 
-	private Button openAfterSavedButton;
+	private Button selectTemplateFromRegistryRadio;
 
-	private ERDiagram diagram;
+	private Button selectTemplateFromFilesRadio;
 
-	private GraphicalViewer viewer;
-
-	private ExportSetting exportSetting;
-
-	public ExportToExcelDialog(Shell parentShell, ERDiagram diagram,
-			IEditorPart editorPart, GraphicalViewer viewer) {
-		super(parentShell, 3, editorPart);
-
-		this.diagram = diagram;
-		this.viewer = viewer;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void initLayout(GridLayout layout) {
 		super.initLayout(layout);
 
-		layout.verticalSpacing = 15;
+		layout.numColumns = 3;
 	}
 
 	/**
@@ -93,306 +59,124 @@ public class ExportToExcelDialog extends AbstractExportDialog {
 	 */
 	@Override
 	protected void initialize(Composite parent) {
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-
-		CompositeFactory.createLabel(parent, "label.template");
-
-		this.createTemplateCombo(parent);
-
-		CompositeFactory.createLabel(parent, "label.output.excel.file");
-
-		this.outputExcelFileText = new FileText(parent, SWT.BORDER,
-				this.getProjectPath(), this.getOutputFileName(".xls"), ".xls");
-		this.outputExcelFileText.setLayoutData(gridData);
-
-		this.outputExcelFileText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				validate();
-			}
-		});
-
-		CompositeFactory.createLabel(parent, "label.output.image.file");
-
-		this.outputImageFileText = new FileText(parent, SWT.BORDER,
-				this.getProjectPath(),
-				this.getOutputFileName(DEFAULT_IMAGE_EXTENTION), new String[] {
-						"*.png", "*.jpeg" });
-		this.outputImageFileText.setLayoutData(gridData);
-
-		this.outputImageFileText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				validate();
-			}
-		});
+		this.outputExcelFileText = CompositeFactory.createFileText(this,
+				parent, "label.output.excel.file", this.getBaseDir(),
+				this.getDefaultOutputFileName(".xls"), "*.xls");
 
 		CompositeFactory.createLabel(parent, "label.category");
+		this.categoryLabel = CompositeFactory.createLabelAsValue(parent, "", 2);
 
-		createCategoryCombo(parent);
+		this.createTemplateGroup(parent);
 
-		GridData optionCheckGridData = new GridData();
-		optionCheckGridData.horizontalSpan = 3;
+		// this.categoryCombo = CompositeFactory.createReadOnlyCombo(this,
+		// parent,
+		// "label.category", 2);
+		// this.initCategoryCombo(this.categoryCombo);
 
-		this.useLogicalNameAsSheetNameButton = new Button(parent, SWT.CHECK);
-		this.useLogicalNameAsSheetNameButton.setText(ResourceString
-				.getResourceString("label.use.logical.name.as.sheet.name"));
-		this.useLogicalNameAsSheetNameButton.setLayoutData(optionCheckGridData);
+		Composite checkboxArea = this.createCheckboxArea(parent, false);
 
-		this.outputImageButton = new Button(parent, SWT.CHECK);
-		this.outputImageButton.setText(ResourceString
-				.getResourceString("label.output.image.to.excel"));
-		this.outputImageButton.setLayoutData(optionCheckGridData);
+		this.outputImageButton = CompositeFactory.createMultiLineCheckbox(this,
+				checkboxArea, "label.output.image.to.excel", false, 1);
 
-		this.openAfterSavedButton = new Button(parent, SWT.CHECK);
-		this.openAfterSavedButton.setText(ResourceString
-				.getResourceString("label.open.after.saved"));
-		this.openAfterSavedButton.setLayoutData(optionCheckGridData);
+		// CompositeFactory.createLabel(parent, "label.output.image.file");
+		// this.outputImageFileText = new FileText(parent, this.getProjectDir(),
+		// this.getDefaultOutputFileName(DEFAULT_IMAGE_EXTENTION),
+		// new String[] { "*.png", "*.jpeg" });
+
+		this.useLogicalNameAsSheetNameButton = CompositeFactory
+				.createMultiLineCheckbox(this, checkboxArea,
+						"label.use.logical.name.as.sheet.name", false, 1);
+
+		this.createOpenAfterSavedButton(checkboxArea, false, 1);
 	}
 
-	private void createTemplateCombo(Composite parent) {
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-		gridData.horizontalSpan = 2;
+	private void createTemplateGroup(Composite parent) {
+		Group group = CompositeFactory.createGroup(parent, "label.template", 3,
+				2);
 
-		this.templateCombo = new Combo(parent, SWT.READ_ONLY);
-		this.templateCombo.setLayoutData(gridData);
+		this.selectTemplateFromRegistryRadio = CompositeFactory.createRadio(
+				this, group, "label.select.from.registry", 2);
+		this.templateCombo = CompositeFactory.createReadOnlyCombo(this, group,
+				null, 2);
+		this.initTemplateCombo();
+
+		CompositeFactory.fillLine(group, 5);
+
+		this.selectTemplateFromFilesRadio = CompositeFactory.createRadio(this,
+				group, "label.select.from.file", 2);
+		this.templateFileText = CompositeFactory.createFileText(this, group,
+				null, this.getBaseDir(), null, "*.xls", false);
+	}
+
+	private void initTemplateCombo() {
 		this.templateCombo.setVisibleItemCount(20);
 
-		this.templateCombo.addSelectionListener(new SelectionAdapter() {
+		this.templateCombo.add(ResourceString
+				.getResourceString("label.template.default.en"));
+		this.templateCombo.add(ResourceString
+				.getResourceString("label.template.default.ja"));
 
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				validate();
+		List<String> fileNames = PreferenceInitializer
+				.getAllExcelTemplateFiles();
+
+		for (String fileName : fileNames) {
+			File file = new File(
+					PreferenceInitializer.getTemplatePath(fileName));
+			if (file.exists()) {
+				this.templateCombo.add(fileName);
 			}
-		});
+		}
 	}
 
-	private void createCategoryCombo(Composite parent) {
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-		gridData.horizontalSpan = 2;
+	@Override
+	protected void addListener() {
+		super.addListener();
 
-		this.categoryCombo = new Combo(parent, SWT.READ_ONLY);
-		this.categoryCombo.setLayoutData(gridData);
-		this.categoryCombo.setVisibleItemCount(20);
+		this.selectTemplateFromRegistryRadio
+				.addSelectionListener(new SelectionAdapter() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						templateCombo.setEnabled(true);
+						templateFileText.setEnabled(false);
+					}
+				});
+
+		this.selectTemplateFromFilesRadio
+				.addSelectionListener(new SelectionAdapter() {
+
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						templateCombo.setEnabled(false);
+						templateFileText.setEnabled(true);
+					}
+				});
 	}
 
 	@Override
 	protected String getErrorMessage() {
-		if (isBlank(this.templateCombo)) {
-			return "error.template.is.empty";
+		// this.outputImageFileText.setEnabled(this.outputImageButton
+		// .getSelection());
+
+		if (this.selectTemplateFromRegistryRadio.getSelection()) {
+			if (isBlank(this.templateCombo)) {
+				return "error.template.is.empty";
+			}
+
+		} else {
+			if (this.templateFileText.isBlank()) {
+				return "error.template.is.empty";
+			}
 		}
+
 		if (this.outputExcelFileText.isBlank()) {
 			return "error.output.excel.file.is.empty";
 		}
-		if (this.outputImageButton.getSelection()
-				&& this.outputImageFileText.isBlank()) {
-			return "error.output.image.file.is.empty";
-		}
 
-		return null;
-	}
-
-	@Override
-	protected void perfomeOK() throws InputException {
-		Category currentCategory = this.diagram.getCurrentCategory();
-		int currentPageIndex = this.diagram.getPageIndex();
-
-		setCurrentCategory();
-
-		InputStream stream = null;
-
-		try {
-			ProgressMonitorDialog monitor = new ProgressMonitorDialog(
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-							.getShell());
-
-			String templateName = this.templateCombo.getText();
-			String outputExcelFilePath = this.outputExcelFileText.getFilePath();
-			String outputImageFilePath = this.outputImageFileText.getFilePath();
-
-			File outputExcelFile = new File(outputExcelFilePath);
-
-			if (!outputExcelFile.isAbsolute()) {
-				outputExcelFile = new File(this.getProjectPath(),
-						outputExcelFilePath);
-			}
-
-			File outputExcelDir = outputExcelFile.getParentFile();
-
-			if (!outputExcelDir.exists()) {
-				if (!Activator
-						.showConfirmDialog(ResourceString
-								.getResourceString(
-										"dialog.message.create.parent.dir",
-										new String[] { outputExcelDir
-												.getAbsolutePath() }))) {
-					throw new InputException(null);
-
-				} else {
-					outputExcelDir.mkdirs();
-				}
-			}
-
-			File outputImageFile = new File(outputImageFilePath);
-
-			if (!outputImageFile.isAbsolute()) {
-				outputImageFile = new File(this.getProjectPath(),
-						outputImageFilePath);
-			}
-
-			File outputImageDir = outputImageFile.getParentFile();
-
-			if (!outputImageDir.exists()) {
-				if (!Activator
-						.showConfirmDialog(ResourceString
-								.getResourceString(
-										"dialog.message.create.parent.dir",
-										new String[] { outputImageDir
-												.getAbsolutePath() }))) {
-					throw new InputException(null);
-
-				} else {
-					outputImageDir.mkdirs();
-				}
-			}
-
-			byte[] imageBuffer = null;
-			int excelPictureType = -1;
-
-			boolean outputImage = this.outputImageButton.getSelection();
-
-			if (outputImage) {
-				ImageInfo imageInfo = ExportToImageAction.outputImage(monitor,
-						this.viewer, null, outputImageFile.getCanonicalPath());
-
-				if (imageInfo == null) {
-					throw new InputException(null);
-
-				} else {
-					imageBuffer = FileUtils
-							.readFileToByteArray(outputImageFile);
-
-					if (imageInfo.getFormat() == SWT.IMAGE_JPEG) {
-						excelPictureType = HSSFWorkbook.PICTURE_TYPE_JPEG;
-
-					} else if (imageInfo.getFormat() == SWT.IMAGE_PNG) {
-						excelPictureType = HSSFWorkbook.PICTURE_TYPE_PNG;
-
-					} else {
-						Activator
-								.showMessageDialog("dialog.message.export.image.not.supported");
-						throw new InputException(null);
-					}
-				}
-			}
-
-			stream = this.getTemplate();
-
-			ExportToExcelManager manager = new ExportToExcelManager(
-					outputExcelFile.getCanonicalPath(), diagram, stream,
-					this.useLogicalNameAsSheetNameButton.getSelection(),
-					imageBuffer, excelPictureType);
-			monitor.run(true, true, manager);
-
-			boolean openAfterSaved = this.openAfterSavedButton.getSelection();
-
-			if (openAfterSaved) {
-				URI uri = outputExcelFile.toURI();
-
-				IWorkbenchPage page = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage();
-
-				IDE.openEditor(page, uri,
-						IEditorRegistry.SYSTEM_EXTERNAL_EDITOR_ID, true);
-			}
-
-			this.exportSetting = this.diagram.getDiagramContents()
-					.getSettings().getExportSetting().clone();
-
-			this.exportSetting.setExcelOutput(outputExcelFilePath);
-			this.exportSetting.setImageOutput(outputImageFilePath);
-			this.exportSetting.setExcelTemplate(templateName);
-
-			this.exportSetting
-					.setUseLogicalNameAsSheet(this.useLogicalNameAsSheetNameButton
-							.getSelection());
-			this.exportSetting.setPutERDiagramOnExcel(outputImage);
-
-			this.exportSetting.setCategoryNameToExport(this.categoryCombo
-					.getText());
-			this.exportSetting.setOpenAfterSaved(openAfterSaved);
-
-			if (manager.getException() != null) {
-				throw manager.getException();
-			}
-
-		} catch (InputException e) {
-			throw e;
-
-		} catch (IOException e) {
-			Activator.showMessageDialog(e.getMessage());
-
-		} catch (InterruptedException e) {
-
-		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
-
-		} finally {
-			this.diagram.setCurrentCategory(currentCategory, currentPageIndex);
-
-			if (stream != null) {
-				try {
-					stream.close();
-				} catch (IOException e) {
-					Activator.showExceptionDialog(e);
-				}
-			}
-		}
-	}
-
-	public ExportSetting getExportSetting() {
-		return this.exportSetting;
-	}
-
-	private void setCurrentCategory() {
-		if (this.categoryCombo.getSelectionIndex() == 0) {
-			this.diagram.setCurrentCategory(null, 0);
-			return;
-		}
-
-		Category currentCategory = this.diagram.getDiagramContents()
-				.getSettings().getCategorySetting().getAllCategories()
-				.get(this.categoryCombo.getSelectionIndex() - 1);
-
-		this.diagram.setCurrentCategory(currentCategory,
-				this.categoryCombo.getSelectionIndex());
-	}
-
-	private InputStream getTemplate() {
-		int index = this.templateCombo.getSelectionIndex();
-
-		if (index == 0) {
-			return TemplatePreferencePage.getDefaultExcelTemplateEn();
-
-		} else if (index == 1) {
-			return TemplatePreferencePage.getDefaultExcelTemplateJa();
-
-		} else {
-			String templateName = this.templateCombo.getText();
-
-			File file = new File(
-					PreferenceInitializer.getTemplatePath(templateName));
-			try {
-				return new FileInputStream(file);
-
-			} catch (FileNotFoundException e) {
-				Activator.showExceptionDialog(e);
-			}
-		}
+		// if (this.outputImageButton.getSelection()
+		// && this.outputImageFileText.isBlank()) {
+		// return "error.output.image.file.is.empty";
+		// }
 
 		return null;
 	}
@@ -402,108 +186,76 @@ public class ExportToExcelDialog extends AbstractExportDialog {
 	 */
 	@Override
 	protected void setData() {
-		Settings settings = this.diagram.getDiagramContents().getSettings();
+		ExportExcelSetting exportExcelSetting = this.settings
+				.getExportSetting().getExportExcelSetting();
 
-		String outputExcel = Format.null2blank(settings.getExportSetting()
+		String outputExcel = Format.null2blank(exportExcelSetting
 				.getExcelOutput());
-		String outputImage = Format.null2blank(settings.getExportSetting()
-				.getImageOutput());
-		String template = settings.getExportSetting().getExcelTemplate();
-
-		this.templateCombo.add(ResourceString
-				.getResourceString("label.template.default.en"));
-		this.templateCombo.add(ResourceString
-				.getResourceString("label.template.default.ja"));
-
-		// select the previous
-		for (int i = 0; i < this.templateCombo.getItemCount(); i++) {
-			String item = this.templateCombo.getItem(i);
-			if (item != null
-					&& item.equals(settings.getExportSetting()
-							.getExcelTemplate())) {
-				this.templateCombo.select(i);
-				break;
-			}
-		}
-
-		String str = Activator.getDefault().getPreferenceStore()
-				.getString(PreferenceInitializer.TEMPLATE_FILE_LIST);
-		List<String> fileNames = this.parseString(str);
-
-		int index = 1;
-		for (String fileName : fileNames) {
-			File file = new File(
-					PreferenceInitializer.getTemplatePath(fileName));
-			if (file.exists()) {
-				this.templateCombo.add(fileName);
-
-				if (fileName.equals(template)) {
-					this.templateCombo.select(index);
-				}
-
-				index++;
-			}
-		}
-
-		if (this.templateCombo.getSelectionIndex() == -1) {
-			this.templateCombo.select(0);
-		}
+		// String outputImage = Format.null2blank(exportExcelSetting
+		// .getImageOutput());
 
 		if ("".equals(outputExcel)) {
-			outputExcel = this.getOutputFilePath(".xls");
+			outputExcel = this.getDefaultOutputFilePath(".xls");
+		}
+
+		// if ("".equals(outputImage)) {
+		// outputImage = this
+		// .getDefaultOutputFilePath(DEFAULT_IMAGE_EXTENTION);
+		// }
+
+		this.outputExcelFileText.setText(FileUtils.getRelativeFilePath(
+				this.getBaseDir(), outputExcel));
+		// this.outputImageFileText.setText(outputImage);
+
+		// this.setCategoryComboData(this.categoryCombo,
+		// exportExcelSetting.getCategory());
+		this.setCategoryData(this.categoryLabel);
+
+		this.useLogicalNameAsSheetNameButton.setSelection(exportExcelSetting
+				.isUseLogicalNameAsSheet());
+		this.outputImageButton.setSelection(exportExcelSetting
+				.isPutERDiagramOnExcel());
+		this.openAfterSavedButton.setSelection(exportExcelSetting
+				.isOpenAfterSaved());
+
+		this.setTemplateData(exportExcelSetting);
+
+		String excelTemplatePath = exportExcelSetting.getExcelTemplatePath();
+
+		if (!Check.isEmpty(excelTemplatePath)) {
+			this.templateFileText.setText(excelTemplatePath);
+			this.selectTemplateFromFilesRadio.setSelection(true);
+			this.templateCombo.setEnabled(false);
 
 		} else {
-			outputExcel = outputExcel
-					.substring(0, outputExcel.lastIndexOf(".")) + ".xls";
+			this.selectTemplateFromRegistryRadio.setSelection(true);
+			this.templateFileText.setEnabled(false);
+
 		}
+	}
 
-		if ("".equals(outputImage)) {
-			outputImage = this.getOutputFilePath(DEFAULT_IMAGE_EXTENTION);
-		}
+	private void setTemplateData(ExportExcelSetting exportExcelSetting) {
+		String lang = exportExcelSetting.getUsedDefaultTemplateLang();
 
-		this.outputExcelFileText.setText(outputExcel);
-		this.outputImageFileText.setText(outputImage);
+		if ("en".equals(lang)) {
+			this.templateCombo.select(0);
 
-		// set categories combo
-		this.categoryCombo.add(ResourceString.getResourceString("label.all"));
+		} else if ("ja".equals(lang)) {
+			this.templateCombo.select(1);
 
-		for (Category category : this.diagram.getDiagramContents()
-				.getSettings().getCategorySetting().getAllCategories()) {
-			this.categoryCombo.add(category.getName());
-		}
+		} else {
+			this.templateCombo.select(0);
 
-		this.categoryCombo.select(0);
+			String template = exportExcelSetting.getExcelTemplate();
 
-		// set previous selected category
-		if (settings.getExportSetting().getCategoryNameToExport() != null) {
-			for (int i = 1; i < this.categoryCombo.getItemCount(); i++) {
-				if (settings.getExportSetting().getCategoryNameToExport()
-						.equals(this.categoryCombo.getItem(i))) {
-					this.categoryCombo.select(i);
+			for (int i = 2; i < this.templateCombo.getItemCount(); i++) {
+				String item = this.templateCombo.getItem(i);
+				if (item.equals(template)) {
+					this.templateCombo.select(i);
 					break;
 				}
 			}
 		}
-
-		ExportSetting exportSetting = settings.getExportSetting();
-
-		this.useLogicalNameAsSheetNameButton.setSelection(exportSetting
-				.isUseLogicalNameAsSheet());
-		this.outputImageButton.setSelection(exportSetting
-				.isPutERDiagramOnExcel());
-		this.openAfterSavedButton
-				.setSelection(exportSetting.isOpenAfterSaved());
-	}
-
-	protected List<String> parseString(String stringList) {
-		StringTokenizer st = new StringTokenizer(stringList, "/");
-		List<String> list = new ArrayList<String>();
-
-		while (st.hasMoreElements()) {
-			list.add(st.nextToken());
-		}
-
-		return list;
 	}
 
 	/**
@@ -512,6 +264,86 @@ public class ExportToExcelDialog extends AbstractExportDialog {
 	@Override
 	protected String getTitle() {
 		return "dialog.title.export.excel";
+	}
+
+	@Override
+	protected ExportWithProgressManager getExportWithProgressManager(
+			ExportSetting exportSetting) throws Exception {
+
+		ExportExcelSetting exportExcelSetting = exportSetting
+				.getExportExcelSetting();
+
+		String outputExcelFilePath = this.outputExcelFileText.getFilePath();
+
+		// String outputImageFilePath = this.outputImageFileText.getFilePath();
+
+		// this.outputExcelFile = new File(outputExcelFilePath);
+		//
+		// if (!outputExcelFile.isAbsolute()) {
+		// outputExcelFile = new File(this.getProjectDir(),
+		// outputExcelFilePath);
+		// }
+		//
+		// File outputExcelDir = outputExcelFile.getParentFile();
+		//
+		// if (!outputExcelDir.exists()) {
+		// if (!Activator.showConfirmDialog(ResourceString.getResourceString(
+		// "dialog.message.create.parent.dir",
+		// new String[] { outputExcelDir.getAbsolutePath() }))) {
+		// throw new InputException();
+		//
+		// } else {
+		// outputExcelDir.mkdirs();
+		// }
+		// }
+
+		exportExcelSetting.setExcelOutput(outputExcelFilePath);
+		// exportExcelSetting.setImageOutput(outputImageFilePath);
+
+		exportExcelSetting
+				.setUseLogicalNameAsSheet(this.useLogicalNameAsSheetNameButton
+						.getSelection());
+		exportExcelSetting.setPutERDiagramOnExcel(this.outputImageButton
+				.getSelection());
+		// exportExcelSetting.setCategory(this
+		// .getSelectedCategory(this.categoryCombo));
+		exportExcelSetting.setCategory(this.diagram.getCurrentCategory());
+		exportExcelSetting.setOpenAfterSaved(this.openAfterSavedButton
+				.getSelection());
+
+		int templateIndex = this.templateCombo.getSelectionIndex();
+
+		String template = null;
+
+		if (templateIndex == 0) {
+			exportExcelSetting.setUsedDefaultTemplateLang("en");
+		} else if (templateIndex == 1) {
+			exportExcelSetting.setUsedDefaultTemplateLang("ja");
+		} else {
+			exportExcelSetting.setUsedDefaultTemplateLang(null);
+			template = this.templateCombo.getText();
+		}
+
+		if (this.selectTemplateFromRegistryRadio.getSelection()) {
+			exportExcelSetting.setExcelTemplate(template);
+
+		} else {
+			exportExcelSetting.setExcelTemplatePath(this.templateFileText
+					.getFilePath());
+		}
+
+		return new ExportToExcelManager(exportExcelSetting);
+	}
+
+	@Override
+	protected File openAfterSaved() {
+		return FileUtils.getFile(this.getBaseDir(), this.settings
+				.getExportSetting().getExportExcelSetting().getExcelOutput());
+	}
+
+	@Override
+	protected boolean openWithExternalEditor() {
+		return true;
 	}
 
 }

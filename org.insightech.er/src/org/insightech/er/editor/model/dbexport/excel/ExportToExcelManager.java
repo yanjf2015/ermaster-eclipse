@@ -1,9 +1,10 @@
 package org.insightech.er.editor.model.dbexport.excel;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,12 +13,11 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.StringObjectModel;
+import org.insightech.er.editor.model.dbexport.AbstractExportManager;
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.AbstractSheetGenerator;
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.AllIndicesSheetGenerator;
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.AllSequencesSheetGenerator;
@@ -34,10 +34,18 @@ import org.insightech.er.editor.model.dbexport.excel.sheet_generator.SheetIndexS
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.TableSheetGenerator;
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.TriggerSheetGenerator;
 import org.insightech.er.editor.model.dbexport.excel.sheet_generator.ViewSheetGenerator;
+import org.insightech.er.editor.model.dbexport.image.ExportToImageManager;
+import org.insightech.er.editor.model.dbexport.image.ImageInfo;
+import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
+import org.insightech.er.editor.model.settings.export.ExportExcelSetting;
+import org.insightech.er.preference.PreferenceInitializer;
+import org.insightech.er.preference.page.template.TemplatePreferencePage;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.io.FileUtils;
 
-public class ExportToExcelManager implements IRunnableWithProgress {
+public class ExportToExcelManager extends AbstractExportManager {
 
 	private static final String WORDS_SHEET_NAME = "words";
 
@@ -86,33 +94,17 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 
 	private Map<String, LoopDefinition> loopDefinitionMap;
 
-	private String saveFilePath;
+	private ExportExcelSetting exportExcelSetting;
 
-	private ERDiagram diagram;
+	private HSSFWorkbook workbook;
 
-	private InputStream template;
+	private File excelFile;
 
-	private boolean useLogicalNameAsSheetName;
+	public ExportToExcelManager(ExportExcelSetting exportExcelSetting)
+			throws FileNotFoundException {
+		super("dialog.message.export.excel");
 
-	private byte[] imageBuffer;
-
-	private int excelPictureType;
-
-	private Exception exception;
-
-	public ExportToExcelManager(String saveFilePath, ERDiagram diagram,
-			InputStream template, boolean useLogicalNameAsSheetName,
-			byte[] imageBuffer, int excelPictureType) {
-		super();
-
-		this.saveFilePath = saveFilePath;
-		this.diagram = diagram;
-		this.diagram.getDiagramContents().sort();
-
-		this.template = template;
-		this.useLogicalNameAsSheetName = useLogicalNameAsSheetName;
-		this.imageBuffer = imageBuffer;
-		this.excelPictureType = excelPictureType;
+		this.exportExcelSetting = exportExcelSetting;
 
 		this.sheetNameMap = new HashMap<String, Integer>();
 		this.sheetObjectMap = new LinkedHashMap<String, ObjectModel>();
@@ -120,50 +112,70 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 		this.loopDefinitionMap = new HashMap<String, LoopDefinition>();
 	}
 
-	public void run(IProgressMonitor monitor) throws InvocationTargetException,
-			InterruptedException {
+	@Override
+	public void init(ERDiagram diagram, File projectDir) throws Exception {
+		super.init(diagram, projectDir);
+
+		this.excelFile = FileUtils.getFile(this.projectDir,
+				this.exportExcelSetting.getExcelOutput());
+		this.excelFile.getParentFile().mkdirs();
+
+		this.backup(this.excelFile, true);
+
+		InputStream templateStream = null;
 
 		try {
-			save(monitor);
+			templateStream = this.getSelectedTemplate();
+			workbook = this.loadTemplateWorkbook(templateStream, this.diagram);
 
-		} catch (InterruptedException e) {
-			throw e;
-
-		} catch (Exception e) {
-			this.exception = e;
+		} finally {
+			if (templateStream != null) {
+				templateStream.close();
+			}
 		}
-
-		monitor.done();
-	}
-
-	public void save(IProgressMonitor monitor) throws IOException,
-			InterruptedException {
-		File excelFile = new File(this.saveFilePath);
-		if (!excelFile.isAbsolute()) {
-			excelFile = new File(this.diagram.getProjectRoot(),
-					this.saveFilePath);
-		}
-
-		excelFile.getParentFile().mkdirs();
-
-		this.backup(excelFile, true);
-
-		HSSFWorkbook workbook = this.loadTemplateWorkbook(this.template,
-				this.diagram);
 
 		// check whether the file is not opened by another process.
 		POIUtils.writeExcelFile(excelFile, workbook);
+	}
 
-		int count = this.countSheetFromTemplate(workbook, this.diagram);
-		monitor.beginTask(
-				ResourceString.getResourceString("dialog.message.export.excel"),
-				count);
+	private InputStream getSelectedTemplate() throws FileNotFoundException {
+		if (!Check.isEmpty(this.exportExcelSetting.getExcelTemplatePath())) {
+			return new FileInputStream(FileUtils.getFile(this.projectDir,
+					this.exportExcelSetting.getExcelTemplatePath()));
+		}
 
-		this.pictureSheetGenerator = new PictureSheetGenerator(workbook,
-				imageBuffer, excelPictureType);
+		String lang = this.exportExcelSetting.getUsedDefaultTemplateLang();
+
+		if ("en".equals(lang)) {
+			return TemplatePreferencePage.getDefaultExcelTemplateEn();
+
+		} else if ("ja".equals(lang)) {
+			return TemplatePreferencePage.getDefaultExcelTemplateJa();
+
+		}
+
+		String templateName = this.exportExcelSetting.getExcelTemplate();
+
+		File file = new File(
+				PreferenceInitializer.getTemplatePath(templateName));
+
+		return new FileInputStream(file);
+	}
+
+	@Override
+	protected int getTotalTaskCount() {
+		return this.countSheetFromTemplate(workbook, this.diagram);
+	}
+
+	@Override
+	protected void doProcess(ProgressMonitor monitor) throws Exception {
+		if (this.exportExcelSetting.isPutERDiagramOnExcel()) {
+			this.pictureSheetGenerator = this.createPictureSheetGenerator(
+					monitor, workbook);
+		}
 
 		this.createSheetFromTemplate(monitor, workbook, diagram,
-				useLogicalNameAsSheetName);
+				this.exportExcelSetting.isUseLogicalNameAsSheet());
 
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			workbook.getSheetAt(i).setSelected(false);
@@ -176,6 +188,18 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 		}
 
 		POIUtils.writeExcelFile(excelFile, workbook);
+	}
+
+	private PictureSheetGenerator createPictureSheetGenerator(
+			ProgressMonitor monitor, HSSFWorkbook workbook) throws Exception {
+		ImageInfoSet imageInfoSet = ExportToImageManager.outputImage(
+				this.diagram, this.exportExcelSetting.getCategory(),
+				this.projectDir, monitor);
+
+		ImageInfo imageInfo = imageInfoSet.getDiagramImageInfo();
+
+		return new PictureSheetGenerator(workbook, imageInfo.getImageData(),
+				imageInfo.getExcelPictureType());
 	}
 
 	private HSSFWorkbook loadTemplateWorkbook(InputStream template,
@@ -249,7 +273,7 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 		}
 	}
 
-	private void createSheetFromTemplate(IProgressMonitor monitor,
+	private void createSheetFromTemplate(ProgressMonitor monitor,
 			HSSFWorkbook workbook, ERDiagram diagram,
 			boolean useLogicalNameAsSheetName) throws InterruptedException {
 		this.initSheetNameMap(workbook);
@@ -279,8 +303,10 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 					this.sheetObjectMap.put(templateSheetName,
 							new StringObjectModel(templateSheetName));
 
-					this.pictureSheetGenerator.setImage(workbook, sheet);
-
+					if (this.pictureSheetGenerator != null) {
+						this.pictureSheetGenerator.setImage(workbook, sheet);
+					}
+					
 					if (this.sheetIndexSheetGenerator.getTemplateSheetName()
 							.equals(templateSheetName)) {
 						sheetIndexSheetNo = workbook.getNumberOfSheets()
@@ -289,12 +315,19 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 						String name = this.sheetIndexSheetGenerator
 								.getSheetName();
 
+						name = AbstractSheetGenerator.decideSheetName(name,
+								sheetNameMap);
+
+						monitor.subTaskWithCounter(name);
+
 						workbook.setSheetName(workbook.getNumberOfSheets() - 1,
-								AbstractSheetGenerator.decideSheetName(name,
-										sheetNameMap));
+								name);
+					} else {
+						monitor.subTaskWithCounter(sheet.getSheetName());
 					}
 
 				} else {
+					monitor.subTaskWithCounter("Removing template sheet");
 					workbook.removeSheetAt(0);
 				}
 
@@ -302,10 +335,6 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 			}
 
 			originalSheetNum--;
-
-			if (monitor.isCanceled()) {
-				throw new InterruptedException("Cancel has been requested.");
-			}
 		}
 
 		if (sheetIndexSheetNo != -1) {
@@ -347,6 +376,10 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 			}
 		}
 
+		if (this.exportExcelSetting.isPutERDiagramOnExcel()) {
+			count += 1;
+		}
+
 		return count;
 	}
 
@@ -382,7 +415,8 @@ public class ExportToExcelManager implements IRunnableWithProgress {
 		return false;
 	}
 
-	public Exception getException() {
-		return exception;
+	public File getOutputFileOrDir() {
+		return FileUtils.getFile(this.projectDir,
+				this.exportExcelSetting.getExcelOutput());
 	}
 }

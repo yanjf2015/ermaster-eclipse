@@ -1,11 +1,10 @@
 package org.insightech.er.editor.view.dialog.element.view.tab;
 
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.editor.model.diagram_contents.element.node.view.View;
 import org.insightech.er.editor.view.dialog.element.view.ViewDialog;
 import org.insightech.er.util.Format;
@@ -16,26 +15,16 @@ public class SqlTabWrapper extends ValidatableTabWrapper {
 
 	private Text sqlText;
 
-	private ViewDialog viewDialog;
+	public SqlTabWrapper(ViewDialog viewDialog, TabFolder parent, View copyData) {
+		super(viewDialog, parent, "label.sql");
 
-	public SqlTabWrapper(ViewDialog viewDialog, TabFolder parent, int style,
-			View copyData) {
-		super(viewDialog, parent, style, "label.sql");
-
-		this.viewDialog = viewDialog;
 		this.copyData = copyData;
-
-		this.init();
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 1;
-		this.setLayout(gridLayout);
-
-		this.sqlText = CompositeFactory.createTextArea(this.viewDialog, this,
-				"label.sql", 400, 400, 1, true);
+		this.sqlText = CompositeFactory.createTextArea(this.dialog, this,
+				"label.sql", -1, 400, 1, true, false);
 
 		this.sqlText.setText(Format.null2blank(copyData.getSql()));
 	}

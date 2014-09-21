@@ -3,15 +3,12 @@ package org.insightech.er.editor.view.action.dbimport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -21,7 +18,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.Activator;
 import org.insightech.er.ImageKey;
@@ -120,14 +116,10 @@ public class ImportFromFileAction extends AbstractImportAction {
 
 	protected String getLoadFilePath(IEditorPart editorPart) {
 
-		IFile file = ((IFileEditorInput) editorPart.getEditorInput()).getFile();
-
 		FileDialog fileDialog = new FileDialog(editorPart.getEditorSite()
 				.getShell(), SWT.OPEN);
 
-		IProject project = file.getProject();
-
-		fileDialog.setFilterPath(project.getLocation().toString());
+		fileDialog.setFilterPath(this.getBasePath());
 
 		String[] filterExtensions = this.getFilterExtensions();
 		fileDialog.setFilterExtensions(filterExtensions);
@@ -323,38 +315,37 @@ public class ImportFromFileAction extends AbstractImportAction {
 		}
 
 		if (mergeGroup) {
-			Map<String, ColumnGroup> groupMap = new HashMap<String, ColumnGroup>();
-
-			for (ColumnGroup columnGroup : this.getDiagram()
-					.getDiagramContents().getGroups()) {
-				groupMap.put(columnGroup.getGroupName(), columnGroup);
-			}
-
-			for (Iterator<ColumnGroup> iter = this.importedColumnGroups
-					.iterator(); iter.hasNext();) {
-				ColumnGroup columnGroup = iter.next();
-
-				ColumnGroup replaceColumnGroup = groupMap.get(columnGroup
-						.getGroupName());
-
-				if (replaceColumnGroup != null) {
-					iter.remove();
-
-					for (NodeElement nodeElement : selectedNodeSet) {
-						if (nodeElement instanceof TableView) {
-							TableView tableView = (TableView) nodeElement;
-							tableView.replaceColumnGroup(columnGroup,
-									replaceColumnGroup);
-						}
-					}
-				}
-			}
+			this.mergeGroup(selectedNodeSet);
 		}
 
 		CopyManager copyManager = new CopyManager(null);
 		NodeSet copyList = copyManager.copyNodeElementList(selectedNodeSet);
 
 		this.importedNodeElements = copyList.getNodeElementList();
+	}
+
+	private void mergeGroup(NodeSet selectedNodeSet) {
+		GroupSet currentGroupSet = this.getDiagram().getDiagramContents()
+				.getGroups();
+
+		for (Iterator<ColumnGroup> iter = this.importedColumnGroups.iterator(); iter
+				.hasNext();) {
+			ColumnGroup columnGroup = iter.next();
+
+			ColumnGroup replaceColumnGroup = currentGroupSet.find(columnGroup);
+
+			if (replaceColumnGroup != null) {
+				iter.remove();
+
+				for (NodeElement nodeElement : selectedNodeSet) {
+					if (nodeElement instanceof TableView) {
+						TableView tableView = (TableView) nodeElement;
+						tableView.replaceColumnGroup(columnGroup,
+								replaceColumnGroup);
+					}
+				}
+			}
+		}
 	}
 
 	/**

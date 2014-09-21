@@ -4,11 +4,11 @@ import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 
 public class TriggerSheetGenerator extends AbstractSheetGenerator {
@@ -33,20 +33,23 @@ public class TriggerSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
-		
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
+
 		for (Trigger trigger : diagram.getDiagramContents().getTriggerSet()) {
 			String name = trigger.getName();
 			HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
 					sheetNameMap);
 
-			sheetObjectMap.put(
-					workbook.getSheetName(workbook.getSheetIndex(newSheet)),
-					trigger);
+			String sheetName = workbook.getSheetName(workbook
+					.getSheetIndex(newSheet));
+			monitor.subTaskWithCounter("[Trigger] " + sheetName);
+
+			sheetObjectMap.put(sheetName, trigger);
 
 			this.setTriggerData(workbook, newSheet, trigger);
 			monitor.worked(1);

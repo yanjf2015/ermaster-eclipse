@@ -32,12 +32,7 @@ public abstract class TablespaceDialog extends AbstractDialog {
 	protected static final int NUM_TEXT_WIDTH = 60;
 
 	public TablespaceDialog() {
-		this(2);
-	}
-
-	public TablespaceDialog(int numColumns) {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				numColumns);
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 	}
 
 	public void init(Tablespace tablespace, ERDiagram diagram) {
@@ -58,7 +53,7 @@ public abstract class TablespaceDialog extends AbstractDialog {
 				this.getNumColumns() - 1, -1);
 		this.nameText = CompositeFactory.createText(this, composite,
 				"label.tablespace.name", this.getNumColumns() - 1,
-				Resources.DESCRIPTION_WIDTH, false);
+				Resources.DESCRIPTION_WIDTH, false, false);
 	}
 
 	@Override

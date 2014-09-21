@@ -31,7 +31,7 @@ public class ChangeInsertedImagePropertyCommand extends AbstractCommand {
 				.isFixAspectRatio());
 		this.insertedImage.setAlpha(this.newInsertedImage.getAlpha());
 
-		this.insertedImage.refreshVisuals();
+		this.insertedImage.refresh();
 	}
 
 	/**

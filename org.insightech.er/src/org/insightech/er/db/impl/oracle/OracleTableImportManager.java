@@ -18,6 +18,7 @@ import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTabl
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 
 public class OracleTableImportManager extends ImportFromDBManagerEclipseBase {
 

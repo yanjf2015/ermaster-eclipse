@@ -116,6 +116,16 @@ public class Category extends NodeElement implements IResizable,
 		return nodeElementList;
 	}
 
+	public void add(NodeElement nodeElement) {
+		if (!(nodeElement instanceof Category)) {
+			this.nodeElementList.add(nodeElement);
+		}
+	}
+
+	public void remove(NodeElement nodeElement) {
+		this.nodeElementList.remove(nodeElement);
+	}
+
 	public List<ERTable> getTableContents() {
 		List<ERTable> tableList = new ArrayList<ERTable>();
 
@@ -152,6 +162,58 @@ public class Category extends NodeElement implements IResizable,
 		return tableList;
 	}
 
+	public Location getNewCategoryLocation(NodeElement element) {
+		if (element instanceof Category) {
+			return null;
+		}
+
+		if (this.contains(element)) {
+			Location elementLocation = element.getLocation();
+			Location newLocation = calculateCategoryLocation(elementLocation);
+
+			if (!newLocation.equals(this.getLocation())) {
+				return newLocation;
+			}
+		}
+
+		return null;
+	}
+
+	public Location getNewCategoryLocation(Location elementLocation) {
+		Location newLocation = calculateCategoryLocation(elementLocation);
+
+		if (!newLocation.equals(this.getLocation())) {
+			return newLocation;
+		}
+
+		return null;
+	}
+
+	private Location calculateCategoryLocation(Location elementLocation) {
+		Location location = this.getLocation();
+
+		if (elementLocation.x < location.x) {
+			location.width += location.x - elementLocation.x;
+			location.x = elementLocation.x;
+		}
+		if (elementLocation.y < location.y) {
+			location.height += location.y - elementLocation.y;
+			location.y = elementLocation.y;
+		}
+		if (elementLocation.x + elementLocation.width > location.x
+				+ location.width) {
+			location.width = elementLocation.x + elementLocation.width
+					- location.x;
+		}
+		if (elementLocation.y + elementLocation.height > location.y
+				+ location.height) {
+			location.height = elementLocation.y + elementLocation.height
+					- location.y;
+		}
+
+		return location;
+	}
+	
 	public int compareTo(Category other) {
 		int compareTo = 0;
 
@@ -178,4 +240,5 @@ public class Category extends NodeElement implements IResizable,
 	public String getObjectType() {
 		return "category";
 	}
+
 }

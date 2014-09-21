@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.insightech.er.db.impl.standard_sql.StandardSQLDBManager;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ViewableModel;
+import org.insightech.er.editor.model.dbexport.ddl.DDLTarget;
 import org.insightech.er.editor.model.diagram_contents.DiagramContents;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Bendpoint;
 import org.insightech.er.editor.model.diagram_contents.element.connection.CommentConnection;
@@ -70,6 +72,10 @@ import org.insightech.er.editor.model.settings.ExportSetting;
 import org.insightech.er.editor.model.settings.PageSetting;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.model.settings.TranslationSetting;
+import org.insightech.er.editor.model.settings.export.ExportDDLSetting;
+import org.insightech.er.editor.model.settings.export.ExportExcelSetting;
+import org.insightech.er.editor.model.settings.export.ExportHtmlSetting;
+import org.insightech.er.editor.model.settings.export.ExportImageSetting;
 import org.insightech.er.editor.model.settings.export.ExportJavaSetting;
 import org.insightech.er.editor.model.settings.export.ExportTestDataSetting;
 import org.insightech.er.editor.model.testdata.DirectTestData;
@@ -79,6 +85,7 @@ import org.insightech.er.editor.model.testdata.TableTestData;
 import org.insightech.er.editor.model.testdata.TestData;
 import org.insightech.er.editor.model.tracking.ChangeTracking;
 import org.insightech.er.editor.model.tracking.ChangeTrackingList;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.NameValue;
 import org.w3c.dom.Document;
@@ -179,12 +186,13 @@ public class XMLLoader {
 				relation.setReferencedComplexUniqueKey(complexUniqueKey);
 			}
 
-			Set<NormalColumn> foreignKeyColumnSet = this.columnReferencedColumnMap
-					.keySet();
+			Set<NormalColumn> foreignKeyColumnSet = new HashSet<NormalColumn>(
+					this.columnReferencedColumnMap.keySet());
 
 			while (!foreignKeyColumnSet.isEmpty()) {
 				NormalColumn foreignKeyColumn = foreignKeyColumnSet.iterator()
 						.next();
+				foreignKeyColumnSet.remove(foreignKeyColumn);
 				reduce(foreignKeyColumnSet, foreignKeyColumn);
 			}
 		}
@@ -239,7 +247,6 @@ public class XMLLoader {
 				}
 			}
 
-			foreignKeyColumnSet.remove(foreignKeyColumn);
 		}
 	}
 
@@ -1074,7 +1081,7 @@ public class XMLLoader {
 			settings.setNotationLevel(this.getIntValue(element,
 					"notation_level"));
 			settings.setNotationExpandGroup(this.getBooleanValue(element,
-					"notation_expand_group"));
+					"notation_expand_group", false));
 
 			settings.setViewMode(this.getIntValue(element, "view_mode"));
 			settings.setOutlineViewMode(this.getIntValue(element,
@@ -1082,19 +1089,20 @@ public class XMLLoader {
 			settings.setViewOrderBy(this.getIntValue(element, "view_order_by"));
 
 			settings.setAutoImeChange(this.getBooleanValue(element,
-					"auto_ime_change"));
+					"auto_ime_change", false));
 			settings.setValidatePhysicalName(this.getBooleanValue(element,
 					"validate_physical_name", true));
 			settings.setUseBezierCurve(this.getBooleanValue(element,
-					"use_bezier_curve"));
+					"use_bezier_curve", false));
 			settings.setSuspendValidator(this.getBooleanValue(element,
-					"suspend_validator"));
-
-			ExportSetting exportSetting = settings.getExportSetting();
-			this.loadExportSetting(exportSetting, element, context);
+					"suspend_validator", false));
 
 			CategorySetting categorySetting = settings.getCategorySetting();
 			this.loadCategorySetting(categorySetting, element, context);
+
+			// must load categorySetting before exportSetting
+			ExportSetting exportSetting = settings.getExportSetting();
+			this.loadExportSetting(exportSetting, element, context);
 
 			TranslationSetting translationSetting = settings
 					.getTranslationSetting();
@@ -1115,75 +1123,163 @@ public class XMLLoader {
 		Element element = this.getElement(parent, "export_setting");
 
 		if (element != null) {
-			exportSetting.setCategoryNameToExport(this.getStringValue(element,
-					"category_name_to_export"));
-			exportSetting.setHtmlOutput(this.getStringValue(element,
-					"html_output"));
-			exportSetting.setDdlOutput(this.getStringValue(element,
-					"ddl_output"));
-			exportSetting.setExcelOutput(this.getStringValue(element,
-					"excel_output"));
-			exportSetting.setExcelTemplate(this.getStringValue(element,
-					"excel_template"));
-			exportSetting.setImageOutput(this.getStringValue(element,
-					"image_output"));
-			exportSetting.setPutERDiagramOnExcel(this.getBooleanValue(element,
-					"put_diagram_on_excel"));
-			exportSetting.setUseLogicalNameAsSheet(this.getBooleanValue(
-					element, "use_logical_name_as_sheet"));
-			exportSetting.setOpenAfterSaved(this.getBooleanValue(element,
-					"open_after_saved"));
-
-			exportSetting.getDdlTarget().createComment = this.getBooleanValue(
-					element, "create_comment");
-			exportSetting.getDdlTarget().createForeignKey = this
-					.getBooleanValue(element, "create_foreignKey");
-			exportSetting.getDdlTarget().createIndex = this.getBooleanValue(
-					element, "create_index");
-			exportSetting.getDdlTarget().createSequence = this.getBooleanValue(
-					element, "create_sequence");
-			exportSetting.getDdlTarget().createTable = this.getBooleanValue(
-					element, "create_table");
-			exportSetting.getDdlTarget().createTablespace = this
-					.getBooleanValue(element, "create_tablespace");
-			exportSetting.getDdlTarget().createTrigger = this.getBooleanValue(
-					element, "create_trigger");
-			exportSetting.getDdlTarget().createView = this.getBooleanValue(
-					element, "create_view");
-
-			exportSetting.getDdlTarget().dropIndex = this.getBooleanValue(
-					element, "drop_index");
-			exportSetting.getDdlTarget().dropSequence = this.getBooleanValue(
-					element, "drop_sequence");
-			exportSetting.getDdlTarget().dropTable = this.getBooleanValue(
-					element, "drop_table");
-			exportSetting.getDdlTarget().dropTablespace = this.getBooleanValue(
-					element, "drop_tablespace");
-			exportSetting.getDdlTarget().dropTrigger = this.getBooleanValue(
-					element, "drop_trigger");
-			exportSetting.getDdlTarget().dropView = this.getBooleanValue(
-					element, "drop_view");
-
-			exportSetting.getDdlTarget().inlineColumnComment = this
-					.getBooleanValue(element, "inline_column_comment");
-			exportSetting.getDdlTarget().inlineTableComment = this
-					.getBooleanValue(element, "inline_table_comment");
-
-			exportSetting.getDdlTarget().commentValueDescription = this
-					.getBooleanValue(element, "comment_value_description");
-			exportSetting.getDdlTarget().commentValueLogicalName = this
-					.getBooleanValue(element, "comment_value_logical_name");
-			exportSetting.getDdlTarget().commentValueLogicalNameDescription = this
-					.getBooleanValue(element,
-							"comment_value_logical_name_description");
-			exportSetting.getDdlTarget().commentReplaceLineFeed = this
-					.getBooleanValue(element, "comment_replace_line_feed");
-			exportSetting.getDdlTarget().commentReplaceString = this
-					.getStringValue(element, "comment_replace_string");
+			this.loadExportDDLSetting(exportSetting.getExportDDLSetting(),
+					element, context);
+			this.loadExportExcelSetting(exportSetting.getExportExcelSetting(),
+					element, context);
+			this.loadExportHtmlSetting(exportSetting.getExportHtmlSetting(),
+					element, context);
+			this.loadExportImageSetting(exportSetting.getExportImageSetting(),
+					element, context);
 			this.loadExportJavaSetting(exportSetting.getExportJavaSetting(),
 					element, context);
 			this.loadExportTestDataSetting(
 					exportSetting.getExportTestDataSetting(), element, context);
+		}
+	}
+
+	private void loadExportDDLSetting(ExportDDLSetting exportDDLSetting,
+			Element parent, LoadContext context) {
+		Element element = this.getElement(parent, "export_ddl_setting");
+
+		if (element != null) {
+			exportDDLSetting.setDdlOutput(Format.null2blank(this
+					.getStringValue(element, "output_path")));
+			exportDDLSetting.setSrcFileEncoding(Format.null2blank(this
+					.getStringValue(element, "encoding")));
+			exportDDLSetting.setOpenAfterSaved(this.getBooleanValue(element,
+					"is_open_after_saved", true));
+
+			String environmentId = this.getStringValue(element,
+					"environment_id");
+			Environment environment = context.environmentMap.get(environmentId);
+			exportDDLSetting.setEnvironment(environment);
+
+			String categoryId = this.getStringValue(element, "category_id");
+			Category category = (Category) context.nodeElementMap
+					.get(categoryId);
+			exportDDLSetting.setCategory(category);
+
+			this.loadDDLTarget(exportDDLSetting.getDdlTarget(), element,
+					context);
+		}
+	}
+
+	private void loadDDLTarget(DDLTarget ddlTarget, Element parent,
+			LoadContext context) {
+		Element element = this.getElement(parent, "ddl_target");
+
+		if (element != null) {
+			ddlTarget.createComment = this.getBooleanValue(element,
+					"create_comment", true);
+			ddlTarget.createForeignKey = this.getBooleanValue(element,
+					"create_foreignKey", true);
+			ddlTarget.createIndex = this.getBooleanValue(element,
+					"create_index", true);
+			ddlTarget.createSequence = this.getBooleanValue(element,
+					"create_sequence", true);
+			ddlTarget.createTable = this.getBooleanValue(element,
+					"create_table", true);
+			ddlTarget.createTablespace = this.getBooleanValue(element,
+					"create_tablespace", true);
+			ddlTarget.createTrigger = this.getBooleanValue(element,
+					"create_trigger", true);
+			ddlTarget.createView = this.getBooleanValue(element, "create_view",
+					true);
+
+			ddlTarget.dropIndex = this.getBooleanValue(element, "drop_index",
+					true);
+			ddlTarget.dropSequence = this.getBooleanValue(element,
+					"drop_sequence", true);
+			ddlTarget.dropTable = this.getBooleanValue(element, "drop_table",
+					true);
+			ddlTarget.dropTablespace = this.getBooleanValue(element,
+					"drop_tablespace", true);
+			ddlTarget.dropTrigger = this.getBooleanValue(element,
+					"drop_trigger", true);
+			ddlTarget.dropView = this.getBooleanValue(element, "drop_view",
+					true);
+
+			ddlTarget.inlineColumnComment = this.getBooleanValue(element,
+					"inline_column_comment", true);
+			ddlTarget.inlineTableComment = this.getBooleanValue(element,
+					"inline_table_comment", true);
+
+			ddlTarget.commentValueDescription = this.getBooleanValue(element,
+					"comment_value_description", true);
+			ddlTarget.commentValueLogicalName = this.getBooleanValue(element,
+					"comment_value_logical_name", false);
+			ddlTarget.commentValueLogicalNameDescription = this
+					.getBooleanValue(element,
+							"comment_value_logical_name_description", false);
+			ddlTarget.commentReplaceLineFeed = this.getBooleanValue(element,
+					"comment_replace_line_feed");
+			ddlTarget.commentReplaceString = this.getStringValue(element,
+					"comment_replace_string");
+		}
+	}
+
+	private void loadExportExcelSetting(ExportExcelSetting exportExcelSetting,
+			Element parent, LoadContext context) {
+		Element element = this.getElement(parent, "export_excel_setting");
+
+		if (element != null) {
+			String categoryId = this.getStringValue(element, "category_id");
+			Category category = (Category) context.nodeElementMap
+					.get(categoryId);
+			exportExcelSetting.setCategory(category);
+
+			exportExcelSetting.setExcelOutput(Format.null2blank(this
+					.getStringValue(element, "output_path")));
+			exportExcelSetting.setExcelTemplate(Format.null2blank(this
+					.getStringValue(element, "template")));
+			exportExcelSetting.setExcelTemplatePath(Format.null2blank(this
+					.getStringValue(element, "template_path")));
+			exportExcelSetting.setUsedDefaultTemplateLang(Format
+					.null2blank(this.getStringValue(element,
+							"used_default_template_lang")));
+			exportExcelSetting.setImageOutput(Format.null2blank(this
+					.getStringValue(element, "image_output")));
+			exportExcelSetting.setOpenAfterSaved(this.getBooleanValue(element,
+					"is_open_after_saved", true));
+			exportExcelSetting.setPutERDiagramOnExcel(this.getBooleanValue(
+					element, "is_put_diagram", true));
+			exportExcelSetting.setUseLogicalNameAsSheet(this.getBooleanValue(
+					element, "is_use_logical_name", true));
+		}
+	}
+
+	private void loadExportHtmlSetting(ExportHtmlSetting exportHtmlSetting,
+			Element parent, LoadContext context) {
+		Element element = this.getElement(parent, "export_html_setting");
+
+		if (element != null) {
+			exportHtmlSetting.setOutputDir(this.getStringValue(element,
+					"output_dir"));
+			// exportHtmlSetting.setSrcFileEncoding(Format.null2blank(this
+			// .getStringValue(element, "file_encoding")));
+			exportHtmlSetting.setWithCategoryImage(this.getBooleanValue(
+					element, "with_category_image", true));
+			exportHtmlSetting.setWithImage(this.getBooleanValue(element,
+					"with_image", true));
+			exportHtmlSetting.setOpenAfterSaved(this.getBooleanValue(element,
+					"is_open_after_saved", true));
+		}
+	}
+
+	private void loadExportImageSetting(ExportImageSetting exportImageSetting,
+			Element parent, LoadContext context) {
+		Element element = this.getElement(parent, "export_image_setting");
+
+		if (element != null) {
+			exportImageSetting.setOutputFilePath(this.getStringValue(element,
+					"output_file_path"));
+			exportImageSetting.setCategoryDirPath(this.getStringValue(element,
+					"category_dir_path"));
+			exportImageSetting.setWithCategoryImage(this.getBooleanValue(
+					element, "with_category_image", true));
+			exportImageSetting.setOpenAfterSaved(this.getBooleanValue(element,
+					"is_open_after_saved", true));
 		}
 	}
 
@@ -1201,7 +1297,7 @@ public class XMLLoader {
 			exportJavaSetting.setSrcFileEncoding(this.getStringValue(element,
 					"src_file_encoding"));
 			exportJavaSetting.setWithHibernate(this.getBooleanValue(element,
-					"with_hibernate"));
+					"with_hibernate", false));
 		}
 	}
 
@@ -1342,7 +1438,8 @@ public class XMLLoader {
 		this.loadLocation(modelProperties, element);
 		this.loadColor(modelProperties, element);
 
-		modelProperties.setDisplay(this.getBooleanValue(element, "display"));
+		modelProperties.setDisplay(this.getBooleanValue(element, "display",
+				false));
 		modelProperties.setCreationDate(this.getDateValue(element,
 				"creation_date"));
 		modelProperties.setUpdatedDate(this.getDateValue(element,
@@ -1375,7 +1472,9 @@ public class XMLLoader {
 		String fontName = this.getStringValue(element, "font_name");
 		int fontSize = this.getIntValue(element, "font_size");
 
-		viewableModel.setFontName(fontName);
+		if (!Check.isEmptyTrim(fontName)) {
+			viewableModel.setFontName(fontName);
+		}
 		viewableModel.setFontSize(fontSize);
 	}
 
@@ -1484,10 +1583,12 @@ public class XMLLoader {
 			}
 
 			Index index = new Index(table, this.getStringValue(indexElement,
-					"name"), this.getBooleanValue(indexElement, "non_unique"),
-					type, this.getStringValue(indexElement, "description"));
+					"name"), this.getBooleanValue(indexElement, "non_unique",
+					true), type, this.getStringValue(indexElement,
+					"description"));
 
-			index.setFullText(this.getBooleanValue(indexElement, "full_text"));
+			index.setFullText(this.getBooleanValue(indexElement, "full_text",
+					false));
 
 			this.loadIndexColumns(index, indexElement, context);
 
@@ -1515,7 +1616,7 @@ public class XMLLoader {
 			NormalColumn column = context.columnMap.get(id);
 
 			Boolean desc = new Boolean(this.getBooleanValue(columnElement,
-					"desc"));
+					"desc", true));
 
 			index.addColumn(column);
 			descs.add(desc);
@@ -1648,7 +1749,7 @@ public class XMLLoader {
 		insertedImage.setBrightness(this.getIntValue(element, "brightness"));
 		insertedImage.setAlpha(this.getIntValue(element, "alpha", 255));
 		insertedImage.setFixAspectRatio(this.getBooleanValue(element,
-				"fix_aspect_ratio"));
+				"fix_aspect_ratio", true));
 
 		this.loadNodeElement(insertedImage, element, context);
 

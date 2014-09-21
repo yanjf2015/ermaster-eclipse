@@ -57,6 +57,10 @@ import org.insightech.er.editor.model.settings.ExportSetting;
 import org.insightech.er.editor.model.settings.PageSetting;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.model.settings.TranslationSetting;
+import org.insightech.er.editor.model.settings.export.ExportDDLSetting;
+import org.insightech.er.editor.model.settings.export.ExportExcelSetting;
+import org.insightech.er.editor.model.settings.export.ExportHtmlSetting;
+import org.insightech.er.editor.model.settings.export.ExportImageSetting;
 import org.insightech.er.editor.model.settings.export.ExportJavaSetting;
 import org.insightech.er.editor.model.settings.export.ExportTestDataSetting;
 import org.insightech.er.editor.model.testdata.DirectTestData;
@@ -148,6 +152,12 @@ public class PersistentXmlImpl extends Persistent {
 				}
 
 			}
+		}
+
+		for (Category category : diagramContents.getSettings()
+				.getCategorySetting().getAllCategories()) {
+			context.nodeElementMap.put(category, new Integer(nodeElementCount));
+			nodeElementCount++;
 		}
 
 		int wordCount = 0;
@@ -866,35 +876,57 @@ public class PersistentXmlImpl extends Persistent {
 
 		xml.append("<export_setting>\n");
 
-		xml.append("\t<category_name_to_export>")
-				.append(escape(exportSetting.getCategoryNameToExport()))
-				.append("</category_name_to_export>\n");
-		xml.append("\t<html_output>")
-				.append(escape(exportSetting.getHtmlOutput()))
-				.append("</html_output>\n");
-		xml.append("\t<ddl_output>")
-				.append(escape(exportSetting.getDdlOutput()))
-				.append("</ddl_output>\n");
-		xml.append("\t<excel_output>")
-				.append(escape(exportSetting.getExcelOutput()))
-				.append("</excel_output>\n");
-		xml.append("\t<excel_template>")
-				.append(escape(exportSetting.getExcelTemplate()))
-				.append("</excel_template>\n");
-		xml.append("\t<image_output>")
-				.append(escape(exportSetting.getImageOutput()))
-				.append("</image_output>\n");
-		xml.append("\t<put_diagram_on_excel>")
-				.append(exportSetting.isPutERDiagramOnExcel())
-				.append("</put_diagram_on_excel>\n");
-		xml.append("\t<use_logical_name_as_sheet>")
-				.append(exportSetting.isUseLogicalNameAsSheet())
-				.append("</use_logical_name_as_sheet>\n");
-		xml.append("\t<open_after_saved>")
-				.append(exportSetting.isOpenAfterSaved())
-				.append("</open_after_saved>\n");
+		xml.append(tab(this.createXML(exportSetting.getExportDDLSetting(),
+				context)));
+		xml.append(tab(this.createXML(exportSetting.getExportExcelSetting(),
+				context)));
+		xml.append(tab(this.createXML(exportSetting.getExportHtmlSetting(),
+				context)));
+		xml.append(tab(this.createXML(exportSetting.getExportImageSetting(),
+				context)));
+		xml.append(tab(this.createXML(exportSetting.getExportJavaSetting(),
+				context)));
+		xml.append(tab(this.createXML(exportSetting.getExportTestDataSetting(),
+				context)));
 
-		DDLTarget ddlTarget = exportSetting.getDdlTarget();
+		xml.append("</export_setting>\n");
+
+		return xml.toString();
+	}
+
+	private String createXML(ExportDDLSetting exportDDLSetting,
+			PersistentContext context) {
+		StringBuilder xml = new StringBuilder();
+
+		xml.append("<export_ddl_setting>\n");
+
+		xml.append("\t<output_path>")
+				.append(escape(exportDDLSetting.getDdlOutput()))
+				.append("</output_path>\n");
+		xml.append("\t<encoding>")
+				.append(escape(exportDDLSetting.getSrcFileEncoding()))
+				.append("</encoding>\n");
+		xml.append("\t<is_open_after_saved>")
+				.append(exportDDLSetting.isOpenAfterSaved())
+				.append("</is_open_after_saved>\n");
+		xml.append("\t<environment_id>")
+				.append(context.environmentMap.get(exportDDLSetting
+						.getEnvironment())).append("</environment_id>\n");
+		xml.append("\t<category_id>")
+				.append(context.nodeElementMap.get(exportDDLSetting
+						.getCategory())).append("</category_id>\n");
+
+		xml.append(tab(this.createXML(exportDDLSetting.getDdlTarget(), context)));
+
+		xml.append("</export_ddl_setting>\n");
+
+		return xml.toString();
+	}
+
+	private String createXML(DDLTarget ddlTarget, PersistentContext context) {
+		StringBuilder xml = new StringBuilder();
+
+		xml.append("<ddl_target>\n");
 
 		xml.append("\t<create_comment>").append(ddlTarget.createComment)
 				.append("</create_comment>\n");
@@ -949,12 +981,96 @@ public class PersistentXmlImpl extends Persistent {
 				.append(Format.null2blank(ddlTarget.commentReplaceString))
 				.append("</comment_replace_string>\n");
 
-		xml.append(tab(this.createXML(exportSetting.getExportJavaSetting(),
-				context)));
-		xml.append(tab(this.createXML(exportSetting.getExportTestDataSetting(),
-				context)));
+		xml.append("</ddl_target>\n");
 
-		xml.append("</export_setting>\n");
+		return xml.toString();
+	}
+
+	private String createXML(ExportExcelSetting exportExcelSetting,
+			PersistentContext context) {
+		StringBuilder xml = new StringBuilder();
+
+		xml.append("<export_excel_setting>\n");
+
+		xml.append("\t<category_id>")
+				.append(context.nodeElementMap.get(exportExcelSetting
+						.getCategory())).append("</category_id>\n");
+		xml.append("\t<output_path>")
+				.append(escape(exportExcelSetting.getExcelOutput()))
+				.append("</output_path>\n");
+		xml.append("\t<template>")
+				.append(escape(exportExcelSetting.getExcelTemplate()))
+				.append("</template>\n");
+		xml.append("\t<template_path>")
+				.append(escape(exportExcelSetting.getExcelTemplatePath()))
+				.append("</template_path>\n");
+		xml.append("\t<used_default_template_lang>")
+				.append(escape(exportExcelSetting.getUsedDefaultTemplateLang()))
+				.append("</used_default_template_lang>\n");
+		xml.append("\t<image_output>")
+				.append(escape(exportExcelSetting.getImageOutput()))
+				.append("</image_output>\n");
+		xml.append("\t<is_open_after_saved>")
+				.append(exportExcelSetting.isOpenAfterSaved())
+				.append("</is_open_after_saved>\n");
+		xml.append("\t<is_put_diagram>")
+				.append(exportExcelSetting.isPutERDiagramOnExcel())
+				.append("</is_put_diagram>\n");
+		xml.append("\t<is_use_logical_name>")
+				.append(exportExcelSetting.isUseLogicalNameAsSheet())
+				.append("</is_use_logical_name>\n");
+
+		xml.append("</export_excel_setting>\n");
+
+		return xml.toString();
+	}
+
+	private String createXML(ExportHtmlSetting exportHtmlSetting,
+			PersistentContext context) {
+		StringBuilder xml = new StringBuilder();
+
+		xml.append("<export_html_setting>\n");
+
+		xml.append("\t<output_dir>")
+				.append(escape(exportHtmlSetting.getOutputDir()))
+				.append("</output_dir>\n");
+		// xml.append("\t<file_encoding>")
+		// .append(escape(exportHtmlSetting.getSrcFileEncoding()))
+		// .append("</file_encoding>\n");
+		xml.append("\t<with_category_image>")
+				.append(exportHtmlSetting.isWithCategoryImage())
+				.append("</with_category_image>\n");
+		xml.append("\t<with_image>").append(exportHtmlSetting.isWithImage())
+				.append("</with_image>\n");
+		xml.append("\t<is_open_after_saved>")
+				.append(exportHtmlSetting.isOpenAfterSaved())
+				.append("</is_open_after_saved>\n");
+
+		xml.append("</export_html_setting>\n");
+
+		return xml.toString();
+	}
+
+	private String createXML(ExportImageSetting exportImageSetting,
+			PersistentContext context) {
+		StringBuilder xml = new StringBuilder();
+
+		xml.append("<export_image_setting>\n");
+
+		xml.append("\t<output_file_path>")
+				.append(escape(exportImageSetting.getOutputFilePath()))
+				.append("</output_file_path>\n");
+		xml.append("\t<category_dir_path>")
+				.append(escape(exportImageSetting.getCategoryDirPath()))
+				.append("</category_dir_path>\n");
+		xml.append("\t<with_category_image>")
+				.append(exportImageSetting.isWithCategoryImage())
+				.append("</with_category_image>\n");
+		xml.append("\t<is_open_after_saved>")
+				.append(exportImageSetting.isOpenAfterSaved())
+				.append("</is_open_after_saved>\n");
+
+		xml.append("</export_image_setting>\n");
 
 		return xml.toString();
 	}

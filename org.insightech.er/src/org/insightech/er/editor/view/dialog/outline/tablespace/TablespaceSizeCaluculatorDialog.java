@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -116,12 +117,14 @@ public class TablespaceSizeCaluculatorDialog extends AbstractDialog implements
 	}
 
 	public TablespaceSizeCaluculatorDialog() {
-		this(4);
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 	}
 
-	public TablespaceSizeCaluculatorDialog(int numColumns) {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				numColumns);
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 4;
 	}
 
 	public void init(ERDiagram diagram) {
@@ -261,9 +264,7 @@ public class TablespaceSizeCaluculatorDialog extends AbstractDialog implements
 	protected void setData() {
 		for (ERTable table : this.tableList) {
 			TableItem tableItem = new TableItem(this.tableTable, SWT.NONE);
-			this
-					.column2TableItem(table, this.tableNumMap.get(table),
-							tableItem);
+			this.column2TableItem(table, this.tableNumMap.get(table), tableItem);
 		}
 
 		this.setDefault();
@@ -382,8 +383,7 @@ public class TablespaceSizeCaluculatorDialog extends AbstractDialog implements
 
 		double bytesOfDataPerBlock = Math.ceil((this
 				.getValue(this.dbBlockSizeText) - bytesOfBlockHeader)
-				* (1 - (this.pctfree / 100)))
-				+ this.getValue(this.kdbtText);
+				* (1 - (this.pctfree / 100))) + this.getValue(this.kdbtText);
 
 		int total = 0;
 

@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.insightech.er.util.Check;
+
 public class FileUtils {
 
 	public static void deleteDirectory(File directory) throws IOException {
@@ -148,4 +150,62 @@ public class FileUtils {
 			IOUtils.closeQuietly(out);
 		}
 	}
+
+	public static File getFile(File baseDir, String filePath) {
+		File file = new File(filePath);
+
+		if (!file.isAbsolute()) {
+			file = new File(baseDir, filePath);
+		}
+
+		return file;
+	}
+
+	public static boolean isInBaseDir(File baseDir, File file) {
+		if (file.getAbsolutePath().equals(baseDir.getAbsolutePath())) {
+			return true;
+
+		} else if (file.getAbsolutePath().startsWith(
+				baseDir.getAbsolutePath() + File.separator)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static boolean isInBaseDir(File baseDir, String filePath)
+			throws IOException {
+		File file = getFile(baseDir, filePath);
+
+		return isInBaseDir(baseDir, file);
+	}
+
+	public static String getRelativeFilePath(File baseDir,
+			String absoluteFilePath) {
+		if (Check.isEmpty(absoluteFilePath)) {
+			return "";
+		}
+
+		File file = new File(absoluteFilePath);
+
+		if (isInBaseDir(baseDir, file)) {
+			if (file.getAbsolutePath().length() > baseDir.getAbsolutePath()
+					.length()) {
+				return file.getAbsolutePath().substring(
+						baseDir.getAbsolutePath().length() + 1);
+			} else {
+				return "";
+			}
+		}
+
+		return absoluteFilePath;
+	}
+
+	public static boolean isAbsolutePath(String path) {
+		if (Check.isEmpty(path)) {
+			return false;
+		}
+		return new File(path).isAbsolute();
+	}
+
 }

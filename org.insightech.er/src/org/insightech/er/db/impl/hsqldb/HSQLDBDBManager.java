@@ -11,6 +11,7 @@ import org.insightech.er.editor.model.dbexport.db.PreTableExportManager;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
 import org.insightech.er.editor.model.dbimport.ImportFromDBManager;
 import org.insightech.er.editor.model.dbimport.PreImportFromDBManager;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableProperties;
 import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.TablespaceProperties;
@@ -56,8 +57,9 @@ public class HSQLDBDBManager extends DBManagerBase {
 		return new HSQLDBTableProperties();
 	}
 
-	public DDLCreator getDDLCreator(ERDiagram diagram, boolean semicolon) {
-		return new HSQLDBDDLCreator(diagram, semicolon);
+	public DDLCreator getDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		return new HSQLDBDDLCreator(diagram, targetCategory, semicolon);
 	}
 
 	public List<String> getIndexTypeList(ERTable table) {
@@ -70,7 +72,8 @@ public class HSQLDBDBManager extends DBManagerBase {
 
 	@Override
 	protected int[] getSupportItems() {
-		return new int[] { SUPPORT_SCHEMA, SUPPORT_SEQUENCE, SUPPORT_SEQUENCE_NOCACHE };
+		return new int[] { SUPPORT_SCHEMA, SUPPORT_SEQUENCE,
+				SUPPORT_SEQUENCE_NOCACHE };
 	}
 
 	public ImportFromDBManager getTableImportManager() {

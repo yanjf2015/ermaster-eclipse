@@ -6,103 +6,321 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
-import org.insightech.er.editor.model.dbexport.html.page_generator.HtmlReportPageGenerator;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.insightech.er.ResourceString;
+import org.insightech.er.common.exception.InputException;
+import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
+import org.insightech.er.editor.controller.editpart.element.PagableFreeformRootEditPart;
+import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.AbstractExportManager;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
+import org.insightech.er.editor.model.settings.export.ExportImageSetting;
+import org.insightech.er.util.ImageUtils;
+import org.insightech.er.util.io.FileUtils;
 
-public class ExportToImageManager {
+public class ExportToImageManager extends AbstractExportManager {
 
-	protected Image img;
+	private ExportImageSetting exportImageSetting;
 
-	private int format;
+	public ExportToImageManager(ExportImageSetting exportImageSetting) {
+		super("dialog.message.export.image");
 
-	private String saveFilePath;
-
-	private String formatName;
-
-	public ExportToImageManager(Image img, int format, String saveFilePath) {
-		this.img = img;
-		this.format = format;
-		this.saveFilePath = saveFilePath;
+		this.exportImageSetting = exportImageSetting;
 	}
 
-	public void doProcess() throws IOException, InterruptedException {
-		File file = new File(this.saveFilePath);
-		file.getParentFile().mkdirs();
+	public static ImageInfoSet outputImage(ERDiagram diagram,
+			Category category, File projectDir, ProgressMonitor monitor)
+			throws Exception {
+		ExportImageSetting exportImageSetting = new ExportImageSetting();
+		exportImageSetting.setOutputFilePath(null);
+		exportImageSetting.setWithCategoryImage(false);
+		exportImageSetting.setCategory(category);
 
-		if (format == SWT.IMAGE_JPEG || format == SWT.IMAGE_BMP) {
-			writeJPGorBMP(this.img, this.saveFilePath, this.format);
+		ExportToImageManager imageManager = new ExportToImageManager(
+				exportImageSetting);
+		imageManager.init(diagram, projectDir);
 
-		} else if (this.format == SWT.IMAGE_PNG || this.format == SWT.IMAGE_GIF) {
-			writePNGorGIF(this.img, this.saveFilePath, this.formatName);
+		return imageManager.createImageInfoSet(monitor);
+	}
+
+	public static ImageInfoSet outputImage(File outputDir,
+			ProgressMonitor monitor, ERDiagram diagram,
+			boolean withCategoryImage) throws Exception {
+		ExportImageSetting exportImageSetting = new ExportImageSetting();
+		exportImageSetting.setOutputFilePath("er.png");
+		exportImageSetting.setWithCategoryImage(withCategoryImage);
+
+		ExportToImageManager imageManager = new ExportToImageManager(
+				exportImageSetting);
+		imageManager.init(diagram, outputDir);
+
+		return imageManager.createImageInfoSet(monitor);
+	}
+
+	public static int countTask(ERDiagram diagram, boolean withCategoryImage,
+			boolean outputToFile) {
+		int imageNum = 1;
+
+		if (withCategoryImage) {
+			imageNum += diagram.getDiagramContents().getSettings()
+					.getCategorySetting().getSelectedCategories().size();
+		}
+
+		if (outputToFile) {
+			return imageNum * 2;
+
+		} else {
+			return imageNum;
 		}
 	}
 
-	private void writeJPGorBMP(Image image, String saveFilePath, int format)
-			throws IOException {
-		ImageData[] imgData = new ImageData[1];
-		imgData[0] = image.getImageData();
-
-		ImageLoader imgLoader = new ImageLoader();
-		imgLoader.data = imgData;
-		imgLoader.save(saveFilePath, format);
+	@Override
+	protected int getTotalTaskCount() {
+		return countTask(this.diagram,
+				this.exportImageSetting.isWithCategoryImage(), true);
 	}
 
-	private void writePNGorGIF(Image image, String saveFilePath,
-			String formatName) throws IOException, InterruptedException {
+	@Override
+	protected void doProcess(ProgressMonitor monitor) throws Exception {
+		this.createImageInfoSet(monitor);
+	}
+
+	private ImageInfoSet createImageInfoSet(ProgressMonitor monitor)
+			throws Exception {
+		String mainFileName = this.exportImageSetting.getOutputFilePath();
+
+		int format = ImageUtils.getFormatType(mainFileName);
+
+		if (mainFileName != null && format == -1) {
+			throw new InputException(
+					"dialog.message.export.image.not.supported");
+		}
+
+		ImageInfoSet imageInfoSet = null;
+
+		Display display = null;
 
 		try {
-			ImageLoader loader = new ImageLoader();
-			loader.data = new ImageData[] { image.getImageData() };
-			loader.save(saveFilePath, format);
+			display = new Display();
 
-		} catch (SWTException e) {
-			// Eclipse 3.2 では、 PNG が Unsupported or unrecognized format となるため、
-			// 以下の代替方法を使用する
-			// ただし、この方法では上手く出力できない環境あり
+			ImageInfo diagramImageInfo = this.outputImage(monitor, display,
+					this.exportImageSetting.getCategory(), format,
+					this.exportImageSetting.getOutputFilePath());
+			imageInfoSet = new ImageInfoSet(diagramImageInfo);
 
-			e.printStackTrace();
-			BufferedImage bufferedImage = new BufferedImage(
-					image.getBounds().width, image.getBounds().height,
-					BufferedImage.TYPE_INT_RGB);
+			if (this.exportImageSetting.isWithCategoryImage()) {
+				for (Category category : this.categoryList) {
+					ImageInfo imageInfo = this.outputImage(monitor, display,
+							category, format, this.getFileNameForCategoryImage(
+									imageInfoSet, category));
 
-			drawAtBufferedImage(bufferedImage, image, 0, 0);
+					imageInfoSet.addImageInfo(category, imageInfo);
+				}
+			}
 
-			ImageIO.write(bufferedImage, formatName, new File(saveFilePath));
+		} catch (Exception e) {
+			if (e.getCause() instanceof OutOfMemoryError) {
+				throw new InputException(
+						"dialog.message.export.image.out.of.memory");
+			}
+
+			throw e;
+
+		} finally {
+			if (display != null) {
+				display.dispose();
+			}
 		}
+
+		return imageInfoSet;
 	}
 
-	private void drawAtBufferedImage(BufferedImage bimg, Image image, int x,
-			int y) throws InterruptedException {
+	private ImageInfo outputImage(ProgressMonitor monitor, Display display,
+			Category category, int format, String fileName) throws Exception {
 
-		ImageData data = image.getImageData();
+		GraphicalViewer viewer = null;
+		ImageInfo imageInfo = null;
 
-		for (int i = 0; i < image.getBounds().width; i++) {
+		try {
+			String name = "All";
+			if (category != null) {
+				name = "category - " + category.getName();
+			}
+			monitor.subTaskWithCounter(ResourceString
+					.getResourceString("dialog.message.export.image.creating")
+					+ " : " + name);
 
-			for (int j = 0; j < image.getBounds().height; j++) {
-				int tmp = 4 * (j * image.getBounds().width + i);
+			viewer = createGraphicalViewer(display, diagram);
+			imageInfo = createImage(display, viewer, format, fileName, diagram,
+					category);
 
-				if (data.data.length > tmp + 2) {
-					int r = 0xff & data.data[tmp + 2];
-					int g = 0xff & data.data[tmp + 1];
-					int b = 0xff & data.data[tmp];
+			monitor.worked(1);
 
-					bimg.setRGB(i + x, j + y, 0xFF << 24 | r << 16 | g << 8
-							| b << 0);
+			if (fileName != null) {
+				monitor.subTaskWithCounter(ResourceString
+						.getResourceString("dialog.message.export.image.output")
+						+ " : " + fileName);
+
+				writeToFile(imageInfo);
+				monitor.worked(1);
+
+			} else {
+				imageInfo.toImageData();
+			}
+
+			return imageInfo;
+
+		} finally {
+			if (imageInfo != null) {
+				imageInfo.dispose();
+			}
+			if (viewer != null && viewer.getContents() != null) {
+				viewer.getContents().deactivate();
+			}
+		}
+
+	}
+
+	private static GraphicalViewer createGraphicalViewer(final Display display,
+			final ERDiagram diagram) {
+
+		final GraphicalViewer[] viewerHolder = new GraphicalViewer[1];
+
+		display.syncExec(new Runnable() {
+
+			public void run() {
+				Shell shell = new Shell(display);
+				shell.setLayout(new GridLayout(1, false));
+
+				ERDiagramEditPartFactory editPartFactory = new ERDiagramEditPartFactory();
+
+				GraphicalViewer viewer = new ScrollingGraphicalViewer();
+
+				viewer.setControl(new FigureCanvas(shell));
+				ScalableFreeformRootEditPart rootEditPart = new PagableFreeformRootEditPart(
+						diagram);
+				viewer.setRootEditPart(rootEditPart);
+
+				viewer.setEditPartFactory(editPartFactory);
+				viewer.setContents(diagram);
+
+				viewerHolder[0] = viewer;
+			}
+
+		});
+
+		return viewerHolder[0];
+	}
+
+	private static ImageInfo createImage(Display display,
+			final GraphicalViewer viewer, final int format, final String path,
+			ERDiagram diagram, Category category) throws InterruptedException {
+		Category currentCategory = diagram.getCurrentCategory();
+		int pageIndex = diagram.getPageIndex();
+
+		try {
+			diagram.setCurrentCategory(category, 0);
+
+			final ImageInfo[] imageInfoHolder = new ImageInfo[1];
+
+			display.syncExec(new Runnable() {
+
+				public void run() {
+					imageInfoHolder[0] = ImageInfo.createImage(viewer, format,
+							path);
 				}
 
-				this.doPostTask();
+			});
+
+			return imageInfoHolder[0];
+
+		} finally {
+			diagram.setCurrentCategory(currentCategory, pageIndex);
+		}
+
+	}
+
+	private void writeToFile(ImageInfo imageInfo) throws IOException,
+			InterruptedException {
+		Image img = imageInfo.getImage();
+		int format = imageInfo.getFormat();
+
+		File file = FileUtils.getFile(this.projectDir, imageInfo.getPath());
+		file.getParentFile().mkdirs();
+
+		try {
+			ImageLoader imgLoader = new ImageLoader();
+			imgLoader.data = new ImageData[] { img.getImageData() };
+			imgLoader.save(file.getAbsolutePath(), format);
+
+		} catch (SWTException e) {
+			if (format == SWT.IMAGE_PNG) {
+				writePNGByAnotherWay(img, file.getAbsolutePath(), format);
+
+			} else {
+				throw e;
 			}
 		}
 	}
 
-	protected void doPreTask(HtmlReportPageGenerator pageGenerator,
-			Object object) {
+	/*
+	 * Eclipse 3.2 では、 PNG が Unsupported or unrecognized format となるため、
+	 * 以下の代替方法を使用する ただし、この方法では上手く出力できない環境あり
+	 */
+	private static void writePNGByAnotherWay(Image image, String saveFilePath,
+			int format) throws IOException, InterruptedException {
+
+		BufferedImage bufferedImage = new BufferedImage(
+				image.getBounds().width, image.getBounds().height,
+				BufferedImage.TYPE_INT_RGB);
+
+		ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
+
+		String formatName = "png";
+
+		ImageIO.write(bufferedImage, formatName, new File(saveFilePath));
 	}
 
-	protected void doPostTask() throws InterruptedException {
+	public File getOutputFileOrDir() {
+		return FileUtils.getFile(this.projectDir,
+				this.exportImageSetting.getOutputFilePath());
+	}
+
+	private String getFileNameForCategoryImage(ImageInfoSet imageInfoSet,
+			Category category) {
+		if (this.exportImageSetting.getOutputFilePath() == null) {
+			return null;
+		}
+
+		String extension = "";
+
+		File mainFile = FileUtils.getFile(this.projectDir,
+				this.exportImageSetting.getOutputFilePath());
+		String mainFilePath = mainFile.getAbsolutePath();
+
+		int index = mainFilePath.lastIndexOf(".");
+
+		if (index != -1) {
+			extension = mainFilePath.substring(index);
+		}
+
+		File file = new File(mainFile.getParentFile(), "categories"
+				+ File.separator
+				+ imageInfoSet.decideFileName(category.getName(), extension));
+
+		return FileUtils.getRelativeFilePath(this.projectDir,
+				file.getAbsolutePath());
 	}
 }

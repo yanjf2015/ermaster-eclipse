@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -37,6 +38,12 @@ public class ExportToDBDialog extends AbstractDialog {
 	}
 
 	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 1;
+	}
+
+	@Override
 	protected void initialize(Composite composite) {
 		this.textArea = CompositeFactory.createTextArea(null, composite,
 				"dialog.message.export.db.sql", 600, 400, 1, false, false);
@@ -47,8 +54,8 @@ public class ExportToDBDialog extends AbstractDialog {
 	 */
 	@Override
 	protected void createButtonsForButtonBar(Composite parent) {
-		this.createButton(parent, IDialogConstants.OK_ID, ResourceString
-				.getResourceString("label.button.execute"), true);
+		this.createButton(parent, IDialogConstants.OK_ID,
+				ResourceString.getResourceString("label.button.execute"), true);
 	}
 
 	@Override
@@ -81,8 +88,8 @@ public class ExportToDBDialog extends AbstractDialog {
 		try {
 			con = this.dbSetting.connect();
 
-			ProgressMonitorDialog dialog = new ProgressMonitorDialog(this
-					.getShell());
+			ProgressMonitorDialog dialog = new ProgressMonitorDialog(
+					this.getShell());
 
 			ExportToDBManager exportToDBManager = new ExportToDBManager();
 			exportToDBManager.init(con, executeDDL);
@@ -93,11 +100,11 @@ public class ExportToDBDialog extends AbstractDialog {
 				Exception e = exportToDBManager.getException();
 				if (e != null) {
 					Activator.showMessageDialog(e.getMessage());
-					throw new InputException(null);
+					throw new InputException();
 
 				} else {
-					Activator
-							.showMessageDialog("dialog.message.export.db.finish");
+//					Activator
+//							.showMessageDialog("dialog.message.export.db.finish");
 				}
 
 			} catch (InvocationTargetException e) {
@@ -108,12 +115,13 @@ public class ExportToDBDialog extends AbstractDialog {
 			throw e;
 
 		} catch (Exception e) {
-			Activator.log(e);
 			Throwable cause = e.getCause();
 
 			if (cause instanceof UnknownHostException) {
 				throw new InputException("error.server.not.found");
 			}
+
+			Activator.log(e);
 
 			Activator.showMessageDialog(e.getMessage());
 			throw new InputException("error.database.not.found");

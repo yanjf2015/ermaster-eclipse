@@ -2,14 +2,15 @@ package org.insightech.er.db.impl.h2;
 
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.not_element.sequence.Sequence;
 import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.Tablespace;
 import org.insightech.er.util.Check;
 
 public class H2DDLCreator extends DDLCreator {
 
-	public H2DDLCreator(ERDiagram diagram, boolean semicolon) {
-		super(diagram, semicolon);
+	public H2DDLCreator(ERDiagram diagram, Category targetCategory, boolean semicolon) {
+		super(diagram, targetCategory, semicolon);
 	}
 
 	@Override

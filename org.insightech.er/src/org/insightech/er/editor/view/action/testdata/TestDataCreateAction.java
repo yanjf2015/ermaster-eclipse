@@ -44,8 +44,8 @@ public class TestDataCreateAction extends AbstractBaseAction {
 		}
 
 		TestDataManageDialog dialog = new TestDataManageDialog(PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow().getShell(), this
-				.getEditorPart(), diagram, copyTestDataList);
+				.getWorkbench().getActiveWorkbenchWindow().getShell(), diagram,
+				copyTestDataList);
 
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			ChangeTestDataCommand command = new ChangeTestDataCommand(diagram,

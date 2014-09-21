@@ -14,7 +14,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -31,9 +30,12 @@ import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.settings.CategorySetting;
 import org.insightech.er.editor.model.settings.Settings;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
 public class CategoryManageDialog extends AbstractDialog {
+
+	private static final int GROUP_HEIGHT = 350;
 
 	private Table categoryTable = null;
 
@@ -63,7 +65,7 @@ public class CategoryManageDialog extends AbstractDialog {
 
 	public CategoryManageDialog(Shell parentShell, Settings settings,
 			ERDiagram diagram) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.diagram = diagram;
 		this.categorySettings = settings.getCategorySetting();
@@ -81,16 +83,22 @@ public class CategoryManageDialog extends AbstractDialog {
 	private void createCategoryGroup(Composite composite) {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 4;
+		gridLayout.verticalSpacing = Resources.VERTICAL_SPACING;
 
 		Group group = new Group(composite, SWT.NONE);
 		group.setText(ResourceString
 				.getResourceString("label.category.message"));
 		group.setLayout(gridLayout);
 
-		CompositeFactory.filler(group, 4);
+		GridData gridData = new GridData();
+		gridData.heightHint = GROUP_HEIGHT;
+		group.setLayoutData(gridData);
+
+		CompositeFactory.fillLine(group, 5);
 
 		GridData tableGridData = new GridData();
-		tableGridData.heightHint = 200;
+		tableGridData.grabExcessVerticalSpace = true;
+		tableGridData.verticalAlignment = GridData.FILL;
 		tableGridData.horizontalSpan = 3;
 		tableGridData.verticalSpan = 2;
 
@@ -98,51 +106,17 @@ public class CategoryManageDialog extends AbstractDialog {
 		this.categoryTable.setHeaderVisible(true);
 		this.categoryTable.setLayoutData(tableGridData);
 		this.categoryTable.setLinesVisible(true);
+		
+		this.upButton = CompositeFactory.createUpButton(group);
+		this.downButton = CompositeFactory.createDownButton(group);
+		
+		this.categoryNameText = CompositeFactory.createText(this, group, null,
+				3, true, false);
+		CompositeFactory.filler(group, 1);
 
-		GridData upButtonGridData = new GridData();
-		upButtonGridData.grabExcessHorizontalSpace = false;
-		upButtonGridData.verticalAlignment = GridData.END;
-		upButtonGridData.grabExcessVerticalSpace = true;
-		upButtonGridData.widthHint = Resources.BUTTON_WIDTH;
-
-		GridData downButtonGridData = new GridData();
-		downButtonGridData.grabExcessVerticalSpace = true;
-		downButtonGridData.verticalAlignment = GridData.BEGINNING;
-		downButtonGridData.widthHint = Resources.BUTTON_WIDTH;
-
-		this.upButton = new Button(group, SWT.NONE);
-		this.upButton.setText(ResourceString
-				.getResourceString("label.up.arrow"));
-		this.upButton.setLayoutData(upButtonGridData);
-
-		this.downButton = new Button(group, SWT.NONE);
-		this.downButton.setText(ResourceString
-				.getResourceString("label.down.arrow"));
-		this.downButton.setLayoutData(downButtonGridData);
-
-		GridData textGridData = new GridData();
-		textGridData.widthHint = 150;
-
-		this.categoryNameText = new Text(group, SWT.BORDER);
-		this.categoryNameText.setLayoutData(textGridData);
-
-		GridData buttonGridData = new GridData();
-		buttonGridData.widthHint = Resources.BUTTON_WIDTH;
-
-		this.addCategoryButton = new Button(group, SWT.NONE);
-		this.addCategoryButton.setLayoutData(buttonGridData);
-		this.addCategoryButton.setText(ResourceString
-				.getResourceString("label.button.add"));
-
-		this.updateCategoryButton = new Button(group, SWT.NONE);
-		this.updateCategoryButton.setLayoutData(buttonGridData);
-		this.updateCategoryButton.setText(ResourceString
-				.getResourceString("label.button.update"));
-
-		this.deleteCategoryButton = new Button(group, SWT.NONE);
-		this.deleteCategoryButton.setLayoutData(buttonGridData);
-		this.deleteCategoryButton.setText(ResourceString
-				.getResourceString("label.button.delete"));
+		this.addCategoryButton = CompositeFactory.createSmallButton(group, "label.button.add");
+		this.updateCategoryButton = CompositeFactory.createSmallButton(group, "label.button.update");
+		this.deleteCategoryButton = CompositeFactory.createSmallButton(group, "label.button.delete");
 
 		TableColumn tableColumn = new TableColumn(categoryTable, SWT.NONE);
 		tableColumn.setWidth(30);
@@ -160,27 +134,20 @@ public class CategoryManageDialog extends AbstractDialog {
 		group.setText(ResourceString
 				.getResourceString("label.category.object.message"));
 
-		GridData gridData1 = new GridData();
-		gridData1.heightHint = 15;
+		GridData gridData = new GridData();
+		gridData.heightHint = GROUP_HEIGHT;
+		group.setLayoutData(gridData);
 
-		Label label = new Label(group, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(gridData1);
+		CompositeFactory.fillLine(group, 5);
 
 		GridData tableGridData = new GridData();
-		tableGridData.heightHint = 200;
+		tableGridData.grabExcessVerticalSpace = true;
+		tableGridData.verticalAlignment = GridData.FILL;
 
 		this.nodeTable = new Table(group, SWT.BORDER | SWT.HIDE_SELECTION);
 		this.nodeTable.setHeaderVisible(true);
 		this.nodeTable.setLayoutData(tableGridData);
 		this.nodeTable.setLinesVisible(true);
-
-		GridData gridData2 = new GridData();
-		gridData2.heightHint = 22;
-
-		label = new Label(group, SWT.NONE);
-		label.setText("");
-		label.setLayoutData(gridData2);
 
 		TableColumn tableColumn2 = new TableColumn(this.nodeTable, SWT.NONE);
 		tableColumn2.setWidth(30);
@@ -239,9 +206,14 @@ public class CategoryManageDialog extends AbstractDialog {
 
 		if (this.targetCategory != null) {
 			initNodeList(targetCategory);
+			this.updateCategoryButton.setEnabled(true);
+			this.deleteCategoryButton.setEnabled(true);
 
 		} else {
 			deleteNodeList();
+			this.updateCategoryButton.setEnabled(false);
+			this.deleteCategoryButton.setEnabled(false);
+
 		}
 	}
 
@@ -263,8 +235,9 @@ public class CategoryManageDialog extends AbstractDialog {
 			editor.horizontalAlignment = SWT.CENTER;
 			editor.setEditor(selectCheckButton, tableItem, 0);
 
-			tableItem.setText(1, ResourceString
-					.getResourceString("label.object.type."
+			tableItem.setText(
+					1,
+					ResourceString.getResourceString("label.object.type."
 							+ nodeElement.getObjectType()));
 			tableItem.setText(2, Format.null2blank(nodeElement.getName()));
 
@@ -323,6 +296,9 @@ public class CategoryManageDialog extends AbstractDialog {
 
 				if (targetCategory == null) {
 					initNodeTable();
+					
+					updateCategoryButton.setEnabled(true);
+					deleteCategoryButton.setEnabled(true);
 				}
 
 				targetCategory = categorySettings.getAllCategories().get(index);
@@ -368,6 +344,12 @@ public class CategoryManageDialog extends AbstractDialog {
 			 */
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				int index = categoryTable.getSelectionIndex();
+
+				if (index == -1) {
+					return;
+				}
+
 				String name = categoryNameText.getText().trim();
 
 				if (name.equals("")) {
@@ -392,6 +374,10 @@ public class CategoryManageDialog extends AbstractDialog {
 			public void widgetSelected(SelectionEvent event) {
 				try {
 					int index = categoryTable.getSelectionIndex();
+
+					if (index == -1) {
+						return;
+					}
 
 					validatePage();
 
@@ -497,6 +483,12 @@ public class CategoryManageDialog extends AbstractDialog {
 
 	@Override
 	protected String getErrorMessage() {
+		if (!Check.isEmpty(this.categoryNameText.getText())) {
+			this.addCategoryButton.setEnabled(true);
+		} else {
+			this.addCategoryButton.setEnabled(false);
+		}
+
 		return null;
 	}
 

@@ -185,14 +185,16 @@ public class Word extends AbstractModel implements ObjectModel,
 
 			int value = 0;
 
-			value = Format.null2blank(o1.physicalName).toUpperCase().compareTo(
-					Format.null2blank(o2.physicalName).toUpperCase());
+			value = Format
+					.null2blank(o1.physicalName)
+					.toUpperCase()
+					.compareTo(Format.null2blank(o2.physicalName).toUpperCase());
 			if (value != 0) {
 				return value;
 			}
 
-			value = Format.null2blank(o1.logicalName).toUpperCase().compareTo(
-					Format.null2blank(o2.logicalName).toUpperCase());
+			value = Format.null2blank(o1.logicalName).toUpperCase()
+					.compareTo(Format.null2blank(o2.logicalName).toUpperCase());
 			if (value != 0) {
 				return value;
 			}
@@ -217,14 +219,16 @@ public class Word extends AbstractModel implements ObjectModel,
 
 			int value = 0;
 
-			value = Format.null2blank(o1.logicalName).toUpperCase().compareTo(
-					Format.null2blank(o2.logicalName).toUpperCase());
+			value = Format.null2blank(o1.logicalName).toUpperCase()
+					.compareTo(Format.null2blank(o2.logicalName).toUpperCase());
 			if (value != 0) {
 				return value;
 			}
 
-			value = Format.null2blank(o1.physicalName).toUpperCase().compareTo(
-					Format.null2blank(o2.physicalName).toUpperCase());
+			value = Format
+					.null2blank(o1.physicalName)
+					.toUpperCase()
+					.compareTo(Format.null2blank(o2.physicalName).toUpperCase());
 			if (value != 0) {
 				return value;
 			}

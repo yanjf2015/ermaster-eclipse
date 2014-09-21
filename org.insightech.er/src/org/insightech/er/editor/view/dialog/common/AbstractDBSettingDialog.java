@@ -57,7 +57,7 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 	protected ERDiagram diagram;
 
 	public AbstractDBSettingDialog(Shell parentShell, ERDiagram diagram) {
-		super(parentShell, 2);
+		super(parentShell);
 		this.diagram = diagram;
 	}
 
@@ -100,28 +100,28 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 		this.dbList.setFocus();
 
 		this.serverName = CompositeFactory.createText(this, group,
-				"label.server.name", false);
+				"label.server.name", false, true);
 		this.port = CompositeFactory.createText(this, group, "label.port",
-				false);
+				false, true);
 		this.dbName = CompositeFactory.createText(this, group,
-				"label.database.name", false);
+				"label.database.name", false, true);
 		this.userName = CompositeFactory.createText(this, group,
-				"label.user.name", false);
+				"label.user.name", false, true);
 		this.password = CompositeFactory.createText(this, group,
-				"label.user.password", false);
+				"label.user.password", false, true);
 		this.password.setEchoChar('*');
 
 		CompositeFactory.filler(group, 2);
 
 		this.useDefaultDriverButton = CompositeFactory.createCheckbox(this,
-				group, "label.use.default.driver", 2);
+				group, "label.use.default.driver", false, 2);
 
 		this.url = CompositeFactory.createText(null, group, "label.url", 1, -1,
-				SWT.BORDER | SWT.READ_ONLY, false);
+				SWT.BORDER | SWT.READ_ONLY, false, true);
 
 		this.driverClassName = CompositeFactory.createText(null, group,
 				"label.driver.class.name", 1, -1, SWT.BORDER | SWT.READ_ONLY,
-				false);
+				false, true);
 	}
 
 	@Override
@@ -189,8 +189,8 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 
 			} else {
 				manager = DBManagerFactory.getDBManager(this.getDBSName());
-				String url = manager.getURL(this.getServerName(), this
-						.getDBName(), this.getPort());
+				String url = manager.getURL(this.getServerName(),
+						this.getDBName(), this.getPort());
 				this.url.setText(url);
 
 				if (isBlank(this.serverName) && manager.doesNeedURLServerName()) {
@@ -247,9 +247,13 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 	protected void setData() {
 		if (this.dbSetting != null) {
 			String database = this.dbSetting.getDbsystem();
+			if (Check.isEmpty(database)) {
+				database = this.diagram.getDatabase();
+			}
 			this.dbList.setText(database);
 
-			this.enableUseDefaultDriver();
+			this.useDefaultDriverButton.setSelection(this.dbSetting
+					.isUseDefaultDriver());
 			this.enableField();
 
 			this.serverName.setText(Format.null2blank(this.dbSetting
@@ -268,14 +272,14 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 					&& this.useDefaultDriverButton.getSelection()) {
 				DBManager manager = DBManagerFactory.getDBManager(this
 						.getDBSName());
-				String url = manager.getURL(this.getServerName(), this
-						.getDBName(), this.getPort());
+				String url = manager.getURL(this.getServerName(),
+						this.getDBName(), this.getPort());
 				this.url.setText(url);
 
 				String driverClassName = manager.getDriverClassName();
 				this.driverClassName.setText(driverClassName);
 			}
-			
+
 		} else {
 			this.enableUseDefaultDriver();
 			this.enableField();
@@ -446,14 +450,8 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 		String dbName = this.getDBName();
 		boolean useDefaultDriver = this.useDefaultDriverButton.getSelection();
 
-		if (!useDefaultDriver) {
-			serverName = null;
-			port = 0;
-			dbName = null;
-		}
-
-		this.dbSetting = new DBSetting(database, serverName, port, dbName, this
-				.getUserName(), this.getPassword(), useDefaultDriver, url,
+		this.dbSetting = new DBSetting(database, serverName, port, dbName,
+				this.getUserName(), this.getPassword(), useDefaultDriver, url,
 				driverClassName);
 
 		PreferenceInitializer.saveSetting(0, this.dbSetting);

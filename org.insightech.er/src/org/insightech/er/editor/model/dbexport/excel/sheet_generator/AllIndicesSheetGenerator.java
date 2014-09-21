@@ -5,32 +5,35 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 
 public class AllIndicesSheetGenerator extends IndexSheetGenerator {
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 		this.clear();
-		
+
 		LoopDefinition loopDefinition = loopDefinitionMap.get(this
 				.getTemplateSheetName());
 
 		HSSFSheet newSheet = createNewSheet(workbook, sheetNo,
 				loopDefinition.sheetName, sheetNameMap);
 
-		sheetObjectMap.put(workbook.getSheetName(workbook
-				.getSheetIndex(newSheet)), diagram.getDiagramContents()
+		String sheetName = workbook.getSheetName(workbook
+				.getSheetIndex(newSheet));
+
+		sheetObjectMap.put(sheetName, diagram.getDiagramContents()
 				.getIndexSet());
 
 		HSSFSheet oldSheet = workbook.getSheetAt(sheetNo);
@@ -44,15 +47,18 @@ public class AllIndicesSheetGenerator extends IndexSheetGenerator {
 					&& !diagram.getCurrentCategory().contains(table)) {
 				continue;
 			}
-			
+
 			for (Index index : table.getIndexes()) {
+				monitor.subTaskWithCounter(sheetName + " - " + table.getName()
+						+ " - " + index.getName());
+
 				if (first) {
 					first = false;
 
 				} else {
 					POIUtils.copyRow(oldSheet, newSheet,
-							loopDefinition.startLine - 1, oldSheet
-									.getLastRowNum(), newSheet.getLastRowNum()
+							loopDefinition.startLine - 1,
+							oldSheet.getLastRowNum(), newSheet.getLastRowNum()
 									+ loopDefinition.spaceLine + 1);
 				}
 

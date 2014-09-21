@@ -61,17 +61,38 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 	@Override
 	protected Command createChangeConstraintCommand(
 			ChangeBoundsRequest request, EditPart child, Object constraint) {
+		ERDiagram diagram = (ERDiagram) this.getHost().getModel();
+
+		List selectedEditParts = this.getHost().getViewer()
+				.getSelectedEditParts();
+
 		if (!(child instanceof NodeElementEditPart)) {
 			return null;
 		}
 
+		return createChangeConstraintCommand(diagram, selectedEditParts,
+				(NodeElementEditPart) child, (Rectangle) constraint);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Command createChangeConstraintCommand(EditPart child,
+			Object constraint) {
+		ERDiagram diagram = (ERDiagram) this.getHost().getModel();
+
+		List selectedEditParts = this.getHost().getViewer()
+				.getSelectedEditParts();
+
+		return createChangeConstraintCommandForNodeElement(diagram,
+				selectedEditParts, child, constraint);
+	}
+
+	public static Command createChangeConstraintCommand(ERDiagram diagram,
+			List selectedEditParts, NodeElementEditPart editPart,
+			Rectangle rectangle) {
 		try {
-			Rectangle rectangle = (Rectangle) constraint;
-
-			List selectedEditParts = this.getHost().getViewer()
-					.getSelectedEditParts();
-
-			NodeElementEditPart editPart = (NodeElementEditPart) child;
 			NodeElement nodeElement = (NodeElement) editPart.getModel();
 			Rectangle currentRectangle = editPart.getFigure().getBounds();
 
@@ -124,9 +145,8 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 						}
 
 						MoveBendpointCommand moveCommand = new MoveBendpointCommand(
-								connection, bendPoint.getX() + diffX, bendPoint
-										.getY()
-										+ diffY, index);
+								connection, bendPoint.getX() + diffX,
+								bendPoint.getY() + diffY, index);
 						bendpointMoveCommandList.add(moveCommand);
 					}
 
@@ -136,8 +156,8 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 			CompoundCommand compoundCommand = new CompoundCommand();
 
 			if (!nothingToDo) {
-				Command changeConstraintCommand = this
-						.createChangeConstraintCommand(editPart, rectangle);
+				Command changeConstraintCommand = createChangeConstraintCommandForNodeElement(
+						diagram, selectedEditParts, editPart, rectangle);
 
 				if (bendpointMoveCommandList.isEmpty()) {
 					return changeConstraintCommand;
@@ -162,13 +182,10 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected Command createChangeConstraintCommand(EditPart child,
+	private static Command createChangeConstraintCommandForNodeElement(
+			ERDiagram diagram, List selectedEditParts, EditPart child,
 			Object constraint) {
-		
+
 		Rectangle rectangle = (Rectangle) constraint;
 
 		NodeElementEditPart editPart = (NodeElementEditPart) child;
@@ -188,34 +205,35 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 			List<Category> otherCategories = null;
 
 			if (move) {
-				if (this.getOtherCategory((Category) nodeElement) != null) {
+				if (getOtherCategory(diagram, selectedEditParts,
+						(Category) nodeElement) != null) {
 					return null;
 				}
 
-				otherCategories = this.getOtherSelectedCategories(category);
+				otherCategories = getOtherSelectedCategories(selectedEditParts,
+						category);
 			}
 
-			return new MoveCategoryCommand((ERDiagram) this.getHost()
-					.getModel(), rectangle.x, rectangle.y, rectangle.width,
-					rectangle.height, category, otherCategories, move);
+			return new MoveCategoryCommand(diagram, rectangle.x, rectangle.y,
+					rectangle.width, rectangle.height, category,
+					otherCategories, move);
 
 		} else {
-			return new MoveElementCommand(
-					(ERDiagram) this.getHost().getModel(), currentRectangle,
+			return new MoveElementCommand(diagram, currentRectangle,
 					rectangle.x, rectangle.y, rectangle.width,
 					rectangle.height, nodeElement);
 		}
 	}
 
-	private Category getOtherCategory(Category category) {
-		ERDiagram diagram = (ERDiagram) this.getHost().getModel();
-
+	private static Category getOtherCategory(ERDiagram diagram,
+			List selectedEditParts, Category category) {
 		List<Category> selectedCategories = diagram.getDiagramContents()
 				.getSettings().getCategorySetting().getSelectedCategories();
 
 		for (NodeElement nodeElement : category.getContents()) {
 			for (Category otherCategory : selectedCategories) {
-				if (otherCategory != category && !isSelected(otherCategory)) {
+				if (otherCategory != category
+						&& !isSelected(selectedEditParts, otherCategory)) {
 					if (otherCategory.contains(nodeElement)) {
 						return otherCategory;
 					}
@@ -226,11 +244,9 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 		return null;
 	}
 
-	private List<Category> getOtherSelectedCategories(Category category) {
+	private static List<Category> getOtherSelectedCategories(
+			List selectedEditParts, Category category) {
 		List<Category> otherCategories = new ArrayList<Category>();
-
-		List selectedEditParts = this.getHost().getViewer()
-				.getSelectedEditParts();
 
 		for (Object object : selectedEditParts) {
 			if (object instanceof CategoryEditPart) {
@@ -248,10 +264,7 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 		return otherCategories;
 	}
 
-	private boolean isSelected(Category category) {
-		List selectedEditParts = this.getHost().getViewer()
-				.getSelectedEditParts();
-
+	private static boolean isSelected(List selectedEditParts, Category category) {
 		for (Object object : selectedEditParts) {
 			if (object instanceof NodeElementEditPart) {
 				NodeElementEditPart editPart = (NodeElementEditPart) object;
@@ -304,6 +317,7 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 				}
 			}
 		}
+
 		return new CreateElementCommand(diagram, element, point.x, point.y,
 				size, enclosedElementList);
 	}

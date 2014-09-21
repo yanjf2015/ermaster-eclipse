@@ -49,6 +49,38 @@ public class DDLTarget implements Serializable, Cloneable {
 	public String commentReplaceString;
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (commentReplaceLineFeed ? 1231 : 1237);
+		result = prime
+				* result
+				+ ((commentReplaceString == null) ? 0 : commentReplaceString
+						.hashCode());
+		result = prime * result + (commentValueDescription ? 1231 : 1237);
+		result = prime * result + (commentValueLogicalName ? 1231 : 1237);
+		result = prime * result
+				+ (commentValueLogicalNameDescription ? 1231 : 1237);
+		result = prime * result + (createComment ? 1231 : 1237);
+		result = prime * result + (createForeignKey ? 1231 : 1237);
+		result = prime * result + (createIndex ? 1231 : 1237);
+		result = prime * result + (createSequence ? 1231 : 1237);
+		result = prime * result + (createTable ? 1231 : 1237);
+		result = prime * result + (createTablespace ? 1231 : 1237);
+		result = prime * result + (createTrigger ? 1231 : 1237);
+		result = prime * result + (createView ? 1231 : 1237);
+		result = prime * result + (dropIndex ? 1231 : 1237);
+		result = prime * result + (dropSequence ? 1231 : 1237);
+		result = prime * result + (dropTable ? 1231 : 1237);
+		result = prime * result + (dropTablespace ? 1231 : 1237);
+		result = prime * result + (dropTrigger ? 1231 : 1237);
+		result = prime * result + (dropView ? 1231 : 1237);
+		result = prime * result + (inlineColumnComment ? 1231 : 1237);
+		result = prime * result + (inlineTableComment ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

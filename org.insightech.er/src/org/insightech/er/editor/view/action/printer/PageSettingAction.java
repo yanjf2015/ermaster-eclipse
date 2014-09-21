@@ -3,6 +3,8 @@ package org.insightech.er.editor.view.action.printer;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
+import org.insightech.er.Activator;
+import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.model.ERDiagram;
@@ -17,6 +19,8 @@ public class PageSettingAction extends AbstractBaseAction {
 		super(ID,
 				ResourceString.getResourceString("action.title.page.setting"),
 				editor);
+
+		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.PRINTER));
 	}
 
 	/**

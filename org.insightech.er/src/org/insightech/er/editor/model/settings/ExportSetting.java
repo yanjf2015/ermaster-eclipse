@@ -1,8 +1,13 @@
 package org.insightech.er.editor.model.settings;
 
 import java.io.Serializable;
+import java.util.Map;
 
-import org.insightech.er.editor.model.dbexport.ddl.DDLTarget;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
+import org.insightech.er.editor.model.settings.export.ExportDDLSetting;
+import org.insightech.er.editor.model.settings.export.ExportExcelSetting;
+import org.insightech.er.editor.model.settings.export.ExportHtmlSetting;
+import org.insightech.er.editor.model.settings.export.ExportImageSetting;
 import org.insightech.er.editor.model.settings.export.ExportJavaSetting;
 import org.insightech.er.editor.model.settings.export.ExportTestDataSetting;
 
@@ -10,29 +15,49 @@ public class ExportSetting implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3669486436464233526L;
 
-	private String excelTemplate;
+	private ExportDDLSetting exportDDLSetting = new ExportDDLSetting();
 
-	private String excelOutput;
+	private ExportExcelSetting exportExcelSetting = new ExportExcelSetting();
 
-	private String imageOutput;
+	private ExportHtmlSetting exportHtmlSetting = new ExportHtmlSetting();
 
-	private String ddlOutput;
-
-	private String htmlOutput;
-
-	private boolean useLogicalNameAsSheet;
-
-	private boolean putERDiagramOnExcel;
-
-	private boolean openAfterSaved;
-
-	private String categoryNameToExport;
+	private ExportImageSetting exportImageSetting = new ExportImageSetting();
 
 	private ExportJavaSetting exportJavaSetting = new ExportJavaSetting();
 
 	private ExportTestDataSetting exportTestDataSetting = new ExportTestDataSetting();
 
-	private DDLTarget ddlTarget = new DDLTarget();
+	public ExportDDLSetting getExportDDLSetting() {
+		return exportDDLSetting;
+	}
+
+	public void setExportDDLSetting(ExportDDLSetting exportDDLSetting) {
+		this.exportDDLSetting = exportDDLSetting;
+	}
+
+	public ExportExcelSetting getExportExcelSetting() {
+		return exportExcelSetting;
+	}
+
+	public void setExportExcelSetting(ExportExcelSetting exportExcelSetting) {
+		this.exportExcelSetting = exportExcelSetting;
+	}
+
+	public ExportHtmlSetting getExportHtmlSetting() {
+		return exportHtmlSetting;
+	}
+
+	public void setExportHtmlSetting(ExportHtmlSetting exportHtmlSetting) {
+		this.exportHtmlSetting = exportHtmlSetting;
+	}
+
+	public ExportImageSetting getExportImageSetting() {
+		return exportImageSetting;
+	}
+
+	public void setExportImageSetting(ExportImageSetting exportImageSetting) {
+		this.exportImageSetting = exportImageSetting;
+	}
 
 	public ExportJavaSetting getExportJavaSetting() {
 		return exportJavaSetting;
@@ -51,150 +76,34 @@ public class ExportSetting implements Serializable, Cloneable {
 		this.exportTestDataSetting = exportTestDataSetting;
 	}
 
-	public DDLTarget getDdlTarget() {
-		return ddlTarget;
-	}
-
-	public void setDdlTarget(DDLTarget ddlTarget) {
-		this.ddlTarget = ddlTarget;
-	}
-
-	/**
-	 * excelOutput ���擾���܂�.
-	 * 
-	 * @return excelOutput
-	 */
-	public String getExcelOutput() {
-		return excelOutput;
-	}
-
-	/**
-	 * excelOutput ��ݒ肵�܂�.
-	 * 
-	 * @param excelOutput
-	 *            excelOutput
-	 */
-	public void setExcelOutput(String excelOutput) {
-		this.excelOutput = excelOutput;
-	}
-
-	/**
-	 * imageOutput ���擾���܂�.
-	 * 
-	 * @return imageOutput
-	 */
-	public String getImageOutput() {
-		return imageOutput;
-	}
-
-	/**
-	 * imageOutput ��ݒ肵�܂�.
-	 * 
-	 * @param imageOutput
-	 *            imageOutput
-	 */
-	public void setImageOutput(String imageOutput) {
-		this.imageOutput = imageOutput;
-	}
-
-	/**
-	 * excelTemplate ���擾���܂�.
-	 * 
-	 * @return excelTemplate
-	 */
-	public String getExcelTemplate() {
-		return excelTemplate;
-	}
-
-	/**
-	 * excelTemplate ��ݒ肵�܂�.
-	 * 
-	 * @param excelTemplate
-	 *            excelTemplate
-	 */
-	public void setExcelTemplate(String excelTemplate) {
-		this.excelTemplate = excelTemplate;
-	}
-
-	/**
-	 * useLogicalNameAsSheet ���擾���܂�.
-	 * 
-	 * @return useLogicalNameAsSheet
-	 */
-	public boolean isUseLogicalNameAsSheet() {
-		return useLogicalNameAsSheet;
-	}
-
-	/**
-	 * useLogicalNameAsSheet ��ݒ肵�܂�.
-	 * 
-	 * @param useLogicalNameAsSheet
-	 *            useLogicalNameAsSheet
-	 */
-	public void setUseLogicalNameAsSheet(boolean useLogicalNameAsSheet) {
-		this.useLogicalNameAsSheet = useLogicalNameAsSheet;
-	}
-
-	/**
-	 * putERDiagramOnExcel ���擾���܂�.
-	 * 
-	 * @return putERDiagramOnExcel
-	 */
-	public boolean isPutERDiagramOnExcel() {
-		return putERDiagramOnExcel;
-	}
-
-	/**
-	 * putERDiagramOnExcel ��ݒ肵�܂�.
-	 * 
-	 * @param putERDiagramOnExcel
-	 *            putERDiagramOnExcel
-	 */
-	public void setPutERDiagramOnExcel(boolean putERDiagramOnExcel) {
-		this.putERDiagramOnExcel = putERDiagramOnExcel;
-	}
-
-	public boolean isOpenAfterSaved() {
-		return openAfterSaved;
-	}
-
-	public void setOpenAfterSaved(boolean openAfterSaved) {
-		this.openAfterSaved = openAfterSaved;
-	}
-
-	/**
-	 * categoryNameToExport���擾���܂��B
-	 * 
-	 * @return categoryNameToExport
-	 */
-	public String getCategoryNameToExport() {
-		return categoryNameToExport;
-	}
-
-	/**
-	 * categoryNameToExport��ݒ肵�܂��B
-	 * 
-	 * @param categoryNameToExport
-	 *            categoryNameToExport
-	 */
-	public void setCategoryNameToExport(String categoryNameToExport) {
-		this.categoryNameToExport = categoryNameToExport;
-	}
-
-	public String getDdlOutput() {
-		return ddlOutput;
-	}
-
-	public void setDdlOutput(String ddlOutput) {
-		this.ddlOutput = ddlOutput;
-	}
-
-	public String getHtmlOutput() {
-		return htmlOutput;
-	}
-
-	public void setHtmlOutput(String htmlOutput) {
-		this.htmlOutput = htmlOutput;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((exportDDLSetting == null) ? 0 : exportDDLSetting.hashCode());
+		result = prime
+				* result
+				+ ((exportExcelSetting == null) ? 0 : exportExcelSetting
+						.hashCode());
+		result = prime
+				* result
+				+ ((exportHtmlSetting == null) ? 0 : exportHtmlSetting
+						.hashCode());
+		result = prime
+				* result
+				+ ((exportImageSetting == null) ? 0 : exportImageSetting
+						.hashCode());
+		result = prime
+				* result
+				+ ((exportJavaSetting == null) ? 0 : exportJavaSetting
+						.hashCode());
+		result = prime
+				* result
+				+ ((exportTestDataSetting == null) ? 0 : exportTestDataSetting
+						.hashCode());
+		return result;
 	}
 
 	@Override
@@ -206,35 +115,25 @@ public class ExportSetting implements Serializable, Cloneable {
 		if (getClass() != obj.getClass())
 			return false;
 		ExportSetting other = (ExportSetting) obj;
-		if (categoryNameToExport == null) {
-			if (other.categoryNameToExport != null)
+		if (exportDDLSetting == null) {
+			if (other.exportDDLSetting != null)
 				return false;
-		} else if (!categoryNameToExport.equals(other.categoryNameToExport))
+		} else if (!exportDDLSetting.equals(other.exportDDLSetting))
 			return false;
-		if (ddlOutput == null) {
-			if (other.ddlOutput != null)
+		if (exportExcelSetting == null) {
+			if (other.exportExcelSetting != null)
 				return false;
-		} else if (!ddlOutput.equals(other.ddlOutput))
+		} else if (!exportExcelSetting.equals(other.exportExcelSetting))
 			return false;
-		if (htmlOutput == null) {
-			if (other.htmlOutput != null)
+		if (exportHtmlSetting == null) {
+			if (other.exportHtmlSetting != null)
 				return false;
-		} else if (!htmlOutput.equals(other.htmlOutput))
+		} else if (!exportHtmlSetting.equals(other.exportHtmlSetting))
 			return false;
-		if (ddlTarget == null) {
-			if (other.ddlTarget != null)
+		if (exportImageSetting == null) {
+			if (other.exportImageSetting != null)
 				return false;
-		} else if (!ddlTarget.equals(other.ddlTarget))
-			return false;
-		if (excelOutput == null) {
-			if (other.excelOutput != null)
-				return false;
-		} else if (!excelOutput.equals(other.excelOutput))
-			return false;
-		if (excelTemplate == null) {
-			if (other.excelTemplate != null)
-				return false;
-		} else if (!excelTemplate.equals(other.excelTemplate))
+		} else if (!exportImageSetting.equals(other.exportImageSetting))
 			return false;
 		if (exportJavaSetting == null) {
 			if (other.exportJavaSetting != null)
@@ -246,34 +145,24 @@ public class ExportSetting implements Serializable, Cloneable {
 				return false;
 		} else if (!exportTestDataSetting.equals(other.exportTestDataSetting))
 			return false;
-		if (imageOutput == null) {
-			if (other.imageOutput != null)
-				return false;
-		} else if (!imageOutput.equals(other.imageOutput))
-			return false;
-		if (openAfterSaved != other.openAfterSaved)
-			return false;
-		if (putERDiagramOnExcel != other.putERDiagramOnExcel)
-			return false;
-		if (useLogicalNameAsSheet != other.useLogicalNameAsSheet)
-			return false;
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ExportSetting clone() {
+	public ExportSetting clone(Map<Category, Category> categoryCloneMap,
+			Map<Environment, Environment> environmentCloneMap) {
 		try {
-			ExportSetting setting = (ExportSetting) super.clone();
+			ExportSetting clone = (ExportSetting) super.clone();
 
-			setting.setDdlTarget(this.ddlTarget.clone());
-			setting.setExportJavaSetting(this.exportJavaSetting.clone());
-			setting
-					.setExportTestDataSetting(this.exportTestDataSetting
-							.clone());
-			return setting;
+			clone.setExportDDLSetting(this.exportDDLSetting.clone(
+					categoryCloneMap, environmentCloneMap));
+			clone.setExportExcelSetting(this.exportExcelSetting
+					.clone(categoryCloneMap));
+			clone.setExportHtmlSetting(this.exportHtmlSetting.clone());
+			clone.setExportImageSetting(this.exportImageSetting.clone());
+			clone.setExportJavaSetting(this.exportJavaSetting.clone());
+			clone.setExportTestDataSetting(this.exportTestDataSetting.clone());
+
+			return clone;
 
 		} catch (CloneNotSupportedException e) {
 			return null;

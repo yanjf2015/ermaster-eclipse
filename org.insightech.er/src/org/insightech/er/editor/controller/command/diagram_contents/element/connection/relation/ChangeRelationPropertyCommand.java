@@ -67,7 +67,7 @@ public class ChangeRelationPropertyCommand extends AbstractCommand {
 		}
 		
 		this.relation.getTarget().refresh();
-		this.relation.getSource().refreshSourceConnections();
+		this.relation.getSource().refresh();
 		this.relation.refreshVisuals();
 	}
 
@@ -95,7 +95,7 @@ public class ChangeRelationPropertyCommand extends AbstractCommand {
 		this.relation.getTargetTableView().setDirty();
 		
 		this.relation.getTarget().refresh();
-		this.relation.getSource().refreshSourceConnections();
+		this.relation.getSource().refresh();
 		this.relation.refreshVisuals();
 	}
 }

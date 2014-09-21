@@ -1,23 +1,32 @@
 package org.insightech.er.editor.model.testdata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.insightech.er.ResourceString;
 
 public class RepeatTestDataDef implements Cloneable {
 
-	public static final String TYPE_FORMAT = ResourceString
-			.getResourceString("label.testdata.repeat.type.format");
+	private static final String TYPE_PREFIX = "label.testdata.repeat.type.";
 
-	public static final String TYPE_FOREIGNKEY = ResourceString
-			.getResourceString("label.testdata.repeat.type.foreign.key");
+	public static final String TYPE_FORMAT = "format";
 
-	public static final String TYPE_ENUM = ResourceString
-			.getResourceString("label.testdata.repeat.type.enum");
+	public static final String TYPE_FOREIGNKEY = "foreign.key";
 
-	public static final String TYPE_NULL = ResourceString
-			.getResourceString("label.testdata.repeat.type.null");
+	public static final String TYPE_ENUM = "enum";
+
+	public static final String TYPE_NULL = "null";
+
+	private static final List<String> ALL_TYPE_LIST = new ArrayList<String>();
+
+	static {
+		ALL_TYPE_LIST.add(TYPE_FORMAT);
+		ALL_TYPE_LIST.add(TYPE_FOREIGNKEY);
+		ALL_TYPE_LIST.add(TYPE_ENUM);
+		ALL_TYPE_LIST.add(TYPE_NULL);
+	}
 
 	private String type;
 
@@ -40,10 +49,46 @@ public class RepeatTestDataDef implements Cloneable {
 	}
 
 	public String getType() {
+		return this.type;
+	}
+
+	public String getTypeLabel() {
+		return getTypeLabel(this.type);
+	}
+
+	public static String getTypeLabel(String type) {
+		return ResourceString.getResourceString(TYPE_PREFIX + type);
+	}
+
+	public static String getType(String type) {
+		for (String typeId : ALL_TYPE_LIST) {
+			if (typeId.equals(type)
+					|| ResourceString.equals(TYPE_PREFIX + typeId, type)) {
+				return typeId;
+			}
+		}
+
 		return type;
 	}
 
+	public static boolean equalType(String typeId, String type) {
+		if (typeId.equals(type)
+				|| ResourceString.equals(TYPE_PREFIX + typeId, type)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public void setType(String type) {
+		for (String typeId : ALL_TYPE_LIST) {
+			if (typeId.equals(type)
+					|| ResourceString.equals(TYPE_PREFIX + typeId, type)) {
+				this.type = typeId;
+				return;
+			}
+		}
+
 		this.type = type;
 	}
 
@@ -98,7 +143,7 @@ public class RepeatTestDataDef implements Cloneable {
 	public void setModifiedValue(Integer row, String value) {
 		this.modifiedValues.put(row, value);
 	}
-	
+
 	public void removeModifiedValue(Integer row) {
 		this.modifiedValues.remove(row);
 	}

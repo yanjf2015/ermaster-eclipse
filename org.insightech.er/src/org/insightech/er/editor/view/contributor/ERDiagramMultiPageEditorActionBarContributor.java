@@ -1,5 +1,6 @@
 package org.insightech.er.editor.view.contributor;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.ZoomComboContributionItem;
@@ -7,6 +8,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.part.MultiPageEditorActionBarContributor;
 import org.insightech.er.editor.ERDiagramEditor;
+import org.insightech.er.editor.model.ERDiagram;
 
 public class ERDiagramMultiPageEditorActionBarContributor extends
 		MultiPageEditorActionBarContributor {
@@ -31,10 +33,14 @@ public class ERDiagramMultiPageEditorActionBarContributor extends
 			this.zoomComboContributionItem = new ZoomComboContributionItem(
 					this.getPage());
 		}
-		
-		activeContributor.contributeToToolBar(actionBars.getToolBarManager(),
-				this.zoomComboContributionItem);
+
 		activeContributor.setActiveEditor(editor);
+
+		EditPart editPart = editor.getGraphicalViewer().getContents();
+		ERDiagram diagram = (ERDiagram) editPart.getModel();
+
+		activeContributor.contributeToToolBar(diagram,
+				actionBars.getToolBarManager(), this.zoomComboContributionItem);
 
 		ZoomComboContributionItem item = (ZoomComboContributionItem) getActionBars()
 				.getToolBarManager().find(
@@ -47,4 +53,5 @@ public class ERDiagramMultiPageEditorActionBarContributor extends
 
 		actionBars.updateActionBars();
 	}
+
 }

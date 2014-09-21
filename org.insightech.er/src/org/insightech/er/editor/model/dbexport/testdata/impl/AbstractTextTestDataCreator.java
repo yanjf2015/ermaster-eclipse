@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 
 import org.insightech.er.editor.model.dbexport.testdata.TestDataCreator;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
+import org.insightech.er.util.io.FileUtils;
 
 public abstract class AbstractTextTestDataCreator extends TestDataCreator {
 
@@ -19,9 +20,11 @@ public abstract class AbstractTextTestDataCreator extends TestDataCreator {
 
 	@Override
 	protected void openFile() throws IOException {
-		File dir = this.getOutputDir();
-		File file = new File(dir, this.testData.getName()
-				+ this.getFileExtention());
+		File file = new File(FileUtils.getFile(this.baseDir,
+				this.exportTestDataSetting.getExportFilePath()),
+				this.testData.getName() + this.getFileExtention());
+
+		file.getParentFile().mkdirs();
 
 		out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(file),
@@ -30,7 +33,7 @@ public abstract class AbstractTextTestDataCreator extends TestDataCreator {
 	}
 
 	@Override
-	protected void write() throws IOException {
+	protected void write() throws Exception {
 		out.print(this.getHeader());
 
 		super.write();

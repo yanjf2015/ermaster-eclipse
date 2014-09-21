@@ -279,7 +279,13 @@ public class NormalColumn extends Column {
 	 */
 	@Override
 	public String getName() {
-		return this.getLogicalName();
+		String name = this.getLogicalName();
+
+		if (Check.isEmpty(name)) {
+			name = this.getPhysicalName();
+		}
+
+		return name;
 	}
 
 	public NormalColumn getRootReferencedColumn() {

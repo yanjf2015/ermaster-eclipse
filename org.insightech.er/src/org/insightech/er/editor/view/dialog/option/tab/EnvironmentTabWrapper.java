@@ -12,10 +12,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.ResourceString;
-import org.insightech.er.Resources;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
+import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.editor.model.settings.Environment;
 import org.insightech.er.editor.model.settings.Settings;
 import org.insightech.er.editor.view.dialog.option.OptionSettingDialog;
@@ -38,46 +37,31 @@ public class EnvironmentTabWrapper extends ValidatableTabWrapper {
 	private static final int LIST_HEIGHT = 230;
 
 	public EnvironmentTabWrapper(OptionSettingDialog dialog, TabFolder parent,
-			int style, Settings settings) {
-		super(dialog, parent, style, "label.tablespace.environment");
+			Settings settings) {
+		super(dialog, parent, "label.tablespace.environment");
 
 		this.settings = settings;
+	}
 
-		this.init();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 3;
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 3;
-		this.setLayout(layout);
-
 		this.createEnvironmentGroup(this);
 
-		GridData gridData = new GridData();
-		gridData.widthHint = 200;
-		gridData.horizontalSpan = 3;
+		this.nameText = CompositeFactory.createText(null, this, null, 3, true,
+				false);
 
-		this.nameText = new Text(this, SWT.BORDER);
-		this.nameText.setLayoutData(gridData);
-
-		GridData buttonGridData = new GridData();
-		buttonGridData.widthHint = Resources.BUTTON_WIDTH;
-
-		this.addButton = new Button(this, SWT.NONE);
-		this.addButton.setLayoutData(buttonGridData);
-		this.addButton.setText(ResourceString
-				.getResourceString("label.button.add"));
-
-		this.editButton = new Button(this, SWT.NONE);
-		this.editButton.setLayoutData(buttonGridData);
-		this.editButton.setText(ResourceString
-				.getResourceString("label.button.edit"));
-
-		this.deleteButton = new Button(this, SWT.NONE);
-		this.deleteButton.setLayoutData(buttonGridData);
-		this.deleteButton.setText(ResourceString
-				.getResourceString("label.button.delete"));
+		this.addButton = CompositeFactory.createSmallButton(this,
+				"label.button.add");
+		this.editButton = CompositeFactory.createSmallButton(this,
+				"label.button.edit");
+		this.deleteButton = CompositeFactory.createSmallButton(this,
+				"label.button.delete");
 
 		this.buttonEnabled(false);
 		this.addButton.setEnabled(false);
@@ -85,7 +69,8 @@ public class EnvironmentTabWrapper extends ValidatableTabWrapper {
 
 	private void createEnvironmentGroup(Composite parent) {
 		GridData gridData = new GridData();
-		gridData.widthHint = 200;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
 		gridData.horizontalSpan = 3;
 		gridData.heightHint = LIST_HEIGHT;
 
@@ -123,8 +108,8 @@ public class EnvironmentTabWrapper extends ValidatableTabWrapper {
 			public void widgetSelected(SelectionEvent e) {
 				String name = nameText.getText().trim();
 				if (!Check.isEmpty(name)) {
-					settings.getEnvironmentSetting().getEnvironments().add(
-							new Environment(name));
+					settings.getEnvironmentSetting().getEnvironments()
+							.add(new Environment(name));
 					setData();
 					environmentList.select(environmentList.getItemCount() - 1);
 				}
@@ -166,8 +151,8 @@ public class EnvironmentTabWrapper extends ValidatableTabWrapper {
 					return;
 				}
 
-				settings.getEnvironmentSetting().getEnvironments().remove(
-						targetIndex);
+				settings.getEnvironmentSetting().getEnvironments()
+						.remove(targetIndex);
 				setData();
 
 				if (settings.getEnvironmentSetting().getEnvironments().size() > targetIndex) {

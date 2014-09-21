@@ -40,7 +40,7 @@ public class ViewEditPart extends TableViewEditPart {
 
 		ViewDialog dialog = new ViewDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), this.getViewer(),
-				copyView, diagram.getDiagramContents().getGroups());
+				copyView);
 
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			CompoundCommand command = createChangeViewPropertyCommand(diagram,

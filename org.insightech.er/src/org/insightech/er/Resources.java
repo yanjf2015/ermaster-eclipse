@@ -8,11 +8,27 @@ import org.eclipse.swt.widgets.Display;
 
 public class Resources {
 
-	public static final int BUTTON_WIDTH = 60;
+	public static final int PREFERENCE_PAGE_MARGIN_TOP = 30;
+
+	public static final int SMALL_BUTTON_WIDTH = 70;
+
+	public static final int MIDDLE_BUTTON_WIDTH = 120;
+
+	public static final int LARGE_BUTTON_WIDTH = 250;
 
 	public static final int BUTTON_ADD_REMOVE_WIDTH = 80;
 
 	public static final int DESCRIPTION_WIDTH = 400;
+
+	public static final int INDENT = 20;
+
+	public static final int VERTICAL_SPACING = 15;
+
+	public static final int MARGIN = 10;
+
+	public static final int MARGIN_TAB = 10;
+
+	public static final int CHECKBOX_INDENT = 5;
 
 	public static Color PINK = new Color(Display.getCurrent(), 255, 0, 255);
 
@@ -31,11 +47,11 @@ public class Resources {
 	public static Color DEFAULT_TABLE_COLOR = new Color(Display.getCurrent(),
 			128, 128, 192);
 
-	public static Color SELECTED_REFERENCED_COLUMN = new Color(Display
-			.getCurrent(), 255, 230, 230);
+	public static Color SELECTED_REFERENCED_COLUMN = new Color(
+			Display.getCurrent(), 255, 230, 230);
 
-	public static Color SELECTED_FOREIGNKEY_COLUMN = new Color(Display
-			.getCurrent(), 230, 255, 230);
+	public static Color SELECTED_FOREIGNKEY_COLUMN = new Color(
+			Display.getCurrent(), 230, 255, 230);
 
 	public static Color SELECTED_REFERENCED_AND_FOREIGNKEY_COLUMN = new Color(
 			Display.getCurrent(), 230, 230, 255);

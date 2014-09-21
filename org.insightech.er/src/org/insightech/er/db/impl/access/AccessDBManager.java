@@ -11,6 +11,7 @@ import org.insightech.er.editor.model.dbexport.db.PreTableExportManager;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
 import org.insightech.er.editor.model.dbimport.ImportFromDBManager;
 import org.insightech.er.editor.model.dbimport.PreImportFromDBManager;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableProperties;
 import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.TablespaceProperties;
@@ -56,8 +57,9 @@ public class AccessDBManager extends DBManagerBase {
 		return new AccessTableProperties();
 	}
 
-	public DDLCreator getDDLCreator(ERDiagram diagram, boolean semicolon) {
-		return new AccessDDLCreator(diagram, semicolon);
+	public DDLCreator getDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		return new AccessDDLCreator(diagram, targetCategory, semicolon);
 	}
 
 	public List<String> getIndexTypeList(ERTable table) {

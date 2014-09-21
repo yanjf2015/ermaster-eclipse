@@ -9,10 +9,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Text;
+import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.common.widgets.RowHeaderTable;
-import org.insightech.er.common.widgets.ValidatableTabWrapper;
 import org.insightech.er.common.widgets.table.CellEditWorker;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
@@ -30,21 +30,20 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 
 	private ERTable table;
 
-	public DirectTestDataTabWrapper(TestDataDialog dialog, TabFolder parent,
-			int style) {
-		super(dialog, parent, style, "label.testdata.direct.input");
+	public DirectTestDataTabWrapper(TestDataDialog dialog, TabFolder parent) {
+		super(dialog, parent, "label.testdata.direct.input");
 
 		this.dialog = dialog;
+	}
 
-		this.init();
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+		layout.numColumns = 2;
 	}
 
 	@Override
 	public void initComposite() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		this.setLayout(layout);
-
 		Text dummy = CompositeFactory.createNumText(dialog, this, "", 50);
 		dummy.setVisible(false);
 
@@ -53,8 +52,8 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 
 	private void createEditTable(Composite composite) {
 		this.editColumnTable = CompositeFactory.createRowHeaderTable(composite,
-				TestDataDialog.WIDTH - 20, TestDataDialog.TABLE_HEIGHT, 75, 25,
-				2, false, true);
+				TestDataDialog.TABLE_WIDTH, TestDataDialog.TABLE_HEIGHT, 75,
+				25, 2, false, true);
 		this.editColumnTable.setCellEditWorker(new CellEditWorker() {
 
 			public void addNewRow() {
@@ -93,11 +92,18 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 		saveTableData();
 
 		this.table = dialog.getTargetTable();
-		this.directTestData = dialog.getTestData().getTableTestDataMap().get(
-				this.table).getDirectTestData();
 
-		// �e�[�u���ύX
-		this.initTable();
+		if (this.table != null) {
+			this.directTestData = dialog.getTestData().getTableTestDataMap()
+					.get(this.table).getDirectTestData();
+
+			this.initTable();
+
+		} else {
+			this.directTestData = null;
+			this.editColumnTable.removeData();
+
+		}
 	}
 
 	private void saveTableData() {
@@ -138,7 +144,8 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 
 			} else {
 				type = Format.formatType(normalColumn.getType(), normalColumn
-						.getTypeData(), this.dialog.getDiagram().getDatabase(), true);
+						.getTypeData(), this.dialog.getDiagram().getDatabase(),
+						true);
 			}
 
 			this.editColumnTable.addColumnHeader(name + "\r\n" + type, 100);
@@ -167,8 +174,9 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 			values[i] = data.get(columns.get(i));
 		}
 
-		this.editColumnTable.addRow(String.valueOf(this.editColumnTable
-				.getItemCount() + 1), values);
+		this.editColumnTable
+				.addRow(String.valueOf(this.editColumnTable.getItemCount() + 1),
+						values);
 	}
 
 	@Override

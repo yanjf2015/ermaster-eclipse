@@ -46,7 +46,6 @@ public class InsertImageTool extends CreationToolEntry {
 		}
 
 		private String getLoadFilePath() {
-
 			FileDialog fileDialog = new FileDialog(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getShell(), SWT.OPEN);
 

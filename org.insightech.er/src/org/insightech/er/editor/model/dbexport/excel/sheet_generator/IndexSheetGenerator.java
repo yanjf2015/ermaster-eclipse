@@ -5,13 +5,13 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.POIUtils.CellLocation;
 
@@ -32,11 +32,12 @@ public class IndexSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 		this.clear();
 
 		for (ERTable table : diagram.getDiagramContents().getContents()
@@ -49,11 +50,14 @@ public class IndexSheetGenerator extends AbstractSheetGenerator {
 			for (Index index : table.getIndexes()) {
 				String name = index.getName();
 
-				HSSFSheet newSheet = createNewSheet(workbook, sheetNo,
-						name, sheetNameMap);
+				HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
+						sheetNameMap);
 
-				sheetObjectMap.put(workbook.getSheetName(workbook
-						.getSheetIndex(newSheet)), index);
+				String sheetName = workbook.getSheetName(workbook
+						.getSheetIndex(newSheet));
+				monitor.subTaskWithCounter("[Index] " + sheetName);
+
+				sheetObjectMap.put(sheetName, index);
 
 				this.setIndexData(workbook, newSheet, index);
 				monitor.worked(1);
@@ -62,7 +66,7 @@ public class IndexSheetGenerator extends AbstractSheetGenerator {
 	}
 
 	/**
-	 * ÉCÉìÉfÉbÉNÉXÉVÅ[ÉgÇ…ÉfÅ[É^Çê›íËÇµÇ‹Ç∑.
+	 * ÔøΩCÔøΩÔøΩÔøΩfÔøΩbÔøΩNÔøΩXÔøΩVÔøΩ[ÔøΩgÔøΩ…ÉfÔøΩ[ÔøΩ^ÔøΩÔøΩ›íËÇµÔøΩ‹ÇÔøΩ.
 	 * 
 	 * @param workbook
 	 * @param sheet
@@ -70,13 +74,16 @@ public class IndexSheetGenerator extends AbstractSheetGenerator {
 	 */
 	public void setIndexData(HSSFWorkbook workbook, HSSFSheet sheet, Index index) {
 		POIUtils.replace(sheet, KEYWORD_PHYSICAL_INDEX_NAME, this.getValue(
-				this.keywordsValueMap, KEYWORD_PHYSICAL_INDEX_NAME, index
-						.getName()));
-		POIUtils.replace(sheet, KEYWORD_INDEX_TYPE, this.getValue(
-				this.keywordsValueMap, KEYWORD_INDEX_TYPE, index.getType()));
+				this.keywordsValueMap, KEYWORD_PHYSICAL_INDEX_NAME,
+				index.getName()));
+		POIUtils.replace(
+				sheet,
+				KEYWORD_INDEX_TYPE,
+				this.getValue(this.keywordsValueMap, KEYWORD_INDEX_TYPE,
+						index.getType()));
 		POIUtils.replace(sheet, KEYWORD_UNIQUE_INDEX, this.getValue(
-				this.keywordsValueMap, KEYWORD_UNIQUE_INDEX, !index
-						.isNonUnique()));
+				this.keywordsValueMap, KEYWORD_UNIQUE_INDEX,
+				!index.isNonUnique()));
 		POIUtils.replace(sheet, KEYWORD_PHYSICAL_TABLE_NAME, this.getValue(
 				this.keywordsValueMap, KEYWORD_PHYSICAL_TABLE_NAME, index
 						.getTable().getPhysicalName()));
@@ -84,8 +91,8 @@ public class IndexSheetGenerator extends AbstractSheetGenerator {
 				this.keywordsValueMap, KEYWORD_LOGICAL_TABLE_NAME, index
 						.getTable().getLogicalName()));
 		POIUtils.replace(sheet, KEYWORD_INDEX_DESCRIPTION, this.getValue(
-				this.keywordsValueMap, KEYWORD_INDEX_DESCRIPTION, index
-						.getDescription()));
+				this.keywordsValueMap, KEYWORD_INDEX_DESCRIPTION,
+				index.getDescription()));
 
 		CellLocation cellLocation = POIUtils.findCell(sheet,
 				FIND_KEYWORDS_OF_COLUMN);

@@ -37,13 +37,13 @@ public class SqlServerTablespaceDialog extends TablespaceDialog {
 		super.initialize(composite);
 
 		this.type = CompositeFactory.createText(this, composite,
-				"label.tablespace.type", false);
+				"label.tablespace.type", false, false);
 		this.pageSize = CompositeFactory.createText(this, composite,
-				"label.tablespace.page.size", false);
+				"label.tablespace.page.size", false, false);
 		this.managedBy = CompositeFactory.createText(this, composite,
-				"label.tablespace.managed.by", false);
+				"label.tablespace.managed.by", false, false);
 		this.container = CompositeFactory.createText(this, composite,
-				"label.tablespace.container", false);
+				"label.tablespace.container", false, false);
 		// this.containerDirectoryPath = this.createText(composite,
 		// "label.tablespace.container.directory.path");
 		// this.containerFilePath = this.createText(composite,
@@ -53,11 +53,11 @@ public class SqlServerTablespaceDialog extends TablespaceDialog {
 		// this.containerDevicePath = this.createText(composite,
 		// "label.tablespace.container.device.path");
 		this.extentSize = CompositeFactory.createText(this, composite,
-				"label.tablespace.extent.size", false);
+				"label.tablespace.extent.size", false, false);
 		this.prefetchSize = CompositeFactory.createText(this, composite,
-				"label.tablespace.prefetch.size", false);
+				"label.tablespace.prefetch.size", false, false);
 		this.bufferPoolName = CompositeFactory.createText(this, composite,
-				"label.tablespace.buffer.pool.name", false);
+				"label.tablespace.buffer.pool.name", false, false);
 	}
 
 	@Override

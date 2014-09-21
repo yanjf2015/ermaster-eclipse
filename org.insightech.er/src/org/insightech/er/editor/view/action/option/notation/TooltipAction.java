@@ -26,4 +26,5 @@ public class TooltipAction extends AbstractBaseAction {
 
 		diagram.setTooltip(this.isChecked());
 	}
+	
 }

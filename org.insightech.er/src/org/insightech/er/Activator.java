@@ -4,28 +4,16 @@ import java.io.File;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.gef.GraphicalViewer;
-import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
-import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.DirectoryDialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
-import org.insightech.er.editor.controller.editpart.element.PagableFreeformRootEditPart;
-import org.insightech.er.editor.model.ERDiagram;
-import org.insightech.er.editor.model.dbexport.image.ImageInfo;
-import org.insightech.er.editor.view.action.dbexport.ExportToImageAction;
 import org.insightech.er.util.Format;
 import org.osgi.framework.BundleContext;
 
@@ -125,7 +113,8 @@ public class Activator extends AbstractUIPlugin {
 		reg.put(ImageKey.DICTIONARY_OPEN,
 				loadImageDescriptor("icons/dictionary_open.gif"));
 		reg.put(ImageKey.EDIT, loadImageDescriptor("icons/pencil.png"));
-		reg.put(ImageKey.ERROR, loadImageDescriptor("icons/error.gif"));
+		reg.put(ImageKey.ERROR,
+				loadImageDescriptor("/icons/full/message_error.gif"));
 		reg.put(ImageKey.EXPORT_DDL,
 				loadImageDescriptor("icons/document-attribute-d.png"));
 		reg.put(ImageKey.EXPORT_TO_CSV,
@@ -166,6 +155,7 @@ public class Activator extends AbstractUIPlugin {
 		reg.put(ImageKey.PAGE_SETTING_V, loadImageDescriptor("images/v.png"));
 		reg.put(ImageKey.PALETTE, loadImageDescriptor("icons/palette.png"));
 		reg.put(ImageKey.PRIMARY_KEY, loadImageDescriptor("icons/pkey.gif"));
+		reg.put(ImageKey.PRINTER, loadImageDescriptor("icons/printer.png"));
 		reg.put(ImageKey.RELATION_1_N,
 				loadImageDescriptor("icons/relation_1_n.gif"));
 		reg.put(ImageKey.RELATION_N_N,
@@ -184,7 +174,7 @@ public class Activator extends AbstractUIPlugin {
 				loadImageDescriptor("icons/tables--pencil.png"));
 		reg.put(ImageKey.TOOLTIP, loadImageDescriptor("icons/ui-tooltip.png"));
 		reg.put(ImageKey.TRIGGER,
-				loadImageDescriptor("icons/arrow-turn-000-left.png"));
+				loadImageDescriptor("icons/script_go.png"));
 		reg.put(ImageKey.VERTICAL_LINE,
 				loadImageDescriptor("icons/vertical_line.gif"));
 		reg.put(ImageKey.VERTICAL_LINE_DISABLED,
@@ -316,7 +306,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static String showSaveDialog(File baseDir, String defaultFileName,
 			String filePath, String[] filterExtensions) {
-		String dir = baseDir.getAbsolutePath();
+		String dir = null;
 		String fileName = defaultFileName;
 
 		if (filePath != null && !"".equals(filePath.trim())) {
@@ -330,6 +320,11 @@ public class Activator extends AbstractUIPlugin {
 
 			dir = file.getParent();
 			fileName = file.getName();
+
+		} else {
+			if (baseDir != null) {
+				dir = baseDir.getAbsolutePath();
+			}
 		}
 
 		FileDialog fileDialog = new FileDialog(PlatformUI.getWorkbench()
@@ -343,14 +338,7 @@ public class Activator extends AbstractUIPlugin {
 		return fileDialog.open();
 	}
 
-	/**
-	 * ディレクトリ選択ダイアログを表示します
-	 * 
-	 * @param filePath
-	 *            デフォルトのファイルパス
-	 * @return ディレクトリ選択ダイアログで選択されたディレクトリのパス
-	 */
-	public static String showDirectoryDialog(String filePath) {
+	public static String showDirectoryDialog(String filePath, String message) {
 		String fileName = null;
 
 		if (filePath != null && !"".equals(filePath.trim())) {
@@ -360,6 +348,8 @@ public class Activator extends AbstractUIPlugin {
 
 		DirectoryDialog dialog = new DirectoryDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), SWT.NONE);
+		
+		dialog.setMessage(ResourceString.getResourceString(message));
 
 		dialog.setFilterPath(fileName);
 
@@ -375,68 +365,4 @@ public class Activator extends AbstractUIPlugin {
 						.getMessage(), e));
 	}
 
-	private static class GraphicalViewerCreator implements Runnable {
-
-		private Display display;
-
-		private ERDiagram diagram;
-
-		private GraphicalViewer viewer;
-
-		private GraphicalViewerCreator(Display display, ERDiagram diagram) {
-			this.display = display;
-			this.diagram = diagram;
-		}
-
-		public void run() {
-			Shell shell = new Shell(display);
-			shell.setLayout(new GridLayout(1, false));
-
-			ERDiagramEditPartFactory editPartFactory = new ERDiagramEditPartFactory();
-			viewer = new ScrollingGraphicalViewer();
-			viewer.setControl(new FigureCanvas(shell));
-			ScalableFreeformRootEditPart rootEditPart = new PagableFreeformRootEditPart(
-					diagram);
-			viewer.setRootEditPart(rootEditPart);
-
-			viewer.setEditPartFactory(editPartFactory);
-			viewer.setContents(diagram);
-		}
-
-	}
-
-	public static GraphicalViewer createGraphicalViewer(Display display,
-			final ERDiagram diagram) {
-		GraphicalViewerCreator runnable = new GraphicalViewerCreator(display,
-				diagram);
-
-		display.syncExec(runnable);
-
-		return runnable.viewer;
-	}
-
-	private static class ImageCreator implements Runnable {
-
-		private GraphicalViewer viewer;
-
-		private ImageInfo imageInfo = null;
-
-		private ImageCreator(GraphicalViewer viewer) {
-			this.viewer = viewer;
-		}
-
-		public void run() {
-			this.imageInfo = ExportToImageAction.createImage(this.viewer);
-		}
-
-	}
-
-	public static ImageInfo createImage(Display display, GraphicalViewer viewer)
-			throws InterruptedException {
-		ImageCreator runnable = new ImageCreator(viewer);
-
-		display.syncExec(runnable);
-
-		return runnable.imageInfo;
-	}
 }

@@ -89,6 +89,17 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 
 		this.setColorToImage();
 	}
+	
+	public void setRGB() {
+		EditPart editPart = ((ERDiagramEditor) this.getWorkbenchPart())
+				.getGraphicalViewer().getContents();
+		ERDiagram diagram = (ERDiagram) editPart.getModel();
+		
+		this.rgb = diagram.getDefaultColorAsGRB();
+		
+		this.setColorToImage();
+		
+	}
 
 	/**
 	 * {@inheritDoc}

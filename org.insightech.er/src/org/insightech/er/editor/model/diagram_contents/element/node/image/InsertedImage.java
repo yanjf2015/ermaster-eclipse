@@ -28,6 +28,7 @@ public class InsertedImage extends NodeElement implements Comparable<InsertedIma
 	
 	public InsertedImage() {
 		this.alpha = 255;
+		this.fixAspectRatio = true;
 	}
 
 	public String getBase64EncodedData() {

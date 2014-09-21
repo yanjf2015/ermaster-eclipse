@@ -11,7 +11,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
@@ -19,6 +18,7 @@ import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTabl
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.index.Index;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.ComplexUniqueKey;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.POIUtils.CellLocation;
@@ -63,11 +63,12 @@ public class TableSheetGenerator extends AbstractSheetGenerator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 		this.clear();
 
 		List<ERTable> nodeSet = null;
@@ -90,8 +91,11 @@ public class TableSheetGenerator extends AbstractSheetGenerator {
 			HSSFSheet newSheet = createNewSheet(workbook, sheetNo, name,
 					sheetNameMap);
 
-			sheetObjectMap.put(workbook.getSheetName(workbook
-					.getSheetIndex(newSheet)), table);
+			String sheetName = workbook.getSheetName(workbook
+					.getSheetIndex(newSheet));
+			monitor.subTaskWithCounter("[Table] " + sheetName);
+
+			sheetObjectMap.put(sheetName, table);
 
 			this.setTableData(workbook, newSheet, table);
 
@@ -102,20 +106,20 @@ public class TableSheetGenerator extends AbstractSheetGenerator {
 	public void setTableData(HSSFWorkbook workbook, HSSFSheet sheet,
 			ERTable table) {
 		POIUtils.replace(sheet, KEYWORD_LOGICAL_TABLE_NAME, this.getValue(
-				this.keywordsValueMap, KEYWORD_LOGICAL_TABLE_NAME, table
-						.getLogicalName()));
+				this.keywordsValueMap, KEYWORD_LOGICAL_TABLE_NAME,
+				table.getLogicalName()));
 
 		POIUtils.replace(sheet, KEYWORD_PHYSICAL_TABLE_NAME, this.getValue(
-				this.keywordsValueMap, KEYWORD_PHYSICAL_TABLE_NAME, table
-						.getPhysicalName()));
+				this.keywordsValueMap, KEYWORD_PHYSICAL_TABLE_NAME,
+				table.getPhysicalName()));
 
 		POIUtils.replace(sheet, KEYWORD_TABLE_DESCRIPTION, this.getValue(
-				this.keywordsValueMap, KEYWORD_TABLE_DESCRIPTION, table
-						.getDescription()));
+				this.keywordsValueMap, KEYWORD_TABLE_DESCRIPTION,
+				table.getDescription()));
 
 		POIUtils.replace(sheet, KEYWORD_TABLE_CONSTRAINT, this.getValue(
-				this.keywordsValueMap, KEYWORD_TABLE_CONSTRAINT, table
-						.getConstraint()));
+				this.keywordsValueMap, KEYWORD_TABLE_CONSTRAINT,
+				table.getConstraint()));
 
 		CellLocation cellLocation = POIUtils.findCell(sheet,
 				FIND_KEYWORDS_OF_COLUMN);
@@ -359,8 +363,8 @@ public class TableSheetGenerator extends AbstractSheetGenerator {
 
 			} else {
 				Index index = table.getIndexes().get(i - 1);
-				HSSFRichTextString text = new HSSFRichTextString(index
-						.getName());
+				HSSFRichTextString text = new HSSFRichTextString(
+						index.getName());
 				cell.setCellValue(text);
 
 				if (i != num) {
@@ -465,8 +469,8 @@ public class TableSheetGenerator extends AbstractSheetGenerator {
 			} else {
 				ComplexUniqueKey complexUniqueKey = table
 						.getComplexUniqueKeyList().get(i - 1);
-				HSSFRichTextString text = new HSSFRichTextString(Format
-						.null2blank(complexUniqueKey.getUniqueKeyName()));
+				HSSFRichTextString text = new HSSFRichTextString(
+						Format.null2blank(complexUniqueKey.getUniqueKeyName()));
 				cell.setCellValue(text);
 
 				if (i != num) {

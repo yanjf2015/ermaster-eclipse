@@ -10,27 +10,23 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.StringObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.editor.model.tracking.ChangeTracking;
 import org.insightech.er.util.POIUtils;
 import org.insightech.er.util.POIUtils.CellLocation;
 
 public class HistorySheetGenerator extends AbstractSheetGenerator {
 
-	// 更新日
 	private static final String KEYWORD_DATE = "$DATE";
 
-	// 変更内容
 	private static final String KEYWORD_CONTENTS = "$CON";
 
-	// 日付フォーマット
 	private static final String KEYWORD_DATE_FORMAT = "$FMT";
 
-	// シート名
 	private static final String KEYWORD_SHEET_NAME = "$SHTN";
 
 	private static final String[] FIND_KEYWORDS_LIST = { KEYWORD_DATE,
@@ -40,19 +36,22 @@ public class HistorySheetGenerator extends AbstractSheetGenerator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 
 		String sheetName = this.getSheetName();
 
 		HSSFSheet newSheet = createNewSheet(workbook, sheetNo, sheetName,
 				sheetNameMap);
 
-		sheetObjectMap.put(workbook.getSheetName(workbook
-				.getSheetIndex(newSheet)), new StringObjectModel(sheetName));
+		sheetName = workbook.getSheetName(workbook.getSheetIndex(newSheet));
+		monitor.subTaskWithCounter(sheetName);
+
+		sheetObjectMap.put(sheetName, new StringObjectModel(sheetName));
 
 		this.setHistoryListData(workbook, newSheet, sheetObjectMap, diagram);
 		monitor.worked(1);

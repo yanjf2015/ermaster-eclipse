@@ -11,6 +11,7 @@ import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.Column;
@@ -33,15 +34,19 @@ public abstract class DDLCreator {
 
 	private ERDiagram diagram;
 
+	private Category targetCategory;
+
 	protected boolean semicolon;
 
 	protected Environment environment;
 
 	protected DDLTarget ddlTarget;
 
-	public DDLCreator(ERDiagram diagram, boolean semicolon) {
+	public DDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
 		this.diagram = diagram;
 		this.semicolon = semicolon;
+		this.targetCategory = targetCategory;
 	}
 
 	public void init(Environment environment, DDLTarget ddlTarget) {
@@ -176,8 +181,8 @@ public abstract class DDLCreator {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 
@@ -209,8 +214,8 @@ public abstract class DDLCreator {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 
@@ -310,8 +315,8 @@ public abstract class DDLCreator {
 
 		for (ERTable table : this.getTablesForCreateDDL()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 
@@ -338,8 +343,8 @@ public abstract class DDLCreator {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 
@@ -366,8 +371,8 @@ public abstract class DDLCreator {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 
@@ -476,8 +481,8 @@ public abstract class DDLCreator {
 		for (ERTable table : diagram.getDiagramContents().getContents()
 				.getTableSet()) {
 
-			if (diagram.getCurrentCategory() != null
-					&& !diagram.getCurrentCategory().contains(table)) {
+			if (this.targetCategory != null
+					&& !this.targetCategory.contains(table)) {
 				continue;
 			}
 			List<String> commentDDLList = this.getCommentDDL(table);
@@ -506,11 +511,13 @@ public abstract class DDLCreator {
 	protected String getDDL(ERTable table) {
 		StringBuilder ddl = new StringBuilder();
 
-		String tableDescription = table.getDescription();
-		if (this.semicolon && !Check.isEmpty(tableDescription)
+		String tableComment = this.filterComment(table.getLogicalName(),
+				table.getDescription(), false);
+
+		if (this.semicolon && !Check.isEmpty(tableComment)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(tableDescription.replaceAll("\n", "\n-- "));
+			ddl.append(tableComment.replaceAll("\n", "\n-- "));
 			ddl.append("\r\n");
 		}
 		ddl.append("CREATE TABLE ");
@@ -642,11 +649,13 @@ public abstract class DDLCreator {
 	protected String getColulmnDDL(NormalColumn normalColumn) {
 		StringBuilder ddl = new StringBuilder();
 
-		String description = normalColumn.getDescription();
-		if (this.semicolon && !Check.isEmpty(description)
+		String columnComment = this.filterComment(normalColumn.getLogicalName(),
+				normalColumn.getDescription(), true);
+
+		if (this.semicolon && !Check.isEmpty(columnComment)
 				&& this.ddlTarget.inlineColumnComment) {
 			ddl.append("\t-- ");
-			ddl.append(description.replaceAll("\n", "\n\t-- "));
+			ddl.append(columnComment.replaceAll("\n", "\n\t-- "));
 			ddl.append("\r\n");
 		}
 

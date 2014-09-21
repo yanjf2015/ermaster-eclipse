@@ -1,6 +1,5 @@
 package org.insightech.er.editor.view.dialog.tracking;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import org.eclipse.gef.GraphicalViewer;
@@ -10,7 +9,6 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -18,7 +16,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
@@ -36,9 +33,6 @@ import org.insightech.er.editor.model.tracking.ChangeTracking;
 import org.insightech.er.util.Check;
 
 public class ChangeTrackingDialog extends Dialog {
-
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-			"yyyy/MM/dd HH:mm:ss");
 
 	private Table changeTrackingTable;
 
@@ -79,10 +73,10 @@ public class ChangeTrackingDialog extends Dialog {
 
 		Composite composite = (Composite) super.createDialogArea(parent);
 
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = 6;
+		GridLayout layout = new GridLayout();
+		this.initLayout(layout);
 
-		composite.setLayout(gridLayout);
+		composite.setLayout(layout);
 
 		this.initialize(composite);
 
@@ -91,57 +85,45 @@ public class ChangeTrackingDialog extends Dialog {
 		return composite;
 	}
 
+	protected void initLayout(GridLayout layout) {
+		layout.numColumns = 6;
+
+		layout.marginLeft = 20;
+		layout.marginRight = 20;
+		layout.marginBottom = 15;
+		layout.marginTop = 15;
+	}
+
 	private void initialize(Composite composite) {
-		GridData tableGridData = new GridData();
-		tableGridData.widthHint = 520;
-		tableGridData.horizontalSpan = 6;
-		tableGridData.heightHint = 150;
+		this.changeTrackingTable = CompositeFactory.createTable(composite, 150,
+				6);
 
-		this.changeTrackingTable = new Table(composite, SWT.BORDER | SWT.SINGLE
-				| SWT.FULL_SELECTION);
-		this.changeTrackingTable.setHeaderVisible(true);
-		this.changeTrackingTable.setLayoutData(tableGridData);
-		this.changeTrackingTable.setLinesVisible(true);
-
-		CompositeFactory.createLabel(composite, "label.contents.of.change", 6);
+		CompositeFactory.createLeftLabel(composite, "label.contents.of.change",
+				6);
 
 		this.textArea = CompositeFactory.createTextArea(null, composite, null,
 				-1, 100, 6, true);
 
-		this.registerButton = new Button(composite, SWT.NONE);
-		this.registerButton.setText(ResourceString
-				.getResourceString("label.button.register"));
+		this.registerButton = CompositeFactory.createSmallButton(composite,
+				"label.button.add");
 
-		this.updateButton = new Button(composite, SWT.NONE);
-		this.updateButton.setText(ResourceString
-				.getResourceString("label.button.update"));
+		this.updateButton = CompositeFactory.createSmallButton(composite,
+				"label.button.update");
 
-		this.deleteButton = new Button(composite, SWT.NONE);
-		this.deleteButton.setText(ResourceString
-				.getResourceString("label.button.delete"));
+		this.deleteButton = CompositeFactory.createSmallButton(composite,
+				"label.button.delete");
 
-		this.replaceButton = new Button(composite, SWT.NONE);
-		this.replaceButton.setText(ResourceString
-				.getResourceString("label.button.change.tracking"));
+		this.replaceButton = CompositeFactory.createButton(composite,
+				"label.button.change.tracking", 1, -1);
+		this.comparisonDisplayButton = CompositeFactory.createButton(composite,
+				"label.button.comparison.display", 1, -1);
+		this.comparisonResetButton = CompositeFactory.createButton(composite,
+				"label.button.comparison.reset", 1, -1);
 
-		this.comparisonDisplayButton = new Button(composite, SWT.NONE);
-		this.comparisonDisplayButton.setText(ResourceString
-				.getResourceString("label.button.comparison.display"));
-
-		this.comparisonResetButton = new Button(composite, SWT.NONE);
-		this.comparisonResetButton.setText(ResourceString
-				.getResourceString("label.button.comparison.reset"));
-
-		TableColumn tableColumn0 = new TableColumn(this.changeTrackingTable,
-				SWT.LEFT);
-		tableColumn0.setWidth(150);
-		tableColumn0.setText(ResourceString.getResourceString("label.date"));
-
-		TableColumn tableColumn1 = new TableColumn(this.changeTrackingTable,
-				SWT.LEFT);
-		tableColumn1.setWidth(400);
-		tableColumn1.setText(ResourceString
-				.getResourceString("label.contents.of.change"));
+		CompositeFactory.createTableColumn(this.changeTrackingTable,
+				"label.date", 200);
+		CompositeFactory.createTableColumn(this.changeTrackingTable,
+				"label.contents.of.change", 500);
 
 		this.changeTrackingTable.addSelectionListener(new SelectionAdapter() {
 
@@ -362,7 +344,8 @@ public class ChangeTrackingDialog extends Dialog {
 			TableItem tableItem = new TableItem(this.changeTrackingTable,
 					SWT.NONE);
 
-			String date = DATE_FORMAT.format(changeTracking.getUpdatedDate());
+			String date = new SimpleDateFormat().format(changeTracking
+					.getUpdatedDate());
 			tableItem.setText(0, date);
 
 			if (!Check.isEmpty(changeTracking.getComment())) {

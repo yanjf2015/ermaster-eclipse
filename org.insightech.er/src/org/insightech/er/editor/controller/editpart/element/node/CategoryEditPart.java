@@ -28,7 +28,9 @@ public class CategoryEditPart extends NodeElementEditPart implements IResizable 
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * When category management (Change Setting Command) is executed, new
+	 * categorie's bounds will be calculated. If undo, replaced all with old
+	 * categories.
 	 */
 	@Override
 	protected Rectangle getRectangle() {
@@ -41,10 +43,19 @@ public class CategoryEditPart extends NodeElementEditPart implements IResizable 
 		for (Object child : rootEditPart.getChildren()) {
 			if (child instanceof NodeElementEditPart) {
 				NodeElementEditPart editPart = (NodeElementEditPart) child;
+				NodeElement element = (NodeElement) editPart.getModel();
 
 				if (category.contains((NodeElement) editPart.getModel())) {
-					Rectangle bounds = editPart.getFigure().getBounds();
+					Location bounds = element.getActualLocation();
 
+					if (bounds.x < rectangle.x) {
+						rectangle.width += rectangle.x - bounds.x;
+						rectangle.x = bounds.x;
+					}
+					if (bounds.y < rectangle.y) {
+						rectangle.height += rectangle.y - bounds.y;
+						rectangle.y = bounds.y;
+					}
 					if (bounds.x + bounds.width > rectangle.x + rectangle.width) {
 						rectangle.width = bounds.x + bounds.width - rectangle.x;
 					}
@@ -54,14 +65,15 @@ public class CategoryEditPart extends NodeElementEditPart implements IResizable 
 								- rectangle.y;
 					}
 
-					if (rectangle.width != category.getWidth()
-							|| rectangle.height != category.getHeight()) {
-						category.setLocation(new Location(category.getX(),
-								category.getY(), rectangle.width,
-								rectangle.height));
-					}
 				}
 			}
+		}
+
+		if (rectangle.x != category.getX() || rectangle.y != category.getY()
+				|| rectangle.width != category.getWidth()
+				|| rectangle.height != category.getHeight()) {
+			category.setLocation(new Location(rectangle.x, rectangle.y,
+					rectangle.width, rectangle.height));
 		}
 
 		return rectangle;

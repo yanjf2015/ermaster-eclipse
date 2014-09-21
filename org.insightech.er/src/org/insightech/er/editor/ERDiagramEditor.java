@@ -130,6 +130,8 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 
 	private ERDiagramActionBarContributor actionBarContributor;
 
+	private ERDiagramPaletteRoot palette;
+
 	private ExtensionLoader extensionLoader;
 
 	private boolean isDirty;
@@ -141,20 +143,21 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 	 *            ERDiagram
 	 * @param editPartFactory
 	 *            ERDiagramEditPartFactory
-	 * @param zoomComboContributionItem
-	 *            ZoomComboContributionItem
 	 * @param outlinePage
 	 *            ERDiagramOutlinePage
+	 * @param editDomain
+	 *            DefaultEditDomain
 	 */
 	public ERDiagramEditor(ERDiagram diagram,
 			ERDiagramEditPartFactory editPartFactory,
-			ERDiagramOutlinePage outlinePage) {
-		DefaultEditDomain domain = new DefaultEditDomain(this);
-		this.setEditDomain(domain);
-
+			ERDiagramOutlinePage outlinePage, DefaultEditDomain editDomain,
+			ERDiagramPaletteRoot palette) {
 		this.diagram = diagram;
 		this.editPartFactory = editPartFactory;
 		this.outlinePage = outlinePage;
+		this.palette = palette;
+
+		this.setEditDomain(editDomain);
 
 		try {
 			this.extensionLoader = new ExtensionLoader(this);
@@ -237,7 +240,7 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 	 */
 	@Override
 	protected PaletteRoot getPaletteRoot() {
-		return new ERDiagramPaletteRoot();
+		return this.palette;
 	}
 
 	/**
@@ -267,6 +270,17 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 				this.getActionRegistry());
 
 		this.getSelectionSynchronizer().addViewer(this.outlinePage.getViewer());
+
+		this.getEditDomain().setPaletteViewer(this.getPaletteViewer());
+
+		this.getActionRegistry().getAction(TooltipAction.ID)
+				.setChecked(this.diagram.isTooltip());
+		this.getActionRegistry().getAction(LockEditAction.ID)
+				.setChecked(this.diagram.isDisableSelectColumn());
+
+		((ChangeBackgroundColorAction) this.getActionRegistry().getAction(
+				ChangeBackgroundColorAction.ID)).setRGB();
+
 	}
 
 	public void removeSelection() {
@@ -363,7 +377,6 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 			}
 
 			registry.registerAction(action);
-
 		}
 
 		IAction action = registry.getAction(SearchAction.ID);
@@ -452,6 +465,10 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 	@Override
 	public GraphicalViewer getGraphicalViewer() {
 		return super.getGraphicalViewer();
+	}
+
+	public void resetEditDomain() {
+		this.getEditDomain().setPaletteViewer(this.getPaletteViewer());
 	}
 
 	public ERDiagramActionBarContributor getActionBarContributor() {

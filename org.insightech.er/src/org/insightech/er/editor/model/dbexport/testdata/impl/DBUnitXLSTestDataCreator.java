@@ -19,6 +19,7 @@ import org.insightech.er.editor.model.testdata.RepeatTestData;
 import org.insightech.er.editor.model.testdata.RepeatTestDataDef;
 import org.insightech.er.util.Format;
 import org.insightech.er.util.POIUtils;
+import org.insightech.er.util.io.FileUtils;
 
 public class DBUnitXLSTestDataCreator extends TestDataCreator {
 
@@ -40,11 +41,14 @@ public class DBUnitXLSTestDataCreator extends TestDataCreator {
 	}
 
 	@Override
-	protected void write() throws IOException {
+	protected void write() throws Exception {
 		super.write();
 
-		File dir = this.getOutputDir();
-		File file = new File(dir, this.testData.getName() + ".xls");
+		File file = new File(FileUtils.getFile(this.baseDir,
+				this.exportTestDataSetting.getExportFilePath()),
+				this.testData.getName() + ".xls");
+
+		file.getParentFile().mkdirs();
 
 		POIUtils.writeExcelFile(file, this.workbook);
 	}

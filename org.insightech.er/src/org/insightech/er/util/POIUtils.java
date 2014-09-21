@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.insightech.er.common.exception.InputException;
 
 public class POIUtils {
 
@@ -201,7 +203,8 @@ public class POIUtils {
 			}
 		} catch (RuntimeException e) {
 			System.err.println("Exception at sheet name:"
-					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:" + (c + 1));
+					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:"
+					+ (c + 1));
 			throw e;
 		}
 
@@ -225,7 +228,8 @@ public class POIUtils {
 			return cell.getBooleanCellValue();
 		} catch (RuntimeException e) {
 			System.err.println("Exception at sheet name:"
-					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:" + (c + 1));
+					+ sheet.getSheetName() + ", row:" + (r + 1) + ", col:"
+					+ (c + 1));
 			throw e;
 		}
 	}
@@ -279,7 +283,7 @@ public class POIUtils {
 	}
 
 	public static void writeExcelFile(File excelFile, HSSFWorkbook workbook)
-			throws IOException {
+			throws Exception {
 		FileOutputStream fos = null;
 		BufferedOutputStream bos = null;
 
@@ -287,6 +291,9 @@ public class POIUtils {
 			fos = new FileOutputStream(excelFile);
 			bos = new BufferedOutputStream(fos);
 			workbook.write(bos);
+
+		} catch (FileNotFoundException e) {
+			throw new InputException(e);
 
 		} finally {
 			if (bos != null) {

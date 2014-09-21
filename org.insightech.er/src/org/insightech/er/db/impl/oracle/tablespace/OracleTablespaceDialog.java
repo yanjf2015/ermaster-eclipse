@@ -51,7 +51,14 @@ public class OracleTablespaceDialog extends TablespaceDialog {
 	private Button calculatorButton;
 
 	public OracleTablespaceDialog() {
-		super(6);
+		super();
+	}
+
+	@Override
+	protected void initLayout(GridLayout layout) {
+		super.initLayout(layout);
+
+		layout.numColumns = 6;
 	}
 
 	@Override
@@ -59,9 +66,9 @@ public class OracleTablespaceDialog extends TablespaceDialog {
 		super.initialize(composite);
 
 		this.dataFile = CompositeFactory.createText(this, composite,
-				"label.tablespace.data.file", 1, 200, false);
+				"label.tablespace.data.file", 1, 200, false, false);
 		this.fileSize = CompositeFactory.createText(this, composite,
-				"label.size", 1, NUM_TEXT_WIDTH, false);
+				"label.size", 1, NUM_TEXT_WIDTH, false, false);
 		this.calculatorButton = new Button(composite, SWT.NONE);
 		this.calculatorButton.setText(ResourceString
 				.getResourceString("label.calculate"));
@@ -90,11 +97,11 @@ public class OracleTablespaceDialog extends TablespaceDialog {
 		autoExtendGroup.setLayoutData(autoExtendGroupGridData);
 
 		this.autoExtend = CompositeFactory.createCheckbox(this,
-				autoExtendGroup, "label.tablespace.auto.extend", 1);
+				autoExtendGroup, "label.tablespace.auto.extend", false, 1);
 		this.autoExtendSize = CompositeFactory.createText(this,
-				autoExtendGroup, "label.size", 1, NUM_TEXT_WIDTH, false);
+				autoExtendGroup, "label.size", 1, NUM_TEXT_WIDTH, false, false);
 		this.autoExtendMaxSize = CompositeFactory.createText(this,
-				autoExtendGroup, "label.max.size", 1, NUM_TEXT_WIDTH, false);
+				autoExtendGroup, "label.max.size", 1, NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.filler(autoExtendGroup, 2);
 		CompositeFactory.createExampleLabel(autoExtendGroup,
 				"label.tablespace.size.example");
@@ -104,7 +111,7 @@ public class OracleTablespaceDialog extends TablespaceDialog {
 
 		this.minimumExtentSize = CompositeFactory.createText(this, composite,
 				"label.tablespace.minimum.extent.size", 1, NUM_TEXT_WIDTH,
-				false);
+				false, false);
 		CompositeFactory.filler(composite, 4);
 		CompositeFactory.filler(composite, 1);
 		CompositeFactory.createExampleLabel(composite,
@@ -123,22 +130,22 @@ public class OracleTablespaceDialog extends TablespaceDialog {
 		defaultStorageGroup.setLayoutData(defaultStorageGroupGridData);
 
 		this.initial = CompositeFactory.createText(this, defaultStorageGroup,
-				"label.tablespace.initial", 1, NUM_TEXT_WIDTH, false);
+				"label.tablespace.initial", 1, NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.createExampleLabel(defaultStorageGroup, "ex) 1M");
 		this.next = CompositeFactory.createText(this, defaultStorageGroup,
-				"label.tablespace.next", 1, NUM_TEXT_WIDTH, false);
+				"label.tablespace.next", 1, NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.createExampleLabel(defaultStorageGroup, "ex) 1M");
 		this.minExtents = CompositeFactory.createText(this,
 				defaultStorageGroup, "label.tablespace.min.extents", 1,
-				NUM_TEXT_WIDTH, false);
+				NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.createExampleLabel(defaultStorageGroup, "ex) 1");
 		this.maxExtents = CompositeFactory.createText(this,
 				defaultStorageGroup, "label.tablespace.max.extents", 1,
-				NUM_TEXT_WIDTH, false);
+				NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.createExampleLabel(defaultStorageGroup, "ex) 4096");
 		this.pctIncrease = CompositeFactory.createText(this,
 				defaultStorageGroup, "label.tablespace.pct.increase", 1,
-				NUM_TEXT_WIDTH, false);
+				NUM_TEXT_WIDTH, false, false);
 		CompositeFactory.createExampleLabel(defaultStorageGroup, "ex) 0");
 
 		this.logging = this.createCheckbox(composite,

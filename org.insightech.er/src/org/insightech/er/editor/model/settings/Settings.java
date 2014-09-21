@@ -1,8 +1,11 @@
 package org.insightech.er.editor.model.settings;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.insightech.er.db.DBManagerFactory;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.model_properties.ModelProperties;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TableProperties;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.properties.TablePropertiesHolder;
@@ -59,7 +62,7 @@ public class Settings implements Serializable, Cloneable, TablePropertiesHolder 
 	private int notationLevel;
 
 	private int viewMode;
-	
+
 	private int viewOrderBy;
 
 	private int outlineViewMode;
@@ -69,7 +72,7 @@ public class Settings implements Serializable, Cloneable, TablePropertiesHolder 
 	private boolean validatePhysicalName;
 
 	private boolean useBezierCurve;
-	
+
 	private boolean suspendValidator;
 
 	public int getNotationLevel() {
@@ -216,17 +219,33 @@ public class Settings implements Serializable, Cloneable, TablePropertiesHolder 
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object clone() {
+	public Settings clone() {
 		Settings clone = null;
 		try {
 			clone = (Settings) super.clone();
 			clone.modelProperties = (ModelProperties) modelProperties.clone();
-			clone.categorySetting = (CategorySetting) categorySetting.clone();
+
+			Map<Category, Category> categoryCloneMap = new HashMap<Category, Category>();
+
+			for (Category category : categorySetting.getAllCategories()) {
+				categoryCloneMap.put(category, category.clone());
+			}
+
+			clone.categorySetting = (CategorySetting) categorySetting
+					.clone(categoryCloneMap);
 			clone.translationSetting = (TranslationSetting) translationSetting
 					.clone();
+
+			Map<Environment, Environment> environmentCloneMap = new HashMap<Environment, Environment>();
+
+			for (Environment environment : environmentSetting.getEnvironments()) {
+				environmentCloneMap.put(environment, environment.clone());
+			}
+
 			clone.environmentSetting = (EnvironmentSetting) environmentSetting
-					.clone();
-			clone.exportSetting = exportSetting.clone();
+					.clone(environmentCloneMap);
+			clone.exportSetting = exportSetting.clone(categoryCloneMap,
+					environmentCloneMap);
 
 			if (this.database != null) {
 				clone.tableProperties = (TableProperties) this
@@ -234,6 +253,7 @@ public class Settings implements Serializable, Cloneable, TablePropertiesHolder 
 			}
 
 		} catch (CloneNotSupportedException e) {
+			return null;
 		}
 
 		return clone;

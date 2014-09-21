@@ -75,7 +75,7 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 
 	public RepeatTestDataSettingDialog(Shell parentShell, int columnIndex,
 			RepeatTestDataTabWrapper repeatTestDataTabWrapper, ERTable table) {
-		super(parentShell, 2);
+		super(parentShell);
 
 		this.repeatTestDataTabWrapper = repeatTestDataTabWrapper;
 		this.table = table;
@@ -110,16 +110,20 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 	}
 
 	private void initTypeCombo() {
-		this.typeCombo.add(RepeatTestDataDef.TYPE_NULL);
-		this.typeCombo.add(RepeatTestDataDef.TYPE_FORMAT);
+		this.typeCombo.add(RepeatTestDataDef
+				.getTypeLabel(RepeatTestDataDef.TYPE_NULL));
+		this.typeCombo.add(RepeatTestDataDef
+				.getTypeLabel(RepeatTestDataDef.TYPE_FORMAT));
 
 		normalColumn = table.getExpandedColumns().get(columnIndex);
 
 		if (normalColumn.isForeignKey()) {
-			this.typeCombo.add(RepeatTestDataDef.TYPE_FOREIGNKEY);
+			this.typeCombo.add(RepeatTestDataDef
+					.getTypeLabel(RepeatTestDataDef.TYPE_FOREIGNKEY));
 		}
 
-		this.typeCombo.add(RepeatTestDataDef.TYPE_ENUM);
+		this.typeCombo.add(RepeatTestDataDef
+				.getTypeLabel(RepeatTestDataDef.TYPE_ENUM));
 	}
 
 	private void initCardPanel(Composite composite) {
@@ -160,7 +164,7 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 		CompositeFactory.createLabel(templatePanel,
 				"label.testdata.repeat.format", 1, LABEL_WIDTH);
 		this.template = CompositeFactory.createText(this, templatePanel, null,
-				6, false);
+				6, false, false);
 		CompositeFactory.filler(templatePanel, 1);
 		CompositeFactory.createExampleLabel(templatePanel,
 				"label.testdata.repeat.comment", 6);
@@ -220,7 +224,7 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 		this.columnCombo.select(this.columnIndex);
 
 		if (dataDef != null) {
-			this.typeCombo.setText(dataDef.getType());
+			this.typeCombo.setText(dataDef.getTypeLabel());
 			this.repeatNum.setText(Format.toString(dataDef.getRepeatNum()));
 			this.template.setText(Format.toString(dataDef.getTemplate()));
 			this.from.setText(Format.toString(dataDef.getFrom()));
@@ -234,7 +238,7 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 			}
 			this.selects.setText(sb.toString());
 
-			this.setCardPanel(this.typeCombo.getText());
+			this.setCardPanel(dataDef.getType());
 
 		} else {
 			this.repeatNum.setText("1");
@@ -318,7 +322,7 @@ public class RepeatTestDataSettingDialog extends AbstractDialog {
 
 			@Override
 			public void widgetSelected(SelectionEvent selectionevent) {
-				setCardPanel(typeCombo.getText());
+				setCardPanel(RepeatTestDataDef.getType(typeCombo.getText()));
 			}
 
 		});

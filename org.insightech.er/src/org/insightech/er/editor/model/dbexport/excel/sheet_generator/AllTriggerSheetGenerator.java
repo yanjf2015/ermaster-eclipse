@@ -5,21 +5,22 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.ObjectModel;
 import org.insightech.er.editor.model.dbexport.excel.ExportToExcelManager.LoopDefinition;
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 import org.insightech.er.util.POIUtils;
 
 public class AllTriggerSheetGenerator extends TriggerSheetGenerator {
 
 	@Override
-	public void generate(IProgressMonitor monitor, HSSFWorkbook workbook,
+	public void generate(ProgressMonitor monitor, HSSFWorkbook workbook,
 			int sheetNo, boolean useLogicalNameAsSheetName,
 			Map<String, Integer> sheetNameMap,
 			Map<String, ObjectModel> sheetObjectMap, ERDiagram diagram,
-			Map<String, LoopDefinition> loopDefinitionMap) {
+			Map<String, LoopDefinition> loopDefinitionMap)
+			throws InterruptedException {
 
 		LoopDefinition loopDefinition = loopDefinitionMap.get(this
 				.getTemplateSheetName());
@@ -27,25 +28,27 @@ public class AllTriggerSheetGenerator extends TriggerSheetGenerator {
 		HSSFSheet newSheet = createNewSheet(workbook, sheetNo,
 				loopDefinition.sheetName, sheetNameMap);
 
-		sheetObjectMap.put(workbook.getSheetName(workbook
-				.getSheetIndex(newSheet)), diagram.getDiagramContents()
-				.getTriggerSet());
+		String sheetName = workbook.getSheetName(workbook
+				.getSheetIndex(newSheet));
+
+		sheetObjectMap.put(
+				sheetName,
+				diagram.getDiagramContents().getTriggerSet());
 
 		HSSFSheet oldSheet = workbook.getSheetAt(sheetNo);
 
 		boolean first = true;
 
 		for (Trigger trigger : diagram.getDiagramContents().getTriggerSet()) {
+			monitor.subTaskWithCounter(sheetName + " - " + trigger.getName());
+
 			if (first) {
 				first = false;
 
 			} else {
-				POIUtils
-						.copyRow(oldSheet, newSheet,
-								loopDefinition.startLine - 1, oldSheet
-										.getLastRowNum(), newSheet
-										.getLastRowNum()
-										+ loopDefinition.spaceLine + 1);
+				POIUtils.copyRow(oldSheet, newSheet,
+						loopDefinition.startLine - 1, oldSheet.getLastRowNum(),
+						newSheet.getLastRowNum() + loopDefinition.spaceLine + 1);
 			}
 
 			this.setTriggerData(workbook, newSheet, trigger);

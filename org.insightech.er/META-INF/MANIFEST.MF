@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: ERMaster
 Bundle-SymbolicName: org.insightech.er; singleton:=true
-Bundle-Version: 1.0.0.v20140727-1950-3
+Bundle-Version: 1.0.0.v20140815-1952-9
 Bundle-Activator: org.insightech.er.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
@@ -236,9 +236,10 @@ Export-Package: org.insightech.er,
  org.insightech.er.editor.view.tool,
  org.insightech.er.extention,
  org.insightech.er.preference,
- org.insightech.er.preference.jdbc,
- org.insightech.er.preference.template,
- org.insightech.er.preference.translation,
+ org.insightech.er.preference.page.jdbc,
+ org.insightech.er.preference.page.root,
+ org.insightech.er.preference.page.template,
+ org.insightech.er.preference.page.translation,
  org.insightech.er.test,
  org.insightech.er.util,
  org.insightech.er.util.io,

@@ -4,14 +4,12 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.ResourceString;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
@@ -53,7 +51,7 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 	@Override
 	protected void initializeDetailTab(Composite composite) {
 		this.uniqueKeyNameText = CompositeFactory.createText(this, composite,
-				"label.unique.key.name", false);
+				"label.unique.key.name", false, true);
 
 		super.initializeDetailTab(composite);
 
@@ -61,22 +59,18 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 
 		if (MySQLDBManager.ID.equals(this.diagram.getDatabase())) {
 			this.characterSetCombo = CompositeFactory.createCombo(this,
-					composite, "label.character.set", 1);
+					composite, "label.character.set");
 			this.collationCombo = CompositeFactory.createCombo(this, composite,
-					"label.collation", 1);
+					"label.collation");
 		}
 
 		if (manager.isSupported(DBManager.SUPPORT_AUTO_INCREMENT_SETTING)) {
-			CompositeFactory.filler(composite, 2);
+			CompositeFactory.fillLine(composite);
 
-			this.autoIncrementSettingButton = new Button(composite, SWT.NONE);
-			this.autoIncrementSettingButton.setText(ResourceString
-					.getResourceString("label.auto.increment.setting"));
+			this.autoIncrementSettingButton = CompositeFactory
+					.createLargeButton(composite,
+							"label.auto.increment.setting");
 			this.autoIncrementSettingButton.setEnabled(false);
-
-			GridData gridData = new GridData();
-			gridData.horizontalSpan = 2;
-			this.autoIncrementSettingButton.setLayoutData(gridData);
 		}
 	}
 
@@ -94,7 +88,7 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 	@Override
 	protected void initializeCheckBoxComposite(Composite composite) {
 		this.primaryKeyCheck = CompositeFactory.createCheckbox(this, composite,
-				"label.primary.key");
+				"label.primary.key", false);
 
 		super.initializeCheckBoxComposite(composite);
 
@@ -102,7 +96,7 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 
 		if (manager.isSupported(DBManager.SUPPORT_AUTO_INCREMENT)) {
 			this.autoIncrementCheck = CompositeFactory.createCheckbox(this,
-					composite, "label.auto.increment");
+					composite, "label.auto.increment", false);
 		}
 
 		if (this.isRefered) {
@@ -134,6 +128,22 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 			this.lengthText.setEnabled(false);
 			this.decimalText.setEnabled(false);
 		}
+	}
+
+	@Override
+	protected void initData() {
+		super.initData();
+
+		if (this.characterSetCombo != null) {
+			this.characterSetCombo.add("");
+
+			for (String characterSet : MySQLDBManager.getCharacterSetList()) {
+				this.characterSetCombo.add(characterSet);
+			}
+
+			this.collationCombo.add("");
+		}
+
 	}
 
 	/**
@@ -180,16 +190,8 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 				.getUniqueKeyName()));
 
 		if (this.characterSetCombo != null) {
-			this.characterSetCombo.add("");
-
-			for (String characterSet : MySQLDBManager.getCharacterSetList()) {
-				this.characterSetCombo.add(characterSet);
-			}
-
 			this.characterSetCombo.setText(Format.null2blank(this.targetColumn
 					.getCharacterSet()));
-
-			this.collationCombo.add("");
 
 			for (String collation : MySQLDBManager
 					.getCollationList(this.targetColumn.getCharacterSet())) {
@@ -225,8 +227,8 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 	protected void setEnabledBySqlType() {
 		super.setEnabledBySqlType();
 
-		SqlType selectedType = SqlType.valueOf(diagram.getDatabase(), typeCombo
-				.getText());
+		SqlType selectedType = SqlType.valueOf(diagram.getDatabase(),
+				typeCombo.getText());
 
 		if (selectedType != null) {
 			if (PostgresDBManager.ID.equals(this.diagram.getDatabase())) {
@@ -312,10 +314,6 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 						}
 					});
 		}
-
-		// Primary Key �́AAUTO_INCREMENT �̃`�F�b�N�{�b�N�X�̐��䃊�X�i�[�̌ďo�����
-		// validate �̃��X�i�[���Ăт����̂ł����Ń��X�i�[�̒ǉ���
-		// ListenerAppender.addCheckBoxListener(this.primaryKeyCheck, this);
 
 		final NormalColumn autoIncrementColumn = this.erTable
 				.getAutoIncrementColumn();

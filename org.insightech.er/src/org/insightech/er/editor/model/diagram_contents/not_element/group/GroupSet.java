@@ -22,7 +22,7 @@ public class GroupSet extends AbstractModel implements Iterable<ColumnGroup> {
 	public void sort() {
 		Collections.sort(this.groups);
 	}
-	
+
 	public void add(ColumnGroup group) {
 		this.groups.add(group);
 	}
@@ -49,6 +49,26 @@ public class GroupSet extends AbstractModel implements Iterable<ColumnGroup> {
 
 	public ColumnGroup get(int index) {
 		return this.groups.get(index);
+	}
+
+	public ColumnGroup find(ColumnGroup group) {
+		int index = this.groups.indexOf(group);
+
+		if (index != -1) {
+			return this.groups.get(this.groups.indexOf(group));
+		}
+
+		return null;
+	}
+
+	public ColumnGroup findSame(ColumnGroup group) {
+		for (ColumnGroup columnGroup : this.groups) {
+			if (columnGroup == group) {
+				return columnGroup;
+			}
+		}
+
+		return null;
 	}
 
 	public int indexOf(ColumnGroup group) {

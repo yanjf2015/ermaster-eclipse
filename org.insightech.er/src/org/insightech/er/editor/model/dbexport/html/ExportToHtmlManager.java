@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 
 import org.insightech.er.ResourceString;
-import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.AbstractExportManager;
 import org.insightech.er.editor.model.dbexport.html.page_generator.HtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.OverviewHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.CategoryHtmlReportPageGenerator;
@@ -24,11 +24,18 @@ import org.insightech.er.editor.model.dbexport.html.page_generator.impl.Tablespa
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.TriggerHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.ViewHtmlReportPageGenerator;
 import org.insightech.er.editor.model.dbexport.html.page_generator.impl.WordHtmlReportPageGenerator;
+import org.insightech.er.editor.model.dbexport.image.ExportToImageManager;
 import org.insightech.er.editor.model.dbexport.image.ImageInfoSet;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
+import org.insightech.er.editor.model.settings.export.ExportHtmlSetting;
 import org.insightech.er.util.io.FileUtils;
 import org.insightech.er.util.io.IOUtils;
 
-public class ExportToHtmlManager {
+public class ExportToHtmlManager extends AbstractExportManager {
+
+	private static final String OUTPUT_DIR = "dbdocs";
+
+	public static final String IMAGE_DIR = "image";
 
 	private static final Map PROPERTIES = ResourceString
 			.getResources("html.report.");
@@ -45,19 +52,14 @@ public class ExportToHtmlManager {
 
 	protected OverviewHtmlReportPageGenerator overviewPageGenerator;
 
-	private String outputDir;
+	private ExportHtmlSetting exportHtmlSetting;
 
-	protected ERDiagram diagram;
+	private File outputDir;
 
-	private ImageInfoSet imageInfoSet;
+	public ExportToHtmlManager(ExportHtmlSetting exportHtmlSetting) {
+		super("dialog.message.export.html");
 
-	public ExportToHtmlManager(String outputDir, ERDiagram diagram,
-			ImageInfoSet imageInfoSet) {
-		this.outputDir = outputDir;
-		this.imageInfoSet = imageInfoSet;
-
-		this.diagram = diagram;
-		this.diagram.getDiagramContents().sort();
+		this.exportHtmlSetting = exportHtmlSetting;
 
 		Map<Object, Integer> idMap = new HashMap<Object, Integer>();
 
@@ -77,17 +79,53 @@ public class ExportToHtmlManager {
 				idMap));
 		htmlReportPageGeneratorList.add(new WordHtmlReportPageGenerator(idMap));
 		htmlReportPageGeneratorList.add(new CategoryHtmlReportPageGenerator(
-				idMap, this.imageInfoSet));
+				idMap));
 	}
 
-	protected void doPreTask(HtmlReportPageGenerator pageGenerator,
-			Object object) {
+	@Override
+	protected int getTotalTaskCount() {
+		int count = 2;
+
+		count += overviewPageGenerator.countAllClasses(this.diagram,
+				this.htmlReportPageGeneratorList);
+
+		if (this.exportHtmlSetting.isWithImage()) {
+			count += ExportToImageManager.countTask(this.diagram,
+					this.exportHtmlSetting.isWithCategoryImage(), true);
+		}
+
+		return count;
 	}
 
-	protected void doPostTask() throws InterruptedException {
+	private ImageInfoSet createImageInfoSet(ProgressMonitor monitor)
+			throws Exception {
+		File imageDir = new File(this.outputDir, IMAGE_DIR);
+
+		return ExportToImageManager.outputImage(imageDir, monitor,
+				this.diagram, this.exportHtmlSetting.isWithCategoryImage());
 	}
 
-	public void doProcess() throws IOException, InterruptedException {
+	@Override
+	protected void doProcess(ProgressMonitor monitor) throws Exception {
+		this.outputDir = new File(FileUtils.getFile(this.projectDir,
+				this.exportHtmlSetting.getOutputDir()), OUTPUT_DIR);
+
+		monitor.subTaskWithCounter("delete dir : "
+				+ this.outputDir.getAbsolutePath());
+
+		FileUtils.deleteDirectory(this.outputDir);
+		monitor.worked(1);
+
+		monitor.subTaskWithCounter("  make dir : "
+				+ this.outputDir.getAbsolutePath());
+		this.outputDir.mkdirs();
+		monitor.worked(1);
+
+		ImageInfoSet imageInfoSet = null;
+
+		if (this.exportHtmlSetting.isWithImage()) {
+			imageInfoSet = createImageInfoSet(monitor);
+		}
 
 		for (int i = 0; i < FIX_FILES.length; i++) {
 			this.copyOut(FIX_FILES[i], FIX_FILES[i]);
@@ -99,23 +137,24 @@ public class ExportToHtmlManager {
 			this.copyOutResource("image/" + iconFile, iconFile);
 		}
 
-		String allclasses = this.overviewPageGenerator.generateAllClasses(this.diagram,
-				this.htmlReportPageGeneratorList);
+		String allclasses = this.overviewPageGenerator.generateAllClasses(
+				this.diagram, this.htmlReportPageGeneratorList);
 		this.writeOut("allclasses.html", allclasses);
 
 		String overviewFrame = this.overviewPageGenerator
-				.generateFrame(htmlReportPageGeneratorList);
+				.generateFrame(this.htmlReportPageGeneratorList);
 		this.writeOut("overview-frame.html", overviewFrame);
 
-		String overviewSummary = overviewPageGenerator
-				.generateSummary(this.imageInfoSet.getDiagramImageInfo(),
-						htmlReportPageGeneratorList);
+		String overviewSummary = overviewPageGenerator.generateSummary(
+				imageInfoSet, this.htmlReportPageGeneratorList);
 		this.writeOut("overview-summary.html", overviewSummary);
 
 		for (int i = 0; i < htmlReportPageGeneratorList.size(); i++) {
 
 			HtmlReportPageGenerator pageGenerator = (HtmlReportPageGenerator) htmlReportPageGeneratorList
 					.get(i);
+			pageGenerator.setImageInfoSet(imageInfoSet);
+
 			try {
 				HtmlReportPageGenerator prevPageGenerator = null;
 				if (i != 0) {
@@ -141,7 +180,9 @@ public class ExportToHtmlManager {
 				for (int j = 0; j < objectList.size(); j++) {
 					Object object = objectList.get(j);
 
-					this.doPreTask(pageGenerator, object);
+					monitor.subTaskWithCounter("writing : ["
+							+ pageGenerator.getType() + "] "
+							+ pageGenerator.getObjectName(object));
 
 					Object prevObject = null;
 					if (j != 0) {
@@ -158,7 +199,7 @@ public class ExportToHtmlManager {
 					String objectId = pageGenerator.getObjectId(object);
 					this.writeOut(type + "/" + objectId + ".html", template);
 
-					this.doPostTask();
+					monitor.worked(1);
 				}
 
 			} catch (RuntimeException e) {
@@ -187,8 +228,7 @@ public class ExportToHtmlManager {
 	}
 
 	private void writeOut(String dstPath, String content) throws IOException {
-		dstPath = this.outputDir + dstPath;
-		File file = new File(dstPath);
+		File file = new File(this.outputDir, dstPath);
 		file.getParentFile().mkdirs();
 
 		FileUtils.writeStringToFile(file, content, "UTF-8");
@@ -230,8 +270,7 @@ public class ExportToHtmlManager {
 		FileOutputStream out = null;
 
 		try {
-			dstPath = this.outputDir + dstPath;
-			File file = new File(dstPath);
+			File file = new File(this.outputDir, dstPath);
 			file.getParentFile().mkdirs();
 
 			out = new FileOutputStream(file);
@@ -244,4 +283,13 @@ public class ExportToHtmlManager {
 			}
 		}
 	}
+
+	public File getOutputFileOrDir() {
+		return this.outputDir;
+	}
+
+	public static File getIndexHtml(File outputDir) {
+		return new File(outputDir, OUTPUT_DIR + File.separator + "index.html");
+	}
+
 }

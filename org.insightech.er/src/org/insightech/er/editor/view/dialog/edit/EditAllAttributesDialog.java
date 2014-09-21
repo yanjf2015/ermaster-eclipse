@@ -74,7 +74,7 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 	// HashMap<Column, TableEditor[]>();
 
 	public EditAllAttributesDialog(Shell parentShell, ERDiagram diagram) {
-		super(parentShell, 2);
+		super(parentShell);
 		this.diagram = diagram;
 
 		CopyManager copyManager = new CopyManager(null);

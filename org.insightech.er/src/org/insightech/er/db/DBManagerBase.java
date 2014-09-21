@@ -23,7 +23,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
 import org.insightech.er.editor.model.settings.JDBCDriverSetting;
 import org.insightech.er.preference.PreferenceInitializer;
-import org.insightech.er.preference.jdbc.JDBCPathDialog;
+import org.insightech.er.preference.page.jdbc.JDBCPathDialog;
 
 public abstract class DBManagerBase implements DBManager {
 

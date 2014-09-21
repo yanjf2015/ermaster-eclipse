@@ -4,17 +4,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.insightech.er.Activator;
 import org.insightech.er.ResourceString;
 
 public class ExportToDBManager implements IRunnableWithProgress {
 
-	private static Logger logger = Logger.getLogger(ExportToDBManager.class
-			.getName());
+	//	private static Logger logger = Logger.getLogger(ExportToDBManager.class
+//			.getName());
 
 	protected Connection con;
 
@@ -77,12 +75,12 @@ public class ExportToDBManager implements IRunnableWithProgress {
 		Statement stmt = null;
 
 		try {
-			logger.info(ddl);
+//			logger.info(ddl);
 			stmt = this.con.createStatement();
 			stmt.execute(ddl);
 
 		} catch (SQLException e) {
-			Activator.log(e);
+//			Activator.log(e);
 			this.errorSql = ddl;
 			throw e;
 

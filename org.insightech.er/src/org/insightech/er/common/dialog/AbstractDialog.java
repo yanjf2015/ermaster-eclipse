@@ -1,10 +1,10 @@
 package org.insightech.er.common.dialog;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.insightech.er.Activator;
-import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -31,13 +30,7 @@ public abstract class AbstractDialog extends Dialog {
 	protected boolean initialized = false;
 
 	protected AbstractDialog(Shell parentShell) {
-		this(parentShell, 1);
-	}
-
-	protected AbstractDialog(Shell parentShell, int numColumns) {
 		super(parentShell);
-
-		this.numColumns = numColumns;
 	}
 
 	/**
@@ -52,8 +45,9 @@ public abstract class AbstractDialog extends Dialog {
 
 		try {
 			GridLayout layout = new GridLayout();
-			layout.numColumns = this.numColumns;
 			this.initLayout(layout);
+
+			this.numColumns = layout.numColumns;
 
 			composite.setLayout(layout);
 			composite.setLayoutData(this.createLayoutData());
@@ -62,7 +56,6 @@ public abstract class AbstractDialog extends Dialog {
 
 			this.initialize(composite);
 
-		
 			this.initialized = true;
 
 		} catch (Exception e) {
@@ -76,7 +69,7 @@ public abstract class AbstractDialog extends Dialog {
 	protected void constrainShellSize() {
 		super.constrainShellSize();
 		this.setData();
-		
+
 		this.validate();
 	}
 
@@ -90,6 +83,10 @@ public abstract class AbstractDialog extends Dialog {
 	}
 
 	protected void initLayout(GridLayout layout) {
+		layout.numColumns = 2;
+		layout.marginLeft = 20;
+		layout.marginRight = 20;
+		layout.marginBottom = 15;
 	}
 
 	protected int getNumColumns() {
@@ -106,6 +103,7 @@ public abstract class AbstractDialog extends Dialog {
 
 	protected void createErrorComposite(Composite parent) {
 		this.errorMessageText = new CLabel(parent, SWT.NONE);
+		this.errorMessageText.setLeftMargin(0);
 		this.errorMessageText.setText("");
 
 		GridData gridData = new GridData();
@@ -114,6 +112,7 @@ public abstract class AbstractDialog extends Dialog {
 		gridData.horizontalSpan = this.numColumns;
 
 		this.errorMessageText.setLayoutData(gridData);
+		this.errorMessageText.setForeground(ColorConstants.red);
 	}
 
 	protected Integer getIntegerValue(Text text) {
@@ -163,9 +162,11 @@ public abstract class AbstractDialog extends Dialog {
 				this.errorMessageText.setText("");
 
 			} else {
-				Image errorIcon = Activator.getImage(ImageKey.ERROR);
-				this.errorMessageText.setImage(errorIcon);
-				this.errorMessageText.setText(errorMessage);
+				// Image errorIcon =
+				// JFaceResources.getImage("dialog_message_error_image");
+				// this.errorMessageText.setImage(errorIcon);
+				this.errorMessageText.setText("- " + errorMessage);
+
 			}
 		}
 	}
@@ -229,7 +230,10 @@ public abstract class AbstractDialog extends Dialog {
 				close();
 
 			} catch (InputException e) {
-				if (e.getMessage() != null) {
+				if (e.getCause() != null) {
+					Activator.showErrorDialog(e.getCause().getMessage());
+
+				} else if (e.getMessage() != null) {
 					this.setMessage(ResourceString.getResourceString(
 							e.getMessage(), e.getArgs()));
 				}
@@ -245,12 +249,12 @@ public abstract class AbstractDialog extends Dialog {
 
 	abstract protected String getErrorMessage();
 
-	abstract protected void perfomeOK() throws InputException;
+	abstract protected void perfomeOK() throws Exception;
 
 	abstract protected String getTitle();
 
 	protected Button createCheckbox(Composite composite, String title) {
-		return CompositeFactory.createCheckbox(this, composite, title,
+		return CompositeFactory.createCheckbox(this, composite, title, false,
 				this.getNumColumns());
 	}
 

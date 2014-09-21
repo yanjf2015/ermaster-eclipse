@@ -36,7 +36,6 @@ public class ERDiagramOutlineEditPart extends AbstractOutlineEditPart {
 		if (event.getPropertyName().equals("refreshOutline")) {
 			this.refreshOutline();
 
-
 		} else if (event.getPropertyName().equals("refreshChildren")) {
 			this.refreshOutline();
 
@@ -44,6 +43,9 @@ public class ERDiagramOutlineEditPart extends AbstractOutlineEditPart {
 			this.refreshOutline();
 
 		} else if (event.getPropertyName().equals("refreshVisuals")) {
+			this.refreshOutline();
+
+		} else if (event.getPropertyName().equals("refreshSettings")) {
 			this.refreshOutline();
 
 		}

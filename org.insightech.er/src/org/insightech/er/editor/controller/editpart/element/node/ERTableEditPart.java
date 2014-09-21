@@ -53,7 +53,7 @@ public class ERTableEditPart extends TableViewEditPart implements IResizable {
 
 		TableDialog dialog = new TableDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), this.getViewer(),
-				copyTable, diagram.getDiagramContents().getGroups());
+				copyTable);
 
 		if (dialog.open() == IDialogConstants.OK_ID) {
 			CompoundCommand command = createChangeTablePropertyCommand(diagram,

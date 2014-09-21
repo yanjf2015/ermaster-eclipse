@@ -6,14 +6,16 @@ import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.model.dbexport.ddl.DDLCreator;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
+import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
 import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.Tablespace;
 
 public class SQLiteDDLCreator extends DDLCreator {
 
-	public SQLiteDDLCreator(ERDiagram diagram, boolean semicolon) {
-		super(diagram, semicolon);
+	public SQLiteDDLCreator(ERDiagram diagram, Category targetCategory,
+			boolean semicolon) {
+		super(diagram, targetCategory, semicolon);
 	}
 
 	@Override
@@ -54,8 +56,8 @@ public class SQLiteDDLCreator extends DDLCreator {
 
 			ddl.append(")\r\n");
 			ddl.append("\tREFERENCES ");
-			ddl.append(filterName(relation.getSourceTableView().getNameWithSchema(
-					this.getDiagram().getDatabase())));
+			ddl.append(filterName(relation.getSourceTableView()
+					.getNameWithSchema(this.getDiagram().getDatabase())));
 			ddl.append(" (");
 
 			first = true;
@@ -67,8 +69,8 @@ public class SQLiteDDLCreator extends DDLCreator {
 
 				}
 
-				ddl.append(filterName(foreignKeyColumn
-						.getReferencedColumn(relation).getPhysicalName()));
+				ddl.append(filterName(foreignKeyColumn.getReferencedColumn(
+						relation).getPhysicalName()));
 				first = false;
 			}
 

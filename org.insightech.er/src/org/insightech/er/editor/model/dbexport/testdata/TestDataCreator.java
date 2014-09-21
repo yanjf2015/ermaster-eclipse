@@ -23,6 +23,8 @@ public abstract class TestDataCreator {
 
 	protected ERDiagram diagram;
 
+	protected File baseDir;
+
 	protected ExportTestDataSetting exportTestDataSetting;
 
 	protected TestData testData;
@@ -32,8 +34,9 @@ public abstract class TestDataCreator {
 	public TestDataCreator() {
 	}
 
-	public void init(TestData testData) {
+	public void init(TestData testData, File baseDir) {
 		this.testData = testData;
+		this.baseDir = baseDir;
 		this.valueListMap = new HashMap<NormalColumn, List<String>>();
 	}
 
@@ -47,6 +50,7 @@ public abstract class TestDataCreator {
 		} else {
 			String value = this.getRepeatTestDataValue(count,
 					repeatTestDataDef, column);
+
 			if (value == null) {
 				return "null";
 			}
@@ -62,7 +66,6 @@ public abstract class TestDataCreator {
 		}
 
 		String type = repeatTestDataDef.getType();
-
 		int repeatNum = repeatTestDataDef.getRepeatNum();
 
 		if (RepeatTestDataDef.TYPE_FORMAT.equals(type)) {
@@ -224,7 +227,7 @@ public abstract class TestDataCreator {
 	}
 
 	final public void write(ExportTestDataSetting exportTestDataSetting,
-			ERDiagram diagram) throws IOException {
+			ERDiagram diagram) throws Exception {
 		this.exportTestDataSetting = exportTestDataSetting;
 		this.diagram = diagram;
 		this.diagram.getDiagramContents().sort();
@@ -239,22 +242,9 @@ public abstract class TestDataCreator {
 		}
 	}
 
-	protected File getOutputDir() {
-		File outputDir = new File(this.exportTestDataSetting.getExportFilePath());
-
-		if (!outputDir.isAbsolute()) {
-			outputDir = new File(this.diagram.getProjectRoot() + "/"
-					+ this.exportTestDataSetting.getExportFilePath());
-		}
-
-		outputDir.getParentFile().mkdirs();
-
-		return outputDir;
-	}
-
 	protected abstract void openFile() throws IOException;
 
-	protected void write() throws IOException {
+	protected void write() throws Exception {
 		for (Map.Entry<ERTable, TableTestData> entry : this.testData
 				.getTableTestDataMap().entrySet()) {
 			ERTable table = entry.getKey();
