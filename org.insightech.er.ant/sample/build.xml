@@ -1,22 +1,26 @@
-<project default="ddl">
+<project default="testdata">
 
 	<target name="ddl">
-		<ermaster.ddl diagramFile="newfile5.erm" outputFile="ddl.sql" encoding="UTF-8" />
+		<ermaster.ddl diagramFile="newfile.erm" outputFile="ddl.sql" encoding="UTF-8" />
 	</target>
-	
+
 	<target name="image">
-		<ermaster.image diagramfile="newfile5.erm" outputfile="test.png" />
+		<ermaster.image diagramfile="newfile.erm" outputfile="c:\work\test.png" withCategory="true" />
 	</target>
 
 	<target name="report_html">
-		<ermaster.reportHtml diagramFile="newfile5.erm" outputDir="." />
+		<ermaster.reportHtml diagramFile="newfile.erm" outputDir="." />
 	</target>
 
 	<target name="report_excel">
-		<ermaster.reportExcel diagramfile="newfile5.erm" outputfile="test.xls" 
-			template="default_ja" 
-			outputimagefile="test.png" 
-			uselogicalnameassheetname="true" />
+		<ermaster.reportExcel diagramfile="newfile.erm" outputfile="c:\work\test.xls" template="default_en" outputimage="true" uselogicalnameassheetname="true" />
+	</target>
+
+	<target name="testdata">
+		<ermaster.testdata diagramFile="newfile.erm" outputDir="." format="0">
+			<testdata name="init/xxx" />
+			<testdata name="result/yyy" />
+		</ermaster.testdata>
 	</target>
 
 </project>

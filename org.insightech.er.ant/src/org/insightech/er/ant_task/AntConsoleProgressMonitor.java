@@ -1,57 +1,52 @@
 package org.insightech.er.ant_task;
 
 import org.apache.tools.ant.Task;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.insightech.er.editor.model.progress_monitor.ProgressMonitor;
 
-public class AntConsoleProgressMonitor implements IProgressMonitor {
-	
-//	private String taskInfo = "";
+public class AntConsoleProgressMonitor implements ProgressMonitor {
+
 	private Task task;
-//	private String taskname = "unknown";
 
-	public AntConsoleProgressMonitor(Task t) {
-		task = t;
-//		taskname = t.getTaskName();
+	private int totalCount;
+
+	private int currentCount;
+
+	public AntConsoleProgressMonitor(Task task) {
+		this.task = task;
 	}
 
-	public void beginTask(String name, int totalTime) {
-//		taskInfo = "";
-//		taskname = name;
-//		task.log("beginTask " + name + " " + taskInfo + "...");
+	public void beginTask(String message, int totalCount) {
+		this.totalCount = totalCount;
+		this.task.log(message);
 	}
 
 	public void done() {
-//		task.log("doneTask=" + taskname);
-//		taskname = "unknown";
+		this.task.log("Finish!");
 	}
 
-	public void setTaskName(String name) {
-//		taskname = name;
+	public void subTaskWithCounter(String message) {
+		this.subTask("(" + (this.getCurrentCount() + 1) + "/"
+				+ this.getTotalCount() + ") " + message);
+
 	}
 
-	public void subTask(String arg0) {
-//		task.log(taskname + " ... subtask: " + arg0 + "...");
+	public void subTask(String message) {
+		this.task.log(message);
 	}
 
-	public void displayMsg(String msg) {
-		task.log("Message=" + msg);
-	}
-
-	public void setCurrentTaskInfo(String info) {
-//		taskInfo = info;
-//		task.log("TaskInfo=" + info);
-	}
-
-	public void internalWorked(double arg0) {
-	}
-
-	public void worked(int timework) {
+	public void worked(int count) {
+		this.currentCount += count;
 	}
 
 	public boolean isCanceled() {
 		return false;
 	}
 
-	public void setCanceled(boolean arg0) {
+	public int getTotalCount() {
+		return this.totalCount;
+	}
+
+	public int getCurrentCount() {
+		return this.currentCount;
 	}
 }

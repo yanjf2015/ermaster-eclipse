@@ -3,22 +3,18 @@ package org.insightech.er.ant_task;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.model.ERDiagram;
+import org.insightech.er.editor.model.dbexport.ExportWithProgressManager;
 import org.insightech.er.editor.persistent.Persistent;
 
 public abstract class ERMasterAntTaskBase extends Task {
-
-	private Display display;
 
 	private String diagramFile;
 
@@ -28,11 +24,11 @@ public abstract class ERMasterAntTaskBase extends Task {
 
 	protected String getAbsolutePath(String path) {
 		if (path == null) {
-			path = this.getProject().getBaseDir().getAbsolutePath();
+			path = this.getProjectBaseDir().getAbsolutePath();
 
 		} else if (!new File(path).isAbsolute() && !path.startsWith("/")) {
-			path = this.getProject().getBaseDir().getAbsolutePath()
-					+ File.separator + path;
+			path = this.getProjectBaseDir().getAbsolutePath() + File.separator
+					+ path;
 		}
 
 		return path;
@@ -54,37 +50,47 @@ public abstract class ERMasterAntTaskBase extends Task {
 				throw new BuildException("diagramFile attribute must be set!");
 			}
 
-			this.log("Load the diagram file : " + this.diagramFile);
+			this.log("Base Location : " + this.getLocation().getFileName());
 
-			File file = new File(this.getLocation().getFileName());
-			in = new BufferedInputStream(new FileInputStream(new File(
-					file.getParent(), this.diagramFile)));
+			File file = new File(this.diagramFile);
+
+			if (!file.isAbsolute()) {
+				file = new File(this.getProjectBaseDir(), this.diagramFile);
+			}
+
+			this.log("Load the diagram file : " + file.getAbsolutePath());
+
+			try {
+				in = new BufferedInputStream(new FileInputStream(file));
+			} catch (Exception e) {
+				throw new BuildException("Diagram file can not be found : "
+						+ file.getAbsolutePath());
+			}
 
 			ERDiagram diagram = persistent.load(in);
 
-			this.log("Output beginning...");
-			this.doTask(diagram);
-			this.log("Output finish!");
+			ExportWithProgressManager exportManager = this
+					.createExportManager(diagram);
+			exportManager.init(diagram, this.getProjectBaseDir());
+
+			exportManager.run(new AntConsoleProgressMonitor(this));
+
+			this.postProcess();
 
 		} catch (InputException e) {
 			throw new BuildException(ResourceString.getResourceString(e
 					.getMessage()));
+		} catch (IOException e) {
+			throw new BuildException(e.getMessage());
 
 		} catch (BuildException e) {
 			throw e;
-
-		} catch (FileNotFoundException e) {
-			throw new BuildException(e);
 
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new BuildException(e);
 
 		} finally {
-			if (this.display != null) {
-				this.display.dispose();
-			}
-
 			if (in != null) {
 				try {
 					in.close();
@@ -98,19 +104,13 @@ public abstract class ERMasterAntTaskBase extends Task {
 
 	protected abstract void logUsage();
 
-	protected abstract void doTask(ERDiagram diagram) throws Exception;
-
-	protected Display getDisplay() {
-		try {
-			return PlatformUI.getWorkbench().getDisplay();
-
-		} catch (IllegalStateException e) {
-			if (this.display == null) {
-				this.display = new Display();
-			}
-		}
-
-		return this.display;
+	protected void postProcess() {
 	}
 
+	protected abstract ExportWithProgressManager createExportManager(
+			ERDiagram diagram) throws Exception;
+
+	protected File getProjectBaseDir() {
+		return this.getProject().getBaseDir();
+	}
 }
