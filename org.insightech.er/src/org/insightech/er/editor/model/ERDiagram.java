@@ -60,9 +60,11 @@ public class ERDiagram extends ViewableModel {
 		this.setDefaultColor(128, 128, 192);
 		this.setColor(255, 255, 255);
 
-		FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
-
-		this.setFontName(fontData.getName());
+		if (Display.getCurrent() != null) {
+			FontData fontData = Display.getCurrent().getSystemFont()
+					.getFontData()[0];
+			this.setFontName(fontData.getName());
+		}
 	}
 
 	public void clear() {
