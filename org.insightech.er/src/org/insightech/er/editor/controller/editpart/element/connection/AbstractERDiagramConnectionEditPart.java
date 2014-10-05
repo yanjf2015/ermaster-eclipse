@@ -16,7 +16,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.Resources;
 import org.insightech.er.editor.controller.editpart.element.node.NodeElementEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.TableViewEditPart;
@@ -93,7 +93,7 @@ public abstract class AbstractERDiagramConnectionEditPart extends
 			this.doPropertyChange(event);
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

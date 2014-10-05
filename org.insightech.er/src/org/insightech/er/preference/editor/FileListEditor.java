@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.util.io.FileUtils;
 
@@ -40,7 +40,7 @@ public abstract class FileListEditor extends ListEditor {
 
 		this.namePathMap = new HashMap<String, String>();
 
-		this.setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		this.setPreferenceStore(ERDiagramActivator.getDefault().getPreferenceStore());
 
 		this.extention = extention;
 	}
@@ -143,7 +143,7 @@ public abstract class FileListEditor extends ListEditor {
 			}
 
 		} catch (IOException e) {
-			Activator.showErrorDialog(ResourceString
+			ERDiagramActivator.showErrorDialog(ResourceString
 					.getResourceString("error.read.file"));
 		}
 

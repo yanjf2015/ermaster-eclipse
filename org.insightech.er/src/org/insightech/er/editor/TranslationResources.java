@@ -13,7 +13,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.settings.TranslationSetting;
 import org.insightech.er.preference.PreferenceInitializer;
@@ -44,14 +44,14 @@ public class TranslationResources {
 							load(in);
 
 						} catch (IOException e) {
-							Activator.showExceptionDialog(e);
+							ERDiagramActivator.showExceptionDialog(e);
 
 						} finally {
 							if (in != null) {
 								try {
 									in.close();
 								} catch (IOException e) {
-									Activator.showExceptionDialog(e);
+									ERDiagramActivator.showExceptionDialog(e);
 								}
 							}
 						}
@@ -67,13 +67,13 @@ public class TranslationResources {
 					load(in);
 
 				} catch (IOException e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 
 				} finally {
 					try {
 						in.close();
 					} catch (IOException e) {
-						Activator.showExceptionDialog(e);
+						ERDiagramActivator.showExceptionDialog(e);
 					}
 				}
 

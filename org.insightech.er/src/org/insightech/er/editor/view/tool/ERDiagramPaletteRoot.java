@@ -7,7 +7,7 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PaletteSeparator;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.requests.SimpleFactory;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.diagram_contents.element.connection.CommentConnection;
@@ -30,9 +30,9 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 				ResourceString.getResourceString("label.select"));
 		selectionTool.setToolClass(MovablePanningSelectionTool.class);
 		selectionTool
-				.setLargeIcon(Activator.getImageDescriptor(ImageKey.ARROW));
+				.setLargeIcon(ERDiagramActivator.getImageDescriptor(ImageKey.ARROW));
 		selectionTool
-				.setSmallIcon(Activator.getImageDescriptor(ImageKey.ARROW));
+				.setSmallIcon(ERDiagramActivator.getImageDescriptor(ImageKey.ARROW));
 
 		group.add(selectionTool);
 		// group.add(new MarqueeToolEntry());
@@ -40,22 +40,22 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 		group.add(new CreationToolEntry(ResourceString
 				.getResourceString("label.table"), ResourceString
 				.getResourceString("label.create.table"), new SimpleFactory(
-				ERTable.class), Activator
-				.getImageDescriptor(ImageKey.TABLE_NEW), Activator
+				ERTable.class), ERDiagramActivator
+				.getImageDescriptor(ImageKey.TABLE_NEW), ERDiagramActivator
 				.getImageDescriptor(ImageKey.TABLE_NEW)));
 
 		group.add(new CreationToolEntry(ResourceString
 				.getResourceString("label.view"), ResourceString
 				.getResourceString("label.create.view"), new SimpleFactory(
-				View.class), Activator.getImageDescriptor(ImageKey.VIEW),
-				Activator.getImageDescriptor(ImageKey.VIEW)));
+				View.class), ERDiagramActivator.getImageDescriptor(ImageKey.VIEW),
+				ERDiagramActivator.getImageDescriptor(ImageKey.VIEW)));
 
 		ConnectionCreationToolEntry oneToManyTool = new ConnectionCreationToolEntry(
 				ResourceString.getResourceString("label.relation.one.to.many"),
 				ResourceString
 						.getResourceString("label.create.relation.one.to.many"),
-				new SimpleFactory(Relation.class), Activator
-						.getImageDescriptor(ImageKey.RELATION_1_N), Activator
+				new SimpleFactory(Relation.class), ERDiagramActivator
+						.getImageDescriptor(ImageKey.RELATION_1_N), ERDiagramActivator
 						.getImageDescriptor(ImageKey.RELATION_1_N));
 		oneToManyTool.setToolClass(RelationCreationTool.class);
 		group.add(oneToManyTool);
@@ -65,8 +65,8 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 						.getResourceString("label.relation.by.existing.columns"),
 				ResourceString
 						.getResourceString("label.create.relation.by.existing.columns"),
-				new SimpleFactory(RelationByExistingColumns.class), Activator
-						.getImageDescriptor(ImageKey.RELATION_1_N), Activator
+				new SimpleFactory(RelationByExistingColumns.class), ERDiagramActivator
+						.getImageDescriptor(ImageKey.RELATION_1_N), ERDiagramActivator
 						.getImageDescriptor(ImageKey.RELATION_1_N));
 		relationByExistingTool
 				.setToolClass(RelationByExistingColumnsCreationTool.class);
@@ -76,8 +76,8 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 				ResourceString.getResourceString("label.relation.many.to.many"),
 				ResourceString
 						.getResourceString("label.create.relation.many.to.many"),
-				new SimpleFactory(RelatedTable.class), Activator
-						.getImageDescriptor(ImageKey.RELATION_N_N), Activator
+				new SimpleFactory(RelatedTable.class), ERDiagramActivator
+						.getImageDescriptor(ImageKey.RELATION_N_N), ERDiagramActivator
 						.getImageDescriptor(ImageKey.RELATION_N_N));
 		manyToManyTool.setToolClass(RelatedTableCreationTool.class);
 		group.add(manyToManyTool);
@@ -86,8 +86,8 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 				ResourceString.getResourceString("label.relation.self"),
 				ResourceString.getResourceString("label.create.relation.self"),
 				new SimpleFactory(SelfRelation.class),
-				Activator.getImageDescriptor(ImageKey.RELATION_SELF),
-				Activator.getImageDescriptor(ImageKey.RELATION_SELF));
+				ERDiagramActivator.getImageDescriptor(ImageKey.RELATION_SELF),
+				ERDiagramActivator.getImageDescriptor(ImageKey.RELATION_SELF));
 		selfRelationTool.setToolClass(SelfRelationCreationTool.class);
 		group.add(selfRelationTool);
 
@@ -97,16 +97,16 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 				ResourceString.getResourceString("label.note"),
 				ResourceString.getResourceString("label.create.note"),
 				new SimpleFactory(Note.class),
-				Activator.getImageDescriptor(ImageKey.NOTE),
-				Activator.getImageDescriptor(ImageKey.NOTE));
+				ERDiagramActivator.getImageDescriptor(ImageKey.NOTE),
+				ERDiagramActivator.getImageDescriptor(ImageKey.NOTE));
 		group.add(noteTool);
 
 		ConnectionCreationToolEntry commentConnectionTool = new ConnectionCreationToolEntry(
 				ResourceString.getResourceString("label.relation.note"),
 				ResourceString.getResourceString("label.create.relation.note"),
 				new SimpleFactory(CommentConnection.class),
-				Activator.getImageDescriptor(ImageKey.COMMENT_CONNECTION),
-				Activator.getImageDescriptor(ImageKey.COMMENT_CONNECTION));
+				ERDiagramActivator.getImageDescriptor(ImageKey.COMMENT_CONNECTION),
+				ERDiagramActivator.getImageDescriptor(ImageKey.COMMENT_CONNECTION));
 		group.add(commentConnectionTool);
 
 		group.add(new PaletteSeparator());
@@ -114,8 +114,8 @@ public class ERDiagramPaletteRoot extends PaletteRoot {
 		group.add(new CreationToolEntry(ResourceString
 				.getResourceString("label.category"), ResourceString
 				.getResourceString("label.create.category"), new SimpleFactory(
-				Category.class), Activator
-				.getImageDescriptor(ImageKey.CATEGORY), Activator
+				Category.class), ERDiagramActivator
+				.getImageDescriptor(ImageKey.CATEGORY), ERDiagramActivator
 				.getImageDescriptor(ImageKey.CATEGORY)));
 
 		group.add(new PaletteSeparator());

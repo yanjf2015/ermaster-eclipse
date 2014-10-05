@@ -3,7 +3,7 @@ package org.insightech.er.editor.view.action.edit;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -20,7 +20,7 @@ public class EditAllAttributesAction extends AbstractBaseAction {
 	public EditAllAttributesAction(ERDiagramEditor editor) {
 		super(ID, ResourceString
 				.getResourceString("action.title.edit.all.attributes"), editor);
-		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.EDIT));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.EDIT));
 	}
 
 	/**

@@ -15,7 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
 import org.insightech.er.editor.controller.editpart.element.PagableFreeformRootEditPart;
 import org.insightech.er.editor.model.ERDiagram;
@@ -33,7 +33,7 @@ public class NoWindowTest {
 		// GraphicalViewer viewer = editor.getGraphicalViewer();
 		execute();
 
-		new Activator();
+		new ERDiagramActivator();
 		Display display1 = new Display();
 		run(display1, 5);
 		try {

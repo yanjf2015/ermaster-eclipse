@@ -20,7 +20,7 @@ import org.eclipse.gef.ui.actions.AlignmentAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.ui.IWorkbenchPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.editpart.element.node.column.NormalColumnEditPart;
 
@@ -202,7 +202,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_LEFT);
 			setText(ALIGNMENT_ACTION_LEFT.getText());
 			setToolTipText(ALIGNMENT_ACTION_LEFT.getToolTipText());
-			setImageDescriptor(Activator
+			setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.ALIGN_LEFT));
 			// setDisabledImageDescriptor(ALIGNMENT_ACTION_LEFT
 			// .getDisabledImageDescriptor());
@@ -212,7 +212,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_RIGHT);
 			setText(ALIGNMENT_ACTION_RIGHT.getText());
 			setToolTipText(ALIGNMENT_ACTION_RIGHT.getToolTipText());
-			setImageDescriptor(Activator
+			setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.ALIGN_RIGHT));
 //			setDisabledImageDescriptor(ALIGNMENT_ACTION_RIGHT
 //					.getDisabledImageDescriptor());
@@ -222,7 +222,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_TOP);
 			setText(ALIGNMENT_ACTION_TOP.getText());
 			setToolTipText(ALIGNMENT_ACTION_TOP.getToolTipText());
-			setImageDescriptor(Activator.getImageDescriptor(ImageKey.ALIGN_TOP));
+			setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.ALIGN_TOP));
 //			setDisabledImageDescriptor(ALIGNMENT_ACTION_TOP
 //					.getDisabledImageDescriptor());
 			break;
@@ -231,7 +231,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_BOTTOM);
 			setText(ALIGNMENT_ACTION_BOTTOM.getText());
 			setToolTipText(ALIGNMENT_ACTION_BOTTOM.getToolTipText());
-			setImageDescriptor(Activator
+			setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.ALIGN_BOTTOM));
 //			setDisabledImageDescriptor(ALIGNMENT_ACTION_BOTTOM
 //					.getDisabledImageDescriptor());
@@ -241,7 +241,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_CENTER);
 			setText(ALIGNMENT_ACTION_CENTER.getText());
 			setToolTipText(ALIGNMENT_ACTION_CENTER.getToolTipText());
-			setImageDescriptor(Activator
+			setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.ALIGN_CENTER));
 //			setDisabledImageDescriptor(ALIGNMENT_ACTION_CENTER
 //					.getDisabledImageDescriptor());
@@ -251,7 +251,7 @@ public class ERDiagramAlignmentAction extends SelectionAction {
 			setId(GEFActionConstants.ALIGN_MIDDLE);
 			setText(ALIGNMENT_ACTION_MIDDLE.getText());
 			setToolTipText(ALIGNMENT_ACTION_MIDDLE.getToolTipText());
-			setImageDescriptor(Activator
+			setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.ALIGN_MIDDLE));
 //			setDisabledImageDescriptor(ALIGNMENT_ACTION_MIDDLE
 //					.getDisabledImageDescriptor());

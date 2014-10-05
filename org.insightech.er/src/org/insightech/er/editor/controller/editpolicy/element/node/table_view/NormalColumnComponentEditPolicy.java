@@ -3,7 +3,7 @@ package org.insightech.er.editor.controller.editpolicy.element.node.table_view;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.ComponentEditPolicy;
 import org.eclipse.gef.requests.GroupRequest;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view.ChangeTableViewPropertyCommand;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.Column;
@@ -95,7 +95,7 @@ public class NormalColumnComponentEditPolicy extends ComponentEditPolicy {
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return null;

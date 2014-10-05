@@ -3,7 +3,7 @@ package org.insightech.er.test;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.model.dbimport.DBObject;
 import org.insightech.er.editor.model.dbimport.DBObjectSet;
 import org.insightech.er.editor.view.dialog.dbimport.SelectImportedObjectFromDBDialog;
@@ -14,7 +14,7 @@ public class SequenceTest {
 	private Shell shell = new Shell(display);
 
 	public static void main(String[] args) throws Exception {
-		new Activator();
+		new ERDiagramActivator();
 		new SequenceTest();
 	}
 

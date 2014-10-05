@@ -3,7 +3,7 @@ package org.insightech.er.common.widgets;
 import java.io.File;
 
 import org.eclipse.swt.widgets.Composite;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 
 public class FileText extends AbstractPathText {
 
@@ -42,7 +42,7 @@ public class FileText extends AbstractPathText {
 
 	@Override
 	protected String selectPathByDilaog() {
-		return Activator.showSaveDialog(this.projectDir, this.defaultFileName,
+		return ERDiagramActivator.showSaveDialog(this.projectDir, this.defaultFileName,
 				this.getFilePath(), this.filterExtensions);
 	}
 

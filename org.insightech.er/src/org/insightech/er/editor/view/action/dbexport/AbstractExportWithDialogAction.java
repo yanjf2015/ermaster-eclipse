@@ -2,7 +2,7 @@ package org.insightech.er.editor.view.action.dbexport;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.controller.command.settings.ChangeSettingsCommand;
@@ -15,7 +15,7 @@ public abstract class AbstractExportWithDialogAction extends AbstractBaseAction 
 	public AbstractExportWithDialogAction(String id, String titleResource,
 			String imageKey, ERDiagramEditor editor) {
 		super(id, ResourceString.getResourceString(titleResource), editor);
-		this.setImageDescriptor(Activator.getImageDescriptor(imageKey));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(imageKey));
 	}
 
 	@Override

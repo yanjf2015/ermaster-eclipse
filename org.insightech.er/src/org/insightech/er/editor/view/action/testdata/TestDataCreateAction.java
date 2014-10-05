@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -24,7 +24,7 @@ public class TestDataCreateAction extends AbstractBaseAction {
 		super(ID, ResourceString
 				.getResourceString("action.title.testdata.create"), editor);
 
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.TEST_DATA));
 	}
 

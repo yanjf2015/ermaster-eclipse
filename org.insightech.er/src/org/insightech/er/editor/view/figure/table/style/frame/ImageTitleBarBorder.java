@@ -6,7 +6,7 @@ import org.eclipse.draw2d.TitleBarBorder;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Image;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 
 public class ImageTitleBarBorder extends TitleBarBorder {
@@ -21,7 +21,7 @@ public class ImageTitleBarBorder extends TitleBarBorder {
 		tempRect.setBounds(getPaintRectangle(figure, insets));
 		Rectangle rec = tempRect;
 
-		// •‚ğæ“¾
+		// ï¿½ï¿½ï¿½ï¿½ï¿½æ“¾
 		this.width = getTextExtents(figure).width + getPadding().getWidth();
 
 		rec.height = Math.min(rec.height, getTextExtents(figure).height
@@ -29,8 +29,8 @@ public class ImageTitleBarBorder extends TitleBarBorder {
 		g.clipRect(rec);
 		g.fillRectangle(rec);
 
-		// ”wŒiƒCƒ[ƒW‚ğ•`‰æ
-		Image image = Activator.getImage(ImageKey.TITLEBAR_BACKGROUND);
+		// ï¿½wï¿½iï¿½Cï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½`ï¿½ï¿½
+		Image image = ERDiagramActivator.getImage(ImageKey.TITLEBAR_BACKGROUND);
 		g.drawImage(image, 0, 0, image.getImageData().width, image
 				.getImageData().height, rec.x, rec.y, rec.width, rec.height);
 

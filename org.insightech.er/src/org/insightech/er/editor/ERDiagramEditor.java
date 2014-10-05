@@ -43,7 +43,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.handlers.IHandlerService;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.Resources;
 import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
 import org.insightech.er.editor.controller.editpart.element.PagableFreeformRootEditPart;
@@ -162,7 +162,7 @@ public class ERDiagramEditor extends GraphicalEditorWithPalette {
 		try {
 			this.extensionLoader = new ExtensionLoader(this);
 		} catch (CoreException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

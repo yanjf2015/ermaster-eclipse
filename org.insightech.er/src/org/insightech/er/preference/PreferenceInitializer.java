@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.db.impl.standard_sql.StandardSQLDBManager;
@@ -67,7 +67,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static String getTemplatePath(String fileName) {
-		IPath dataLocation = Activator.getDefault().getStateLocation();
+		IPath dataLocation = ERDiagramActivator.getDefault().getStateLocation();
 		String path = dataLocation.append(PreferenceInitializer.TEMPLATE_DIR)
 				.append(fileName).toOSString();
 
@@ -75,7 +75,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static String getTranslationPath(String fileName) {
-		IPath dataLocation = Activator.getDefault().getStateLocation();
+		IPath dataLocation = ERDiagramActivator.getDefault().getStateLocation();
 		String path = dataLocation
 				.append(PreferenceInitializer.TRANSLATION_DIR).append(fileName)
 				.toOSString();
@@ -94,7 +94,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void addJDBCDriver(String db, String className, String path) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -126,7 +126,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			}
 		}
 
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -160,7 +160,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void clearJDBCDriverInfo() {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int num = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -178,7 +178,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static String getJDBCDriverPath(String db, String driverClassName) {
 		String path = null;
 
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -202,7 +202,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static DBSetting getDBSetting(int no) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		String dbsystem = store
 				.getString(PreferenceInitializer.DB_SETTING_DBSYSTEM + no);
@@ -236,7 +236,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void saveSetting(int no, DBSetting dbSetting) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		store.setValue(PreferenceInitializer.DB_SETTING_DBSYSTEM + no,
 				Format.null2blank(dbSetting.getDbsystem()));
@@ -260,7 +260,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void saveSetting(List<DBSetting> dbSettingList) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		store.setValue(PreferenceInitializer.DB_SETTING_LIST_NUM,
 				dbSettingList.size());
@@ -274,7 +274,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static List<DBSetting> getDBSettingList(String database) {
 		List<DBSetting> dbSettingList = new ArrayList<DBSetting>();
 
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int num = store.getInt(PreferenceInitializer.DB_SETTING_LIST_NUM);
 
@@ -292,7 +292,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void addDBSetting(DBSetting dbSetting) {
-		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
 
 		int num = store.getInt(PreferenceInitializer.DB_SETTING_LIST_NUM);
 		num++;
@@ -302,7 +302,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static List<String> getAllUserTranslations() {
-		String str = Activator.getDefault().getPreferenceStore()
+		String str = ERDiagramActivator.getDefault().getPreferenceStore()
 				.getString(PreferenceInitializer.TRANSLATION_FILE_LIST);
 
 		StringTokenizer st = new StringTokenizer(str, "/");
@@ -324,7 +324,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static List<String> getAllExcelTemplateFiles() {
-		String str = Activator.getDefault().getPreferenceStore()
+		String str = ERDiagramActivator.getDefault().getPreferenceStore()
 				.getString(PreferenceInitializer.TEMPLATE_FILE_LIST);
 		
 		return parseStringToList(str);
@@ -342,7 +342,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void addPreferenceValue(String value) {
-		IPreferenceStore preferenceStore = Activator.getDefault()
+		IPreferenceStore preferenceStore = ERDiagramActivator.getDefault()
 				.getPreferenceStore();
 
 		String values = preferenceStore

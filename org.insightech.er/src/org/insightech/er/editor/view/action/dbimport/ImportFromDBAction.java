@@ -8,7 +8,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
@@ -35,7 +35,7 @@ public class ImportFromDBAction extends AbstractImportAction {
 	public ImportFromDBAction(ERDiagramEditor editor) {
 		super(ID, ResourceString.getResourceString("action.title.import.db"),
 				editor);
-		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.DATABASE));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.DATABASE));
 	}
 
 	protected AbstractSelectImportedObjectDialog createSelectImportedObjectDialog(
@@ -120,7 +120,7 @@ public class ImportFromDBAction extends AbstractImportAction {
 
 							Exception e = preTableImportManager.getException();
 							if (e != null) {
-								Activator.showMessageDialog(e.getMessage());
+								ERDiagramActivator.showMessageDialog(e.getMessage());
 								throw new InputException("error.jdbc.version");
 
 							}

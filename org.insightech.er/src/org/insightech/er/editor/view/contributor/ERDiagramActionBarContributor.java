@@ -29,7 +29,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.part.EditorPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.ERDiagram;
@@ -72,10 +72,10 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 		this.addRetargetAction(new RedoRetargetAction());
 
 		ZoomInRetargetAction zoomInAction = new ZoomInRetargetAction();
-		zoomInAction.setImageDescriptor(Activator
+		zoomInAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ZOOM_IN));
 		ZoomOutRetargetAction zoomOutAction = new ZoomOutRetargetAction();
-		zoomOutAction.setImageDescriptor(Activator
+		zoomOutAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ZOOM_OUT));
 		this.addRetargetAction(zoomInAction);
 		this.addRetargetAction(zoomOutAction);
@@ -85,7 +85,7 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 				GEFActionConstants.TOGGLE_GRID_VISIBILITY,
 				ResourceString.getResourceString("action.title.grid"),
 				IAction.AS_CHECK_BOX);
-		gridAction.setImageDescriptor(Activator
+		gridAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.GRID));
 
 		this.addRetargetAction(gridAction);
@@ -94,7 +94,7 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 				GEFActionConstants.TOGGLE_SNAP_TO_GEOMETRY,
 				ResourceString.getResourceString("action.title.grid.snap"),
 				IAction.AS_CHECK_BOX);
-		gridSnapAction.setImageDescriptor(Activator
+		gridSnapAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.GRID_SNAP));
 
 		this.addRetargetAction(gridSnapAction);
@@ -102,14 +102,14 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 		RetargetAction tooltipAction = new RetargetAction(TooltipAction.ID,
 				ResourceString.getResourceString("action.title.tooltip"),
 				IAction.AS_CHECK_BOX);
-		tooltipAction.setImageDescriptor(Activator
+		tooltipAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.TOOLTIP));
 		this.addRetargetAction(tooltipAction);
 
 		RetargetAction lockEditAction = new RetargetAction(LockEditAction.ID,
 				ResourceString.getResourceString("action.title.lock.edit"),
 				IAction.AS_CHECK_BOX);
-		lockEditAction.setImageDescriptor(Activator
+		lockEditAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.LOCK_EDIT));
 		this.addRetargetAction(lockEditAction);
 
@@ -117,48 +117,48 @@ public class ERDiagramActionBarContributor extends ActionBarContributor {
 
 		AlignmentRetargetAction alignLeftAction = new AlignmentRetargetAction(
 				PositionConstants.LEFT);
-		alignLeftAction.setImageDescriptor(Activator
+		alignLeftAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_LEFT));
 		alignLeftAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignLeftAction);
 		AlignmentRetargetAction alignCenterAction = new AlignmentRetargetAction(
 				PositionConstants.CENTER);
-		alignCenterAction.setImageDescriptor(Activator
+		alignCenterAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_CENTER));
 		alignCenterAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignCenterAction);
 		AlignmentRetargetAction alignRightAction = new AlignmentRetargetAction(
 				PositionConstants.RIGHT);
-		alignRightAction.setImageDescriptor(Activator
+		alignRightAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_RIGHT));
 		alignRightAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignRightAction);
 		AlignmentRetargetAction alignTopAction = new AlignmentRetargetAction(
 				PositionConstants.TOP);
-		alignTopAction.setImageDescriptor(Activator
+		alignTopAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_TOP));
 		alignTopAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignTopAction);
 		AlignmentRetargetAction alignMiddleAction = new AlignmentRetargetAction(
 				PositionConstants.MIDDLE);
-		alignMiddleAction.setImageDescriptor(Activator
+		alignMiddleAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_MIDDLE));
 		alignMiddleAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignMiddleAction);
 		AlignmentRetargetAction alignBottomAction = new AlignmentRetargetAction(
 				PositionConstants.BOTTOM);
-		alignBottomAction.setImageDescriptor(Activator
+		alignBottomAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.ALIGN_BOTTOM));
 		alignBottomAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(alignBottomAction);
 
 		MatchWidthRetargetAction matchWidthAction = new MatchWidthRetargetAction();
-		matchWidthAction.setImageDescriptor(Activator
+		matchWidthAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.MATCH_WIDTH));
 		matchWidthAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(matchWidthAction);
 		MatchHeightRetargetAction matchHeightAction = new MatchHeightRetargetAction();
-		matchHeightAction.setImageDescriptor(Activator
+		matchHeightAction.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.MATCH_HEIGHT));
 		matchHeightAction.setDisabledImageDescriptor(null);
 		this.addRetargetAction(matchHeightAction);

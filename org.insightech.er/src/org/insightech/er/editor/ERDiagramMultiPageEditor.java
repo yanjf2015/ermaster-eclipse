@@ -44,7 +44,7 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.editor.controller.command.category.ChangeCategoryNameCommand;
@@ -148,14 +148,14 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 			this.diagram = persistent.load(in);
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 
 		} finally {
 			if (in != null) {
 				try {
 					in.close();
 				} catch (Exception e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 		}
@@ -183,7 +183,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 					ResourceString.getResourceString("label.all"));
 
 		} catch (PartInitException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		this.initCategoryPages();
@@ -225,7 +225,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 			}
 
 		} catch (PartInitException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return super.createPageContainer(parent);
@@ -276,7 +276,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 			}
 
 		} catch (PartInitException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 
@@ -319,7 +319,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		for (int i = 0; i < this.getPageCount(); i++) {
@@ -431,7 +431,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 					this.inputFile.deleteMarkers(null, true,
 							IResource.DEPTH_INFINITE);
 				} catch (CoreException e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 
@@ -483,7 +483,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 			try {
 				ResourcesPlugin.getWorkspace().run(editorMarker, null);
 			} catch (CoreException e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 	}
@@ -586,6 +586,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 
 			@Override
 			public void mouseDoubleClick(MouseEvent mouseevent) {
+				
 				Category category = getPageCategory(getActivePage());
 
 				if (category != null) {
@@ -657,7 +658,7 @@ public class ERDiagramMultiPageEditor extends MultiPageEditorPart {
 				project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
 			} catch (CoreException e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 	}

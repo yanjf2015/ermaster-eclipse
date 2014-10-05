@@ -7,7 +7,7 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.editpart.element.AbstractModelEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.ERTableEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.ViewEditPart;
@@ -60,7 +60,7 @@ public abstract class ColumnEditPart extends AbstractModelEditPart {
 				performRequestOpen();
 
 			} catch (Exception e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 

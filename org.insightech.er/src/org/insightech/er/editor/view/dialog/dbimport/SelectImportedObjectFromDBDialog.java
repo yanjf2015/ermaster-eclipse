@@ -3,7 +3,7 @@ package org.insightech.er.editor.view.dialog.dbimport;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -46,7 +46,7 @@ public class SelectImportedObjectFromDBDialog extends
 				.getSelection();
 
 		if (this.clearDiagramButton.getSelection()) {
-			if (!Activator.showConfirmDialog("label.clear.diagram.confirm")) {
+			if (!ERDiagramActivator.showConfirmDialog("label.clear.diagram.confirm")) {
 				throw new InputException();
 			} else {
 				this.diagram.clear();

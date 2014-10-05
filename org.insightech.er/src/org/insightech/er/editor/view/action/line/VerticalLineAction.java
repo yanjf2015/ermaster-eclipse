@@ -11,7 +11,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.LabelRetargetAction;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -30,7 +30,7 @@ public class VerticalLineAction extends AbstractBaseSelectionAction {
 		super(ID, ResourceString
 				.getResourceString("action.title.vertical.line"), editor);
 
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.VERTICAL_LINE));
 //		this.setDisabledImageDescriptor(Activator
 //				.getImageDescriptor(ImageKey.VERTICAL_LINE_DISABLED));
@@ -94,7 +94,7 @@ public class VerticalLineAction extends AbstractBaseSelectionAction {
 				command = this.adjustSpace(start, top, bottom, list);
 			}
 		} catch (Exception e) {
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 		}
 		
 		return command;
@@ -202,7 +202,7 @@ public class VerticalLineAction extends AbstractBaseSelectionAction {
 			super(ID, ResourceString
 					.getResourceString("action.title.vertical.line"));
 
-			this.setImageDescriptor(Activator
+			this.setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.VERTICAL_LINE));
 //			this.setDisabledImageDescriptor(Activator
 //					.getImageDescriptor(ImageKey.VERTICAL_LINE_DISABLED));

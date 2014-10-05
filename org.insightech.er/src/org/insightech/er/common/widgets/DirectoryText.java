@@ -3,7 +3,7 @@ package org.insightech.er.common.widgets;
 import java.io.File;
 
 import org.eclipse.swt.widgets.Composite;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.util.io.FileUtils;
 
 public class DirectoryText extends AbstractPathText {
@@ -27,7 +27,7 @@ public class DirectoryText extends AbstractPathText {
 		String filePath = FileUtils.getFile(this.projectDir, getFilePath())
 				.getAbsolutePath();
 
-		return Activator.showDirectoryDialog(filePath, this.message);
+		return ERDiagramActivator.showDirectoryDialog(filePath, this.message);
 	}
 
 }

@@ -9,7 +9,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.DocumentProviderRegistry;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.IElementStateListener;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 
 public class ERDiagramElementStateListener implements IElementStateListener {
 
@@ -28,7 +28,7 @@ public class ERDiagramElementStateListener implements IElementStateListener {
 		try {
 			documentProvider.connect(editorPart.getEditorInput());
 		} catch (CoreException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

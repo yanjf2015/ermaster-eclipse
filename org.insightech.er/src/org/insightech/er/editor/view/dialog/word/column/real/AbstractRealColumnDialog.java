@@ -133,13 +133,15 @@ public abstract class AbstractRealColumnDialog extends AbstractColumnDialog {
 			this.defaultText.removeAll();
 
 			if (selectedType.isTimestamp()) {
-				this.defaultText.add(ResourceString
-						.getResourceString("label.current.date.time"));
+				this.defaultText
+						.add(ResourceString
+								.getResourceString(ResourceString.KEY_DEFAULT_VALUE_CURRENT_DATE_TIME));
 				this.defaultText.setText(defaultValue);
 
 			} else if (selectedType.isFullTextIndexable()) {
-				this.defaultText.add(ResourceString
-						.getResourceString("label.empty.string"));
+				this.defaultText
+						.add(ResourceString
+								.getResourceString(ResourceString.KEY_DEFAULT_VALUE_EMPTY_STRING));
 				this.defaultText.setText(defaultValue);
 
 			} else {

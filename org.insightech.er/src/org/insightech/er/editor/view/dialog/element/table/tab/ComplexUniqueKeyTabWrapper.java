@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.common.dialog.AbstractTabbedDialog;
 import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.common.exception.InputException;
@@ -169,7 +169,7 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 
 				if (!"".equals(name)) {
 					if (!Check.isAlphabet(name)) {
-						Activator
+						ERDiagramActivator
 								.showErrorDialog("error.unique.key.name.not.alphabet");
 						return;
 					}
@@ -185,13 +185,13 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 				}
 
 				if (columnList.isEmpty()) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.not.checked.complex.unique.key.columns");
 					return;
 				}
 
 				if (contains(columnList) != null) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.already.exist.complex.unique.key");
 					return;
 				}
@@ -220,7 +220,7 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 				String name = nameText.getText().trim();
 
 				if (!Check.isAlphabet(name)) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.unique.key.name.not.alphabet");
 					return;
 				}
@@ -238,14 +238,14 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 				}
 
 				if (columnList.isEmpty()) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.not.checked.complex.unique.key.columns");
 					return;
 				}
 
 				ComplexUniqueKey sameKey = contains(columnList);
 				if (sameKey != null && sameKey != complexUniqueKey) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.already.exist.complex.unique.key");
 					return;
 				}

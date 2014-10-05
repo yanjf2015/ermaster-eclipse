@@ -11,6 +11,10 @@ import java.util.TreeMap;
 
 public class ResourceString {
 
+	public static final String KEY_DEFAULT_VALUE_EMPTY_STRING = "label.empty.string";
+
+	public static final String KEY_DEFAULT_VALUE_CURRENT_DATE_TIME = "label.current.date.time";
+
 	private static ResourceBundle resource = ResourceBundle
 			.getBundle("org.insightech.er.ERDiagram");
 
@@ -22,6 +26,14 @@ public class ResourceString {
 
 	public static String getResourceString(String key) {
 		return getResourceString(key, null);
+	}
+
+	public static String normalize(String key, String value) {
+		if (equals(key, value)) {
+			return getResourceString(key);
+		}
+
+		return value;
 	}
 
 	public static boolean equals(String key, String value) {

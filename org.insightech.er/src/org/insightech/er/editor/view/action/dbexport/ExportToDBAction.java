@@ -6,7 +6,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.RetargetAction;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -68,7 +68,7 @@ public class ExportToDBAction extends AbstractBaseAction {
 			super(ID, ResourceString
 					.getResourceString("action.title.export.db"));
 
-			this.setImageDescriptor(Activator
+			this.setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.EXPORT_TO_DB));
 			this.setToolTipText(this.getText());
 		}

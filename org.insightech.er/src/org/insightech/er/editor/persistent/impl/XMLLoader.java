@@ -1011,11 +1011,17 @@ public class XMLLoader {
 			word = context.uniqueWordDictionary.getUniqueWord(word);
 		}
 
+		String defaultValue = this.getStringValue(element, "default_value");
+		defaultValue = ResourceString.normalize(
+				ResourceString.KEY_DEFAULT_VALUE_EMPTY_STRING, defaultValue);
+		defaultValue = ResourceString.normalize(
+				ResourceString.KEY_DEFAULT_VALUE_CURRENT_DATE_TIME,
+				defaultValue);
+
 		normalColumn = new NormalColumn(word, this.getBooleanValue(element,
 				"not_null"), this.getBooleanValue(element, "primary_key"),
 				this.getBooleanValue(element, "unique_key"),
-				this.getBooleanValue(element, "auto_increment"),
-				this.getStringValue(element, "default_value"),
+				this.getBooleanValue(element, "auto_increment"), defaultValue,
 				this.getStringValue(element, "constraint"),
 				this.getStringValue(element, "unique_key_name"),
 				this.getStringValue(element, "character_set"),

@@ -48,6 +48,8 @@ public class ImageAntTask extends ERMasterAntTaskBase {
 		this.log("    * diagramFile  - The path of the input .erm file.");
 		this.log("    * outputFile   - The path of the output image file. The png/jpg/jpeg/bmp format are supported.");
 		this.log("      withCategory - Boolean. Whether images of each category are output. Default value is true.");
+		this.log("                     If true is specified, then the directory named 'images' will be made,");
+		this.log("                     and images of each category are output under this directory.");
 	}
 
 	@Override

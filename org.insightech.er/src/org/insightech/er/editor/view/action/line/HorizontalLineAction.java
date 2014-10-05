@@ -11,7 +11,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.LabelRetargetAction;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -32,7 +32,7 @@ public class HorizontalLineAction extends AbstractBaseSelectionAction {
 		super(ID, ResourceString
 				.getResourceString("action.title.horizontal.line"), editor);
 
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.HORIZONTAL_LINE));
 		// this.setDisabledImageDescriptor(Activator
 		// .getImageDescriptor(ImageKey.HORIZONTAL_LINE_DISABLED));
@@ -206,7 +206,7 @@ public class HorizontalLineAction extends AbstractBaseSelectionAction {
 			super(ID, ResourceString
 					.getResourceString("action.title.horizontal.line"));
 
-			this.setImageDescriptor(Activator
+			this.setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.HORIZONTAL_LINE));
 			// this.setDisabledImageDescriptor(Activator
 			// .getImageDescriptor(ImageKey.HORIZONTAL_LINE_DISABLED));

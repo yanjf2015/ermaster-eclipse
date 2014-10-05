@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.widgets.TreeItem;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.DBManager;
@@ -40,7 +40,7 @@ public class SequenceSetOutlineEditPart extends AbstractOutlineEditPart {
 
 		this.setWidgetText(ResourceString.getResourceString("label.sequence")
 				+ " (" + this.getModelChildren().size() + ")");
-		this.setWidgetImage(Activator.getImage(ImageKey.DICTIONARY));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.DICTIONARY));
 	}
 
 }

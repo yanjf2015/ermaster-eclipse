@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
@@ -242,7 +242,7 @@ public class JDBCPreferencePage extends PreferencePage implements
 					}
 
 				} catch (Exception e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 		});
@@ -290,7 +290,7 @@ public class JDBCPreferencePage extends PreferencePage implements
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 }

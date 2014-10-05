@@ -17,7 +17,7 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.editpolicies.XYLayoutEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.NothingToDoCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.bendpoint.MoveBendpointCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.CreateElementCommand;
@@ -177,7 +177,7 @@ public class ERDiagramLayoutEditPolicy extends XYLayoutEditPolicy {
 			return compoundCommand;
 
 		} catch (Exception e) {
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 			return null;
 		}
 	}

@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
@@ -89,14 +89,14 @@ public class PageSettingDialog extends AbstractDialog {
 		directionGroup.setLayout(directionGroupLayout);
 
 		Label vImage = new Label(directionGroup, SWT.NONE);
-		vImage.setImage(Activator.getImage(ImageKey.PAGE_SETTING_V));
+		vImage.setImage(ERDiagramActivator.getImage(ImageKey.PAGE_SETTING_V));
 
 		vButton = new Button(directionGroup, SWT.RADIO);
 		vButton.setText(ResourceString
 				.getResourceString("label.page.direction.v"));
 
 		Label hImage = new Label(directionGroup, SWT.NONE);
-		hImage.setImage(Activator.getImage(ImageKey.PAGE_SETTING_H));
+		hImage.setImage(ERDiagramActivator.getImage(ImageKey.PAGE_SETTING_H));
 
 		hButton = new Button(directionGroup, SWT.RADIO);
 		hButton.setText(ResourceString

@@ -11,7 +11,7 @@ import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.swt.graphics.Font;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.Resources;
 import org.insightech.er.editor.view.figure.table.TableFigure;
@@ -50,7 +50,7 @@ public class FunnyStyleSupport extends AbstractStyleSupport {
 
 		ImageFigure image = new ImageFigure();
 		image.setBorder(new MarginBorder(new Insets(5, 10, 5, 2)));
-		image.setImage(Activator.getImage(this.getTableFigure().getImageKey()));
+		image.setImage(ERDiagramActivator.getImage(this.getTableFigure().getImageKey()));
 		title.add(image);
 
 		this.nameLabel = new Label();
@@ -137,7 +137,7 @@ public class FunnyStyleSupport extends AbstractStyleSupport {
 			if (primaryKey) {
 				ImageFigure image = new ImageFigure();
 				image.setBorder(new MarginBorder(new Insets(0, 0, 0, 0)));
-				image.setImage(Activator.getImage(ImageKey.PRIMARY_KEY));
+				image.setImage(ERDiagramActivator.getImage(ImageKey.PRIMARY_KEY));
 				columnFigure.add(image);
 
 			} else {
@@ -150,7 +150,7 @@ public class FunnyStyleSupport extends AbstractStyleSupport {
 			if (foreignKey) {
 				ImageFigure image = new ImageFigure();
 				image.setBorder(new MarginBorder(new Insets(0, 0, 0, 0)));
-				image.setImage(Activator.getImage(ImageKey.FOREIGN_KEY));
+				image.setImage(ERDiagramActivator.getImage(ImageKey.FOREIGN_KEY));
 				columnFigure.add(image);
 
 			} else {

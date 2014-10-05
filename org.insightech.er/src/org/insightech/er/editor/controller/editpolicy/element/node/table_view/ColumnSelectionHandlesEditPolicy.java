@@ -19,7 +19,7 @@ import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.editpolicies.NonResizableEditPolicy;
 import org.eclipse.gef.requests.DirectEditRequest;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.relation.CreateRelationCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.relation.DeleteRelationCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view.AddColumnGroupCommand;
@@ -256,7 +256,7 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return super.getCommand(request);
@@ -278,7 +278,7 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 		List<Relation> relationList = oldColumn.getOutgoingRelationList();
 
 		if (!relationList.isEmpty()) {
-			Activator.showErrorDialog("error.reference.key.not.moveable");
+			ERDiagramActivator.showErrorDialog("error.reference.key.not.moveable");
 			return null;
 
 		} else if (oldColumn.isForeignKey()) {
@@ -286,7 +286,7 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 			TableView referencedTableView = oldRelation.getSourceTableView();
 
 			if (ERTable.isRecursive(referencedTableView, newTableView)) {
-				Activator.showErrorDialog("error.recursive.relation");
+				ERDiagramActivator.showErrorDialog("error.recursive.relation");
 				return null;
 			}
 
@@ -305,7 +305,7 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 			List<NormalColumn> oldForeignKeyColumnList = new ArrayList<NormalColumn>();
 
 			if (referencedTableView == newTableView) {
-				Activator
+				ERDiagramActivator
 						.showErrorDialog("error.foreign.key.not.moveable.to.reference.table");
 				return null;
 			}
@@ -346,7 +346,7 @@ public class ColumnSelectionHandlesEditPolicy extends NonResizableEditPolicy {
 						.getOutgoingRelationList();
 
 				if (!oldRelationList.isEmpty()) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("error.reference.key.not.moveable");
 					return null;
 				}

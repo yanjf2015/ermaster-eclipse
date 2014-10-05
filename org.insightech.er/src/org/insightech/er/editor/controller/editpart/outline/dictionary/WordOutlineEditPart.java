@@ -10,7 +10,7 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.dictionary.EditWordCommand;
 import org.insightech.er.editor.controller.editpart.outline.AbstractOutlineEditPart;
@@ -139,7 +139,7 @@ public class WordOutlineEditPart extends AbstractOutlineEditPart {
 
 		this.setWidgetText(diagram.filter(name));
 
-		this.setWidgetImage(Activator.getImage(ImageKey.WORD));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.WORD));
 	}
 
 	/**

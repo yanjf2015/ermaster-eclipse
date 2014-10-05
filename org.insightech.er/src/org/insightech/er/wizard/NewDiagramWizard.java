@@ -7,7 +7,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.ide.IDE;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.wizard.page.NewDiagramWizardPage1;
 import org.insightech.er.wizard.page.NewDiagramWizardPage2;
 
@@ -43,7 +43,7 @@ public class NewDiagramWizard extends Wizard implements INewWizard {
 			IDE.openEditor(page, file, true);
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return true;

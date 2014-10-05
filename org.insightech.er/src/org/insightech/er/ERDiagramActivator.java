@@ -10,6 +10,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.PlatformUI;
@@ -20,23 +21,29 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class ERDiagramActivator extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.insightech.er";
 
 	// The shared instance
-	private static Activator plugin;
+	private static ERDiagramActivator plugin;
+
+	private static Display localDisplay;
 
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public ERDiagramActivator() {
 		plugin = this;
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
+		if (localDisplay != null) {
+			localDisplay.dispose();
+		}
+		
 		Resources.PINK.dispose();
 		Resources.ADDED_COLOR.dispose();
 		Resources.UPDATED_COLOR.dispose();
@@ -65,8 +72,20 @@ public class Activator extends AbstractUIPlugin {
 	 * 
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static ERDiagramActivator getDefault() {
 		return plugin;
+	}
+
+	public static Display getDisplay() {
+		Display display = Display.getDefault();
+
+		if (display != null) {
+			return display;
+		}
+		
+//		localDisplay = new Display();
+return null;
+//		return localDisplay;
 	}
 
 	/**
@@ -173,8 +192,7 @@ public class Activator extends AbstractUIPlugin {
 		reg.put(ImageKey.TEST_DATA,
 				loadImageDescriptor("icons/tables--pencil.png"));
 		reg.put(ImageKey.TOOLTIP, loadImageDescriptor("icons/ui-tooltip.png"));
-		reg.put(ImageKey.TRIGGER,
-				loadImageDescriptor("icons/script_go.png"));
+		reg.put(ImageKey.TRIGGER, loadImageDescriptor("icons/script_go.png"));
 		reg.put(ImageKey.VERTICAL_LINE,
 				loadImageDescriptor("icons/vertical_line.gif"));
 		reg.put(ImageKey.VERTICAL_LINE_DISABLED,
@@ -218,10 +236,10 @@ public class Activator extends AbstractUIPlugin {
 	 *            例外
 	 */
 	public static void showExceptionDialog(Throwable e) {
-		IStatus status = new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0,
+		IStatus status = new Status(IStatus.ERROR, ERDiagramActivator.PLUGIN_ID, 0,
 				e.toString(), e);
 
-		Activator.log(e);
+		ERDiagramActivator.log(e);
 
 		ErrorDialog.openError(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(),
@@ -348,7 +366,7 @@ public class Activator extends AbstractUIPlugin {
 
 		DirectoryDialog dialog = new DirectoryDialog(PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getShell(), SWT.NONE);
-		
+
 		dialog.setMessage(ResourceString.getResourceString(message));
 
 		dialog.setFilterPath(fileName);
@@ -358,10 +376,10 @@ public class Activator extends AbstractUIPlugin {
 
 	public static void log(Throwable e) {
 		e.printStackTrace();
-		Activator
+		ERDiagramActivator
 				.getDefault()
 				.getLog()
-				.log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 0, e
+				.log(new Status(IStatus.ERROR, ERDiagramActivator.PLUGIN_ID, 0, e
 						.getMessage(), e));
 	}
 

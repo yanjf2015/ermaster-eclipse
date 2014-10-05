@@ -49,7 +49,7 @@ import org.eclipse.ui.texteditor.IDocumentProviderExtension2;
 import org.eclipse.ui.texteditor.IDocumentProviderExtension3;
 import org.eclipse.ui.texteditor.IElementStateListener;
 import org.eclipse.ui.texteditor.IElementStateListenerExtension;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.osgi.framework.Bundle;
 
 public class TestEditor extends EditorPart {
@@ -358,7 +358,7 @@ public class TestEditor extends EditorPart {
 
 		} catch (InterruptedException x) {
 		} catch (InvocationTargetException e) {
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 		}
 	}
 
@@ -519,7 +519,7 @@ public class TestEditor extends EditorPart {
 			firePropertyChange(IEditorPart.PROP_INPUT);
 
 		} catch (CoreException e) {
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 		}
 	}
 
@@ -782,7 +782,7 @@ public class TestEditor extends EditorPart {
 					fSourceViewer.setEditable(isEditable());
 
 			} catch (CoreException e) {
-				Activator.log(e);
+				ERDiagramActivator.log(e);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.DBManager;
@@ -102,7 +102,7 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 
 			Exception e = exportToDBManager.getException();
 			if (e != null) {
-				Activator.log(e);
+				ERDiagramActivator.log(e);
 				String message = e.getMessage();
 				String errorSql = exportToDBManager.getErrorSql();
 
@@ -132,7 +132,7 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 
 			}
 
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 			throw new InputException("error.database.not.found");
 
 		} finally {
@@ -140,7 +140,7 @@ public class ExportDBSettingDialog extends AbstractDBSettingDialog {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 		}

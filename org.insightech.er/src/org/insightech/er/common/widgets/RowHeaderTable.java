@@ -24,9 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
@@ -55,7 +53,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.widgets.table.CellEditWorker;
 import org.insightech.er.common.widgets.table.CustomCellEditor;
@@ -198,8 +196,10 @@ public class RowHeaderTable extends JScrollPane implements ClipboardOwner {
 						} else if (event.getKeyCode() == KeyEvent.VK_BACK_SPACE
 								|| event.getKeyCode() == KeyEvent.VK_DELETE) {
 
-							deleteCell();
-
+							if (!table.isEditing()) {
+								deleteCell();
+								event.consume();
+							}
 						}
 					}
 
@@ -686,11 +686,10 @@ public class RowHeaderTable extends JScrollPane implements ClipboardOwner {
 					.getTransferData(DataFlavor.stringFlavor);
 
 			scanner = new Scanner(data);
-			Scanner lineScanner = null;
+
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				lineScanner = new Scanner(line);
-				lineScanner.useDelimiter("\t");
+				String[] values = line.split("\t");
 
 				if (!insert) {
 					if (row == this.getItemCount() - 1) {
@@ -701,21 +700,15 @@ public class RowHeaderTable extends JScrollPane implements ClipboardOwner {
 					}
 
 					int column = 0;
-					while (lineScanner.hasNext()) {
-						String text = lineScanner.next();
-						this.setValueAt(text, row, column++);
+
+					for (int i = 0; i < values.length; i++) {
+						if (column < this.table.getColumnCount()) {
+							this.setValueAt(values[i], row, column++);
+						}
 					}
 
 				} else {
-					List<String> texts = new ArrayList<String>();
-
-					while (lineScanner.hasNext()) {
-						String text = lineScanner.next();
-						texts.add(text);
-					}
-
-					this.addRow(row, "",
-							texts.toArray(new String[texts.size()]));
+					this.addRow(row, "", values);
 				}
 
 				row++;
@@ -723,7 +716,7 @@ public class RowHeaderTable extends JScrollPane implements ClipboardOwner {
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 
 		} finally {
 			if (scanner != null) {

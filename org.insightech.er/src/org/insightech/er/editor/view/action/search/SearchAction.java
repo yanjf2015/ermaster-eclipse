@@ -2,7 +2,7 @@ package org.insightech.er.editor.view.action.search;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -17,7 +17,7 @@ public class SearchAction extends AbstractBaseAction {
 	public SearchAction(ERDiagramEditor editor) {
 		super(ID, ResourceString.getResourceString("action.title.find"), editor);
 		this.setActionDefinitionId("org.eclipse.ui.edit.findReplace");
-		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.FIND));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.FIND));
 	}
 
 	/**

@@ -6,7 +6,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.db.EclipseDBManagerFactory;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.tablespace.EditTablespaceCommand;
@@ -28,7 +28,7 @@ public class TablespaceOutlineEditPart extends AbstractOutlineEditPart
 		Tablespace tablespace = (Tablespace) this.getModel();
 
 		this.setWidgetText(this.getDiagram().filter(tablespace.getName()));
-		this.setWidgetImage(Activator.getImage(ImageKey.TABLESPACE));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.TABLESPACE));
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class TablespaceOutlineEditPart extends AbstractOutlineEditPart
 					.getEclipseDBManager(diagram).createTablespaceDialog();
 
 			if (dialog == null) {
-				Activator
+				ERDiagramActivator
 						.showMessageDialog("dialog.message.tablespace.not.supported");
 			} else {
 				dialog.init(tablespace, diagram);

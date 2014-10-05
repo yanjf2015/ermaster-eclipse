@@ -1,7 +1,7 @@
 package org.insightech.er.editor.controller.command;
 
 import org.eclipse.gef.commands.Command;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 
 public abstract class AbstractCommand extends Command {
 
@@ -14,7 +14,7 @@ public abstract class AbstractCommand extends Command {
 			doExecute();
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 
@@ -26,7 +26,7 @@ public abstract class AbstractCommand extends Command {
 		try {
 			doUndo();
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

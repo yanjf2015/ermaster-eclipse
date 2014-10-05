@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.Resources;
 import org.insightech.er.common.dialog.AbstractDialog;
@@ -402,7 +402,7 @@ public class CategoryManageDialog extends AbstractDialog {
 					initCategoryTable();
 
 				} catch (Exception e) {
-					Activator.log(e);
+					ERDiagramActivator.log(e);
 				}
 			}
 		});

@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.DialogSettings;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.column.NormalColumn;
@@ -93,7 +93,7 @@ public class GlobalGroupSet {
 				}
 			}
 		} catch (IOException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return columnGroups;
@@ -162,12 +162,12 @@ public class GlobalGroupSet {
 			settings.save(getPath());
 
 		} catch (IOException e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 
 	private static String getPath() {
-		IPath dataLocation = Activator.getDefault().getStateLocation();
+		IPath dataLocation = ERDiagramActivator.getDefault().getStateLocation();
 		String path = dataLocation.append(COLUMN_GOURP_SETTINGS_FILENAME)
 				.toOSString();
 		return path;

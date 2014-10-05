@@ -8,7 +8,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.GraphicalNodeEditPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.AbstractCreateConnectionCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.CreateCommentConnectionCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.CreateConnectionCommand;
@@ -54,7 +54,7 @@ public class NodeElementGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy 
 
 		String validatedMessage = command.validate();
 		if (validatedMessage != null) {
-			Activator.showErrorDialog(validatedMessage);
+			ERDiagramActivator.showErrorDialog(validatedMessage);
 
 			return null;
 		}

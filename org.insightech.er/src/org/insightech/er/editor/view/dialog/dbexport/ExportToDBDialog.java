@@ -11,7 +11,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.exception.InputException;
@@ -79,7 +79,7 @@ public class ExportToDBDialog extends AbstractDialog {
 			executeDDL = this.textArea.getText();
 		}
 
-		if (!Activator.showConfirmDialog("dialog.message.export.db.confirm")) {
+		if (!ERDiagramActivator.showConfirmDialog("dialog.message.export.db.confirm")) {
 			return;
 		}
 
@@ -99,7 +99,7 @@ public class ExportToDBDialog extends AbstractDialog {
 
 				Exception e = exportToDBManager.getException();
 				if (e != null) {
-					Activator.showMessageDialog(e.getMessage());
+					ERDiagramActivator.showMessageDialog(e.getMessage());
 					throw new InputException();
 
 				} else {
@@ -121,9 +121,9 @@ public class ExportToDBDialog extends AbstractDialog {
 				throw new InputException("error.server.not.found");
 			}
 
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 
-			Activator.showMessageDialog(e.getMessage());
+			ERDiagramActivator.showMessageDialog(e.getMessage());
 			throw new InputException("error.database.not.found");
 
 		} finally {
@@ -131,7 +131,7 @@ public class ExportToDBDialog extends AbstractDialog {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 		}

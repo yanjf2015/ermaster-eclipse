@@ -7,7 +7,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.widgets.Event;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -26,7 +26,7 @@ public class AutoResizeModelAction extends AbstractBaseSelectionAction {
 	public AutoResizeModelAction(ERDiagramEditor editor) {
 		super(ID, ResourceString.getResourceString("action.title.auto.resize"),
 				editor);
-		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.RESIZE));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.RESIZE));
 	}
 
 	/**

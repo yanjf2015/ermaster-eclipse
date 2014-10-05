@@ -4,7 +4,7 @@ import org.eclipse.gef.Disposable;
 import org.eclipse.gef.editparts.ZoomListener;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.jface.action.Action;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 
@@ -17,7 +17,7 @@ public class ZoomAdjustAction extends Action implements ZoomListener,
 
 	public ZoomAdjustAction(ZoomManager zoomManager) {
 		super(ResourceString.getResourceString("action.title.zoom.adjust"),
-				Activator.getImageDescriptor(ImageKey.ZOOM_ADJUST));
+				ERDiagramActivator.getImageDescriptor(ImageKey.ZOOM_ADJUST));
 		this.zoomManager = zoomManager;
 		zoomManager.addZoomListener(this);
 

@@ -1,8 +1,8 @@
 package org.insightech.er;
 
 /**
- * {@link Activator#getImage(String)},
- * {@link Activator#getImageDescriptor(String)}
+ * {@link ERDiagramActivator#getImage(String)},
+ * {@link ERDiagramActivator#getImageDescriptor(String)}
  */
 public interface ImageKey {
 

@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.Resources;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.CreateCommentConnectionCommand;
 import org.insightech.er.editor.controller.editpart.DeleteableEditPart;
@@ -509,7 +509,7 @@ public abstract class NodeElementEditPart extends AbstractModelEditPart
 				performRequestOpen();
 
 			} catch (Exception e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 

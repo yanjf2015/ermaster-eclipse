@@ -62,7 +62,7 @@
                   
                </documentation>
                <appInfo>
-                  <meta.attribute kind="java" basedOn=":org.insightech.er.extention.IExtendAction"/>
+                  <meta.attribute kind="java" basedOn=":org.insightech.er.extention.IERDiagramActionFactory"/>
                </appInfo>
             </annotation>
          </attribute>

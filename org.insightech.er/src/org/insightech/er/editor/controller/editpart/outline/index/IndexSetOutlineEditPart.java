@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.controller.editpart.outline.AbstractOutlineEditPart;
@@ -44,7 +44,7 @@ public class IndexSetOutlineEditPart extends AbstractOutlineEditPart {
 	protected void refreshOutlineVisuals() {
 		this.setWidgetText(ResourceString.getResourceString("label.index")
 				+ " (" + this.getModelChildren().size() + ")");
-		this.setWidgetImage(Activator.getImage(ImageKey.DICTIONARY));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.DICTIONARY));
 	}
 
 }

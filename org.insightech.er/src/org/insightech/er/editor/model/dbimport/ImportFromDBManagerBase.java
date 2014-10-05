@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.db.sqltype.SqlType;
@@ -1593,7 +1593,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
 
 	public static void main(String[] args) throws InputException,
 			InstantiationException, IllegalAccessException, SQLException {
-		new Activator();
+		new ERDiagramActivator();
 
 		DBSetting setting = new DBSetting("Oracle", "localhost", 1521, "XE",
 				"nakajima", "nakajima", true, null, null);

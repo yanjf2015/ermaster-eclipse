@@ -9,7 +9,7 @@ import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
@@ -40,7 +40,7 @@ public class SequenceOutlineEditPart extends AbstractOutlineEditPart implements
 		}
 
 		this.setWidgetText(this.getDiagram().filter(sequence.getName()));
-		this.setWidgetImage(Activator.getImage(ImageKey.SEQUENCE));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.SEQUENCE));
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class SequenceOutlineEditPart extends AbstractOutlineEditPart implements
 			super.performRequest(request);
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

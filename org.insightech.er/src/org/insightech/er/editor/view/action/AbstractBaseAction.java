@@ -12,7 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.model.ERDiagram;
 
@@ -44,7 +44,7 @@ public abstract class AbstractBaseAction extends Action {
 				project.refreshLocal(IResource.DEPTH_INFINITE, null);
 
 			} catch (CoreException e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 	}
@@ -73,7 +73,7 @@ public abstract class AbstractBaseAction extends Action {
 			execute(event);
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

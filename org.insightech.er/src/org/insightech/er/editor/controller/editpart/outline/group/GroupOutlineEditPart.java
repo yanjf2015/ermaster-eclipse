@@ -10,7 +10,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.group.ChangeGroupCommand;
 import org.insightech.er.editor.controller.editpart.DeleteableEditPart;
@@ -33,7 +33,7 @@ public class GroupOutlineEditPart extends AbstractOutlineEditPart implements
 		ColumnGroup columnGroup = (ColumnGroup) this.getModel();
 
 		this.setWidgetText(this.getDiagram().filter(columnGroup.getName()));
-		this.setWidgetImage(Activator.getImage(ImageKey.GROUP));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.GROUP));
 	}
 
 	/**

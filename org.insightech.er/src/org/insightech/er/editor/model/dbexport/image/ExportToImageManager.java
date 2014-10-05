@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.controller.editpart.element.ERDiagramEditPartFactory;
@@ -109,12 +110,9 @@ public class ExportToImageManager extends AbstractExportManager {
 		}
 
 		ImageInfoSet imageInfoSet = null;
-
-		Display display = null;
+		Display display = ERDiagramActivator.getDisplay();
 
 		try {
-			display = new Display();
-
 			ImageInfo diagramImageInfo = this.outputImage(monitor, display,
 					this.exportImageSetting.getCategory(), format,
 					this.exportImageSetting.getOutputFilePath());
@@ -137,11 +135,6 @@ public class ExportToImageManager extends AbstractExportManager {
 			}
 
 			throw e;
-
-		} finally {
-			if (display != null) {
-				display.dispose();
-			}
 		}
 
 		return imageInfoSet;

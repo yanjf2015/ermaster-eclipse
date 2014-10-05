@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.diagram_contents.element.connection.DeleteConnectionCommand;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
@@ -99,7 +99,7 @@ public class DeleteRelationCommand extends DeleteConnectionCommand {
 		if (this.removeForeignKey == null) {
 			if (this.relation.isReferedStrictly()) {
 				if (this.isReferencedByMultiRelations()) {
-					Activator
+					ERDiagramActivator
 							.showErrorDialog("dialog.message.referenced.by.multi.foreign.key");
 					return false;
 				}
@@ -118,7 +118,7 @@ public class DeleteRelationCommand extends DeleteConnectionCommand {
 				return true;
 			}
 
-			if (Activator.showConfirmDialog(
+			if (ERDiagramActivator.showConfirmDialog(
 					"dialog.message.confirm.remove.foreign.key", SWT.YES,
 					SWT.NO)) {
 				this.removeForeignKey = true;

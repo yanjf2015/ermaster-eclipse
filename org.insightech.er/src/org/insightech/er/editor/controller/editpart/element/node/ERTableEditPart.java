@@ -4,7 +4,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.db.impl.oracle.OracleDBManager;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view.ChangeTableViewPropertyCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.sequence.CreateSequenceCommand;
@@ -111,7 +111,7 @@ public class ERTableEditPart extends TableViewEditPart implements IResizable {
 
 					if (!triggerSet.contains(triggerName)
 							|| !sequenceSet.contains(sequenceName)) {
-						if (Activator
+						if (ERDiagramActivator
 								.showConfirmDialog("dialog.message.confirm.create.autoincrement.trigger")) {
 							if (!triggerSet.contains(triggerName)) {
 								// トリガーの作成
@@ -169,7 +169,7 @@ public class ERTableEditPart extends TableViewEditPart implements IResizable {
 
 						if (triggerSet.contains(triggerName)
 								|| sequenceSet.contains(sequenceName)) {
-							if (Activator
+							if (ERDiagramActivator
 									.showConfirmDialog("dialog.message.confirm.remove.autoincrement.trigger")) {
 
 								// トリガーの削除

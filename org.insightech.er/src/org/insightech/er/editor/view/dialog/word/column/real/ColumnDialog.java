@@ -69,7 +69,7 @@ public class ColumnDialog extends AbstractRealColumnDialog {
 
 			this.autoIncrementSettingButton = CompositeFactory
 					.createLargeButton(composite,
-							"label.auto.increment.setting");
+							"label.auto.increment.setting", 2);
 			this.autoIncrementSettingButton.setEnabled(false);
 		}
 	}

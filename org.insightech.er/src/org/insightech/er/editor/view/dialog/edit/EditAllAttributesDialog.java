@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
@@ -423,7 +423,7 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 			colCount++;
 			if (normalColumn.isPrimaryKey()) {
 				tableItem.setImage(colCount,
-						Activator.getImage(ImageKey.PRIMARY_KEY));
+						ERDiagramActivator.getImage(ImageKey.PRIMARY_KEY));
 			} else {
 				tableItem.setImage(colCount, null);
 			}
@@ -431,7 +431,7 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 			colCount++;
 			if (normalColumn.isForeignKey()) {
 				tableItem.setImage(colCount,
-						Activator.getImage(ImageKey.FOREIGN_KEY));
+						ERDiagramActivator.getImage(ImageKey.FOREIGN_KEY));
 
 				// CLabel imageLabel = new CLabel(this.attributeTable,
 				// SWT.NONE);
@@ -450,10 +450,10 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 			if (normalColumn.isNotNull()) {
 				if (normalColumn.isPrimaryKey()) {
 					tableItem.setImage(colCount,
-							Activator.getImage(ImageKey.CHECK_GREY));
+							ERDiagramActivator.getImage(ImageKey.CHECK_GREY));
 				} else {
 					tableItem.setImage(colCount,
-							Activator.getImage(ImageKey.CHECK));
+							ERDiagramActivator.getImage(ImageKey.CHECK));
 				}
 
 			} else {
@@ -465,10 +465,10 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 
 				if (table != null && normalColumn.isRefered()) {
 					tableItem.setImage(colCount,
-							Activator.getImage(ImageKey.CHECK_GREY));
+							ERDiagramActivator.getImage(ImageKey.CHECK_GREY));
 				} else {
 					tableItem.setImage(colCount,
-							Activator.getImage(ImageKey.CHECK));
+							ERDiagramActivator.getImage(ImageKey.CHECK));
 				}
 
 			} else {

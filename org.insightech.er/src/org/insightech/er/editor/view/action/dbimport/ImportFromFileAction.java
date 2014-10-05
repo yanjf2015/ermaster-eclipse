@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -60,7 +60,7 @@ public class ImportFromFileAction extends AbstractImportAction {
 	public ImportFromFileAction(ERDiagramEditor editor) {
 		super(ID, ResourceString.getResourceString("action.title.import.file"),
 				editor);
-		this.setImageDescriptor(Activator.getImageDescriptor(ImageKey.TABLE));
+		this.setImageDescriptor(ERDiagramActivator.getImageDescriptor(ImageKey.TABLE));
 	}
 
 	protected DBObjectSet preImport() throws Exception {
@@ -82,7 +82,7 @@ public class ImportFromFileAction extends AbstractImportAction {
 			if (file == null || !file.exists()) {
 				File realFile = path.toFile();
 				if (realFile == null || !realFile.exists()) {
-					Activator.showErrorDialog("error.import.file");
+					ERDiagramActivator.showErrorDialog("error.import.file");
 					return null;
 				}
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.ui.IEditorPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -25,7 +25,7 @@ public class ExportToDictionaryAction extends AbstractExportAction {
 	public ExportToDictionaryAction(ERDiagramEditor editor) {
 		super(ID, ResourceString
 				.getResourceString("action.title.export.dictionary"), editor);
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.EXPORT_TO_CSV));
 	}
 
@@ -77,7 +77,7 @@ public class ExportToDictionaryAction extends AbstractExportAction {
 				writer.crln();
 			}
 
-			Activator.showMessageDialog("dialog.message.export.finish");
+			ERDiagramActivator.showMessageDialog("dialog.message.export.finish");
 
 		} finally {
 			if (out != null) {

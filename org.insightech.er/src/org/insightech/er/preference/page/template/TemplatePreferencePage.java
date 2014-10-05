@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.Resources;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -118,7 +118,7 @@ public class TemplatePreferencePage extends PreferencePage implements
 	}
 
 	private void download(String fileName) {
-		String filePath = Activator.showSaveDialog(null, fileName, fileName,
+		String filePath = ERDiagramActivator.showSaveDialog(null, fileName, fileName,
 				new String[] { ".xls" });
 
 		if (filePath != null) {
@@ -130,14 +130,14 @@ public class TemplatePreferencePage extends PreferencePage implements
 
 				IOUtils.copy(in, out);
 			} catch (IOException ioe) {
-				Activator.showExceptionDialog(ioe);
+				ERDiagramActivator.showExceptionDialog(ioe);
 
 			} finally {
 				if (in != null) {
 					try {
 						in.close();
 					} catch (IOException e1) {
-						Activator.showExceptionDialog(e1);
+						ERDiagramActivator.showExceptionDialog(e1);
 					}
 
 				}
@@ -145,7 +145,7 @@ public class TemplatePreferencePage extends PreferencePage implements
 					try {
 						out.close();
 					} catch (IOException e1) {
-						Activator.showExceptionDialog(e1);
+						ERDiagramActivator.showExceptionDialog(e1);
 					}
 				}
 

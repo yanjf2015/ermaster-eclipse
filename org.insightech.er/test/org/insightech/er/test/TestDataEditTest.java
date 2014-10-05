@@ -3,7 +3,7 @@ package org.insightech.er.test;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.db.impl.mysql.MySQLDBManager;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
@@ -20,7 +20,7 @@ public class TestDataEditTest {
 	private Shell shell = new Shell(display);
 
 	public static void main(String[] args) throws Exception {
-		new Activator();
+		new ERDiagramActivator();
 		new TestDataEditTest();
 	}
 

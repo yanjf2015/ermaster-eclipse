@@ -91,7 +91,7 @@ public class ExcelReportAntTask extends ERMasterAntTaskBase {
 
 	@Override
 	protected void logUsage() {
-		this.log("<ermaster.excelReport> have these attributes. (the attribute with '*' must be set.) ");
+		this.log("<ermaster.reportExcel> have these attributes. (the attribute with '*' must be set.) ");
 		this.log("    * diagramFile     - The path of the input .erm file.");
 		this.log("    * outputFile      - The path of the output excel file.");
 		this.log("      template        - The template for the output excel file.");

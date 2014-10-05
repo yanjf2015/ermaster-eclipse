@@ -11,7 +11,7 @@ import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IEditorPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.model.ERDiagram;
 
@@ -52,7 +52,7 @@ public abstract class AbstractBaseSelectionAction extends SelectionAction {
 		try {
 			execute(event);
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

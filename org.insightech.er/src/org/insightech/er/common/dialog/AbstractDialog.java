@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -59,7 +59,7 @@ public abstract class AbstractDialog extends Dialog {
 			this.initialized = true;
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return composite;
@@ -231,7 +231,7 @@ public abstract class AbstractDialog extends Dialog {
 
 			} catch (InputException e) {
 				if (e.getCause() != null) {
-					Activator.showErrorDialog(e.getCause().getMessage());
+					ERDiagramActivator.showErrorDialog(e.getCause().getMessage());
 
 				} else if (e.getMessage() != null) {
 					this.setMessage(ResourceString.getResourceString(
@@ -240,7 +240,7 @@ public abstract class AbstractDialog extends Dialog {
 				return;
 
 			} catch (Exception e) {
-				Activator.showExceptionDialog(e);
+				ERDiagramActivator.showExceptionDialog(e);
 			}
 		}
 

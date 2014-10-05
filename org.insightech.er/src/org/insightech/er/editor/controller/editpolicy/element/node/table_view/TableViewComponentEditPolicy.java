@@ -9,7 +9,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.requests.DirectEditRequest;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view.AddColumnGroupCommand;
 import org.insightech.er.editor.controller.command.diagram_contents.element.node.table_view.AddWordCommand;
 import org.insightech.er.editor.controller.editpart.element.node.TableViewEditPart;
@@ -108,7 +108,7 @@ public class TableViewComponentEditPolicy extends
 			}
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 
 		return super.getCommand(request);

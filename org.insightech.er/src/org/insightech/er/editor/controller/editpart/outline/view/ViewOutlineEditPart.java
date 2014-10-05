@@ -8,7 +8,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.editpart.DeleteableEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.ViewEditPart;
@@ -69,7 +69,7 @@ public class ViewOutlineEditPart extends AbstractOutlineEditPart implements
 		}
 
 		this.setWidgetText(diagram.filter(name));
-		this.setWidgetImage(Activator.getImage(ImageKey.VIEW));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.VIEW));
 	}
 
 	/**

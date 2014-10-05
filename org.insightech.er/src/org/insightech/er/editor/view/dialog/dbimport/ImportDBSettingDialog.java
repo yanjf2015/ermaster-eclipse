@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.common.exception.InputException;
 import org.insightech.er.editor.model.ERDiagram;
 import org.insightech.er.editor.view.dialog.common.AbstractDBSettingDialog;
@@ -61,8 +61,8 @@ public class ImportDBSettingDialog extends AbstractDBSettingDialog {
 						new String[] { System.getProperty("java.version") });
 			}
 
-			Activator.log(e);
-			Activator.showMessageDialog(e.getMessage());
+			ERDiagramActivator.log(e);
+			ERDiagramActivator.showMessageDialog(e.getMessage());
 
 			throw new InputException("error.database.not.found");
 
@@ -71,7 +71,7 @@ public class ImportDBSettingDialog extends AbstractDBSettingDialog {
 				try {
 					con.close();
 				} catch (SQLException e) {
-					Activator.showExceptionDialog(e);
+					ERDiagramActivator.showExceptionDialog(e);
 				}
 			}
 		}

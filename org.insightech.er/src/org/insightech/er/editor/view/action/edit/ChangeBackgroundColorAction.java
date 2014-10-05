@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.LabelRetargetAction;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
@@ -63,7 +63,7 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 	}
 
 	private void setColorToImage() {
-		ImageData imageData = Activator.getImageDescriptor(
+		ImageData imageData = ERDiagramActivator.getImageDescriptor(
 				ImageKey.CHANGE_BACKGROUND_COLOR).getImageData();
 		int blackPixel = imageData.palette.getPixel(new RGB(0, 0, 0));
 		imageData.transparentPixel = imageData.palette.getPixel(new RGB(255,
@@ -97,8 +97,7 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 		
 		this.rgb = diagram.getDefaultColorAsGRB();
 		
-		this.setColorToImage();
-		
+		this.setColorToImage();		
 	}
 
 	/**
@@ -178,9 +177,9 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 					.getResourceString("action.title.change.background.color"),
 					Action.AS_DROP_DOWN_MENU);
 
-			this.setImageDescriptor(Activator
+			this.setImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.CHANGE_BACKGROUND_COLOR));
-			this.setDisabledImageDescriptor(Activator
+			this.setDisabledImageDescriptor(ERDiagramActivator
 					.getImageDescriptor(ImageKey.CHANGE_BACKGROUND_COLOR_DISABLED));
 			this.setToolTipText(ResourceString
 					.getResourceString("action.title.change.background.color"));
@@ -193,7 +192,7 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 						MenuItem item1 = new MenuItem(menu, SWT.NONE);
 						item1.setText(ResourceString
 								.getResourceString("action.title.select.color"));
-						item1.setImage(Activator.getImage(ImageKey.PALETTE));
+						item1.setImage(ERDiagramActivator.getImage(ImageKey.PALETTE));
 
 						item1.addSelectionListener(new SelectionAdapter() {
 
@@ -219,7 +218,7 @@ public class ChangeBackgroundColorAction extends SelectionAction {
 							}
 						});
 					} catch (Exception e) {
-						Activator.showExceptionDialog(e);
+						ERDiagramActivator.showExceptionDialog(e);
 					}
 					return menu;
 				}

@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.ui.IWorkbenchPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.editpart.element.node.column.NormalColumnEditPart;
 
@@ -15,7 +15,7 @@ public class ERDiagramMatchHeightAction extends MatchHeightAction {
 
 	public ERDiagramMatchHeightAction(IWorkbenchPart part) {
 		super(part);
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.MATCH_HEIGHT));
 		this.setDisabledImageDescriptor(null);
 	}

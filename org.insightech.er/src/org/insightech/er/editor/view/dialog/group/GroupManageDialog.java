@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -418,7 +418,7 @@ public class GroupManageDialog extends AbstractDialog implements
 					setButtonEnabled(true);
 
 				} catch (Exception ex) {
-					Activator.showExceptionDialog(ex);
+					ERDiagramActivator.showExceptionDialog(ex);
 				}
 			}
 		});
@@ -462,7 +462,7 @@ public class GroupManageDialog extends AbstractDialog implements
 						}
 					}
 				} catch (Exception ex) {
-					Activator.showExceptionDialog(ex);
+					ERDiagramActivator.showExceptionDialog(ex);
 				}
 			}
 

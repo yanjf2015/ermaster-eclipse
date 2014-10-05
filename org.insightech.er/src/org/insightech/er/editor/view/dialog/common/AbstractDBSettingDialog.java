@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
@@ -407,7 +407,7 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 					}
 
 				} catch (Exception ex) {
-					Activator.showExceptionDialog(ex);
+					ERDiagramActivator.showExceptionDialog(ex);
 				}
 
 			}
@@ -426,12 +426,12 @@ public abstract class AbstractDBSettingDialog extends AbstractDialog {
 
 						PreferenceInitializer.addDBSetting(dbSetting);
 
-						Activator
+						ERDiagramActivator
 								.showMessageDialog("dialog.message.add.to.connection.list");
 					}
 
 				} catch (Exception ex) {
-					Activator.showExceptionDialog(ex);
+					ERDiagramActivator.showExceptionDialog(ex);
 				}
 			}
 		});

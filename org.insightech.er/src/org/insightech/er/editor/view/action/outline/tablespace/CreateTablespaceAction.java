@@ -3,7 +3,7 @@ package org.insightech.er.editor.view.action.outline.tablespace;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Event;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.EclipseDBManagerFactory;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.tablespace.CreateTablespaceCommand;
@@ -31,7 +31,7 @@ public class CreateTablespaceAction extends AbstractOutlineBaseAction {
 		TablespaceDialog dialog = EclipseDBManagerFactory.getEclipseDBManager(
 				diagram).createTablespaceDialog();
 		if (dialog == null) {
-			Activator
+			ERDiagramActivator
 					.showMessageDialog("dialog.message.tablespace.not.supported");
 
 		} else {

@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.common.dialog.AbstractDialog;
@@ -355,13 +355,13 @@ public class ERTableComposite extends Composite {
 			NormalColumn normalColumn = (NormalColumn) column;
 
 			if (normalColumn.isPrimaryKey()) {
-				tableItem.setImage(0, Activator.getImage(ImageKey.PRIMARY_KEY));
+				tableItem.setImage(0, ERDiagramActivator.getImage(ImageKey.PRIMARY_KEY));
 			} else {
 				tableItem.setImage(0, null);
 			}
 
 			if (normalColumn.isForeignKey()) {
-				tableItem.setImage(1, Activator.getImage(ImageKey.FOREIGN_KEY));
+				tableItem.setImage(1, ERDiagramActivator.getImage(ImageKey.FOREIGN_KEY));
 			} else {
 				tableItem.setImage(1, null);
 			}
@@ -381,7 +381,7 @@ public class ERTableComposite extends Composite {
 
 		} else {
 			tableItem.setBackground(ColorConstants.white);
-			tableItem.setImage(0, Activator.getImage(ImageKey.GROUP));
+			tableItem.setImage(0, ERDiagramActivator.getImage(ImageKey.GROUP));
 			tableItem.setImage(1, null);
 			tableItem.setText(2, column.getName());
 			tableItem.setText(3, "");

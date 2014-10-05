@@ -7,7 +7,7 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.ui.IWorkbenchPart;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.editpart.element.node.column.NormalColumnEditPart;
 
@@ -15,7 +15,7 @@ public class ERDiagramMatchWidthAction extends MatchWidthAction {
 
 	public ERDiagramMatchWidthAction(IWorkbenchPart part) {
 		super(part);
-		this.setImageDescriptor(Activator
+		this.setImageDescriptor(ERDiagramActivator
 				.getImageDescriptor(ImageKey.MATCH_WIDTH));
 		this.setDisabledImageDescriptor(null);
 	}

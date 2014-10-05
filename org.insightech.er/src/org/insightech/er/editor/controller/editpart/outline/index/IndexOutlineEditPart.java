@@ -7,7 +7,7 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.tools.SelectEditPartTracker;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.editor.controller.command.diagram_contents.not_element.index.ChangeIndexCommand;
 import org.insightech.er.editor.controller.editpart.DeleteableEditPart;
@@ -28,7 +28,7 @@ public class IndexOutlineEditPart extends AbstractOutlineEditPart implements
 		Index index = (Index) this.getModel();
 
 		this.setWidgetText(this.getDiagram().filter(index.getName()));
-		this.setWidgetImage(Activator.getImage(ImageKey.INDEX));
+		this.setWidgetImage(ERDiagramActivator.getImage(ImageKey.INDEX));
 	}
 
 	/**

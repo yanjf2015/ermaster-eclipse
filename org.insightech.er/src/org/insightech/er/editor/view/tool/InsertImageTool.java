@@ -7,7 +7,7 @@ import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ImageKey;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.diagram_contents.element.node.image.InsertedImage;
@@ -17,8 +17,8 @@ public class InsertImageTool extends CreationToolEntry {
 	public InsertImageTool() {
 		super(ResourceString.getResourceString("label.image.insert"), ResourceString
 				.getResourceString("label.image.insert"), new SimpleFactory(
-				InsertedImage.class), Activator
-				.getImageDescriptor(ImageKey.IMAGE), Activator
+				InsertedImage.class), ERDiagramActivator
+				.getImageDescriptor(ImageKey.IMAGE), ERDiagramActivator
 				.getImageDescriptor(ImageKey.IMAGE));
 	}
 

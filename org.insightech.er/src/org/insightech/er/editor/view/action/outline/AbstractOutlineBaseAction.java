@@ -6,7 +6,7 @@ import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.model.ERDiagram;
 
 public abstract class AbstractOutlineBaseAction extends Action {
@@ -34,7 +34,7 @@ public abstract class AbstractOutlineBaseAction extends Action {
 		try {
 			execute(event);
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

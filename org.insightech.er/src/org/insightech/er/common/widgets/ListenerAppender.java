@@ -6,7 +6,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
@@ -29,7 +28,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.dialog.ValidatableTabWrapper;
 import org.insightech.er.editor.model.ERDiagram;
@@ -102,6 +101,44 @@ public class ListenerAppender {
 		});
 	}
 
+	public static void addFocusListener(final Combo combo, final boolean imeOn) {
+		combo.addFocusListener(new FocusAdapter() {
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void focusGained(FocusEvent e) {
+				ERDiagram diagram = (ERDiagram) PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage()
+						.getActiveEditor().getAdapter(ERDiagram.class);
+
+				if (diagram != null) {
+					if (diagram.getDiagramContents().getSettings()
+							.isAutoImeChange()) {
+						if (imeOn) {
+							combo.getShell().setImeInputMode(
+									SWT.DBCS | SWT.NATIVE);
+
+						} else {
+							combo.getShell().setImeInputMode(SWT.ALPHA);
+						}
+					}
+				}
+
+				super.focusGained(e);
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void focusLost(FocusEvent e) {
+				super.focusLost(e);
+			}
+		});
+	}
+
 	public static void addTraverseListener(final Text textArea) {
 		textArea.addTraverseListener(new TraverseListener() {
 			public void keyTraversed(TraverseEvent e) {
@@ -125,6 +162,8 @@ public class ListenerAppender {
 
 	public static void addComboListener(final Combo combo,
 			final AbstractDialog dialog, final boolean imeOn) {
+		addFocusListener(combo, imeOn);
+
 		if (dialog != null) {
 			combo.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
@@ -132,30 +171,6 @@ public class ListenerAppender {
 				}
 			});
 		}
-
-		combo.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-				ERDiagram diagram = (ERDiagram) PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage()
-						.getActiveEditor().getAdapter(ERDiagram.class);
-
-				if (diagram != null) {
-					if (diagram.getDiagramContents().getSettings()
-							.isAutoImeChange()) {
-						if (imeOn) {
-							combo.getShell().setImeInputMode(
-									SWT.DBCS | SWT.NATIVE);
-
-						} else {
-							combo.getShell().setImeInputMode(SWT.ALPHA);
-						}
-					}
-				}
-			}
-
-			public void focusLost(FocusEvent e) {
-			}
-		});
 	}
 
 	public static void addCheckBoxListener(final Button button,
@@ -235,7 +250,7 @@ public class ListenerAppender {
 								editableTable);
 					}
 				} catch (Exception e) {
-					Activator.log(e);
+					ERDiagramActivator.log(e);
 				}
 			}
 
@@ -247,7 +262,7 @@ public class ListenerAppender {
 						editableTable.onDoubleClicked(xy);
 					}
 				} catch (Exception e) {
-					Activator.log(e);
+					ERDiagramActivator.log(e);
 				}
 			}
 		});

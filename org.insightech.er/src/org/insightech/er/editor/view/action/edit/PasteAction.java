@@ -7,7 +7,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.ERDiagramEditor;
 import org.insightech.er.editor.controller.command.edit.PasteCommand;
@@ -54,7 +54,7 @@ public class PasteAction extends SelectionAction {
 		try {
 			execute(createCommand());
 		} catch (Exception e) {
-			Activator.log(e);
+			ERDiagramActivator.log(e);
 		}
 	}
 

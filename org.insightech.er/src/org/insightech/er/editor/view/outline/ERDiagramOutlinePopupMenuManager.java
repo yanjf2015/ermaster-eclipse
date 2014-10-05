@@ -14,7 +14,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionFactory;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.DBManager;
 import org.insightech.er.db.DBManagerFactory;
@@ -185,14 +185,14 @@ public class ERDiagramOutlinePopupMenuManager extends MenuManager {
 						manager.update(true);
 						
 					} catch (Exception e) {
-						Activator.showExceptionDialog(e);
+						ERDiagramActivator.showExceptionDialog(e);
 					}
 				}
 
 			});
 
 		} catch (Exception e) {
-			Activator.showExceptionDialog(e);
+			ERDiagramActivator.showExceptionDialog(e);
 		}
 	}
 

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
-import org.insightech.er.Activator;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.model.diagram_contents.element.connection.Relation;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.ERTable;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
@@ -146,7 +146,7 @@ public class CreateRelationByExistingColumnsCommand extends
 		}
 
 		if (candidateForeignKeyColumns.isEmpty()) {
-			Activator
+			ERDiagramActivator
 					.showErrorDialog("error.no.candidate.of.foreign.key.exist");
 			return false;
 		}
