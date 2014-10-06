@@ -40,14 +40,15 @@ public abstract class AbstractRealColumnDialog extends AbstractColumnDialog {
 		this.tabItem = new TabItem(this.tabFolder, SWT.NONE);
 		this.tabItem.setText(ResourceString.getResourceString("label.basic"));
 
-		Composite composite = super.createRootComposite(this.tabFolder);
+		Composite composite = CompositeFactory.createComposite(this.tabFolder,
+				this.getCompositeNumColumns(), true);
 		this.tabItem.setControl(composite);
 
 		this.tabItem = new TabItem(this.tabFolder, SWT.NONE);
 		this.tabItem.setText(ResourceString.getResourceString("label.detail"));
 
 		Composite detailComposite = CompositeFactory.createComposite(
-				this.tabFolder, 2);
+				this.tabFolder, 2, true);
 		this.initializeDetailTab(detailComposite);
 		this.tabItem.setControl(detailComposite);
 

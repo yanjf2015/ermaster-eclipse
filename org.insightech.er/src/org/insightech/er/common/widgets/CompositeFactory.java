@@ -37,17 +37,31 @@ import org.insightech.er.editor.view.dialog.dbimport.ViewLabelProvider;
 
 public class CompositeFactory {
 
-	public static Composite createComposite(Composite parent, int numColumns) {
+	public static Composite createComposite(Composite parent, int numColumns, boolean withMargin) {
 		GridLayout gridLayout = new GridLayout();
 
 		gridLayout.numColumns = numColumns;
-		gridLayout.marginTop = Resources.MARGIN;
-		gridLayout.marginBottom = Resources.MARGIN;
-		gridLayout.marginRight = Resources.MARGIN;
-		gridLayout.marginLeft = Resources.MARGIN;
+		
+		if (withMargin) {
+			gridLayout.marginTop = Resources.MARGIN;
+			gridLayout.marginBottom = Resources.MARGIN;
+			gridLayout.marginRight = Resources.MARGIN;
+			gridLayout.marginLeft = Resources.MARGIN;
 
+		} else {
+			gridLayout.marginTop = 0;
+			gridLayout.marginBottom = 0;
+			gridLayout.marginWidth = 0;			
+		}
+		
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(gridLayout);
+
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
+		composite.setLayoutData(gridData);
 
 		return composite;
 	}

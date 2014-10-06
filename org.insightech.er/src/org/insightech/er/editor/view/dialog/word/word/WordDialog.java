@@ -22,9 +22,9 @@ public class WordDialog extends AbstractWordDialog {
 
 	@Override
 	protected void setWordData() {
-		this.setData(this.targetWord.getPhysicalName(), this.targetWord
-				.getLogicalName(), this.targetWord.getType(), this.targetWord
-				.getTypeData(), this.targetWord.getDescription());
+		this.setData(this.targetWord.getPhysicalName(),
+				this.targetWord.getLogicalName(), this.targetWord.getType(),
+				this.targetWord.getTypeData(), this.targetWord.getDescription());
 	}
 
 	/**
@@ -99,13 +99,13 @@ public class WordDialog extends AbstractWordDialog {
 		if (this.argsText != null) {
 			args = this.argsText.getText();
 		}
-		
+
 		TypeData typeData = new TypeData(length, decimal, array,
 				arrayDimension, unsigned, zerofill, binary, args);
 
-		this.returnWord = new Word(physicalNameText.getText(), logicalNameText
-				.getText(), selectedType, typeData, descriptionText.getText(),
-				database);
+		this.returnWord = new Word(physicalNameText.getText(),
+				logicalNameText.getText(), selectedType, typeData,
+				descriptionText.getText(), database);
 	}
 
 	public Word getWord() {
@@ -116,4 +116,5 @@ public class WordDialog extends AbstractWordDialog {
 	protected String getTitle() {
 		return "dialog.title.word";
 	}
+
 }

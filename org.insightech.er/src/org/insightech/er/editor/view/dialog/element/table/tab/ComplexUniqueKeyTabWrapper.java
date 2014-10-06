@@ -87,7 +87,7 @@ public class ComplexUniqueKeyTabWrapper extends ValidatableTabWrapper {
 				"label.column.name", -1, SWT.NONE);
 
 		Composite buttonComposite = CompositeFactory.createChildComposite(this,
-				1, 3);
+				2, 3);
 
 		this.addButton = CompositeFactory.createSmallButton(buttonComposite,
 				"label.button.add");

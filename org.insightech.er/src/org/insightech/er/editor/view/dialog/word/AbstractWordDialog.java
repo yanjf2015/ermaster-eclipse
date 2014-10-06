@@ -83,7 +83,7 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 	}
 
 	protected Composite createRootComposite(Composite parent) {
-		return CompositeFactory.createComposite(parent, this.getCompositeNumColumns());
+		return CompositeFactory.createComposite(parent, this.getCompositeNumColumns(), false);
 	}
 
 	protected int getCompositeNumColumns() {

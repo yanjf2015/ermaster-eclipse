@@ -233,8 +233,7 @@ public class IndexTabWrapper extends ValidatableTabWrapper {
 		Index copyIndex = null;
 
 		if (add || selectedIndex == -1) {
-			copyIndex = new CopyIndex(copyData, index, null);
-			this.copyData.addIndex(copyIndex);
+			copyIndex = new CopyIndex(this.copyData, index, null);			
 
 		} else {
 			copyIndex = this.copyData.getIndex(selectedIndex);
