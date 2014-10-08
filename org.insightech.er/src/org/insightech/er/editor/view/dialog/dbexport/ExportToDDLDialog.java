@@ -95,7 +95,7 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 			this.environmentCombo.add(environment.getName());
 		}
 
-		this.outputFileText = CompositeFactory.createFileText(this, parent,
+		this.outputFileText = CompositeFactory.createFileText(true, this, parent,
 				"label.output.file", this.getBaseDir(),
 				this.getDefaultOutputFileName(".sql"), "*.sql");
 

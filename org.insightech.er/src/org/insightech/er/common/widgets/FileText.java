@@ -11,29 +11,32 @@ public class FileText extends AbstractPathText {
 
 	private String defaultFileName;
 
-	public FileText(Composite parent, File projectDir, String defaultFileName,
-			String filterExtension) {
-		this(parent, projectDir, defaultFileName, filterExtension, true);
+	private boolean save;
+
+	public FileText(boolean save, Composite parent, File projectDir,
+			String defaultFileName, String filterExtension) {
+		this(save, parent, projectDir, defaultFileName, filterExtension, true);
 	}
 
-	public FileText(Composite parent, File projectDir, String defaultFileName,
-			String filterExtension, boolean indent) {
-		this(parent, projectDir, defaultFileName,
+	public FileText(boolean save, Composite parent, File projectDir,
+			String defaultFileName, String filterExtension, boolean indent) {
+		this(save, parent, projectDir, defaultFileName,
 				new String[] { filterExtension }, indent);
 	}
 
-	public FileText(Composite parent, final File projectDir,
+	public FileText(boolean save, Composite parent, final File projectDir,
 			final String defaultFileName, String[] filterExtensions) {
-		this(parent, projectDir, defaultFileName, filterExtensions, true);
+		this(save, parent, projectDir, defaultFileName, filterExtensions, true);
 	}
 
-	public FileText(Composite parent, final File projectDir,
+	public FileText(boolean save, Composite parent, final File projectDir,
 			final String defaultFileName, String[] filterExtensions,
 			boolean indent) {
 		super(parent, projectDir, indent);
 
 		this.filterExtensions = filterExtensions;
 		this.defaultFileName = defaultFileName;
+		this.save = save;
 	}
 
 	public void setFilterExtension(String filterExtension) {
@@ -42,8 +45,9 @@ public class FileText extends AbstractPathText {
 
 	@Override
 	protected String selectPathByDilaog() {
-		return ERDiagramActivator.showSaveDialog(this.projectDir, this.defaultFileName,
-				this.getFilePath(), this.filterExtensions);
+		return ERDiagramActivator.showSaveDialog(this.projectDir,
+				this.defaultFileName, this.getFilePath(),
+				this.filterExtensions, save);
 	}
 
 }

@@ -34,8 +34,8 @@ public class ExportToImageDialog extends AbstractExportDialog {
 	 */
 	@Override
 	protected void initialize(Composite parent) {
-		this.outputFileText = CompositeFactory.createFileText(this, parent,
-				"label.output.file", this.getBaseDir(),
+		this.outputFileText = CompositeFactory.createFileText(true, this,
+				parent, "label.output.file", this.getBaseDir(),
 				this.getDefaultOutputFileName(DEFAULT_EXTENTION), new String[] {
 						"*.png", "*.jpeg", "*.bmp" });
 

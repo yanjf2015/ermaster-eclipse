@@ -10,11 +10,11 @@ public class ExportHtmlSetting implements Serializable, Cloneable {
 
 //	private String srcFileEncoding;
 
-	private boolean withImage;
+	private boolean withImage = true;
 
-	private boolean withCategoryImage;
+	private boolean withCategoryImage = true;
 
-	private boolean openAfterSaved;
+	private boolean openAfterSaved = true;
 
 	public String getOutputDir() {
 		return outputDir;

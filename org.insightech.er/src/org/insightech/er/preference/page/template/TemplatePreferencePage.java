@@ -118,8 +118,8 @@ public class TemplatePreferencePage extends PreferencePage implements
 	}
 
 	private void download(String fileName) {
-		String filePath = ERDiagramActivator.showSaveDialog(null, fileName, fileName,
-				new String[] { ".xls" });
+		String filePath = ERDiagramActivator.showSaveDialog(null, fileName,
+				fileName, new String[] { ".xls" }, true);
 
 		if (filePath != null) {
 			InputStream in = null;

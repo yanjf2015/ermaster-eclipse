@@ -14,9 +14,9 @@ public class ExportImageSetting implements Serializable, Cloneable {
 
 	private Category category;
 	
-	private boolean withCategoryImage;
+	private boolean withCategoryImage = true;
 
-	private boolean openAfterSaved;
+	private boolean openAfterSaved = true;
 
 	public Category getCategory() {
 		return category;

@@ -59,7 +59,7 @@ public class ExportToExcelDialog extends AbstractExportDialog {
 	 */
 	@Override
 	protected void initialize(Composite parent) {
-		this.outputExcelFileText = CompositeFactory.createFileText(this,
+		this.outputExcelFileText = CompositeFactory.createFileText(true, this,
 				parent, "label.output.excel.file", this.getBaseDir(),
 				this.getDefaultOutputFileName(".xls"), "*.xls");
 
@@ -104,8 +104,8 @@ public class ExportToExcelDialog extends AbstractExportDialog {
 
 		this.selectTemplateFromFilesRadio = CompositeFactory.createRadio(this,
 				group, "label.select.from.file", 2);
-		this.templateFileText = CompositeFactory.createFileText(this, group,
-				null, this.getBaseDir(), null, "*.xls", false);
+		this.templateFileText = CompositeFactory.createFileText(false, this,
+				group, null, this.getBaseDir(), null, "*.xls", false);
 	}
 
 	private void initTemplateCombo() {

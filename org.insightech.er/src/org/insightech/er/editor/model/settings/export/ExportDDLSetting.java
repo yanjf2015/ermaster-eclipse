@@ -13,7 +13,7 @@ public class ExportDDLSetting implements Serializable, Cloneable {
 
 	private String ddlOutput;
 
-	private boolean openAfterSaved;
+	private boolean openAfterSaved = true;
 
 	private String srcFileEncoding;
 

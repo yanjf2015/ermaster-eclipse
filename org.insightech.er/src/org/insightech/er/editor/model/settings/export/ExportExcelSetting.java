@@ -21,11 +21,11 @@ public class ExportExcelSetting implements Serializable, Cloneable {
 
 	private Category category;
 
-	private boolean useLogicalNameAsSheet;
+	private boolean useLogicalNameAsSheet = true;
 
-	private boolean putERDiagramOnExcel;
+	private boolean putERDiagramOnExcel = true;
 
-	private boolean openAfterSaved;
+	private boolean openAfterSaved = true;
 
 	public String getExcelTemplate() {
 		return excelTemplate;

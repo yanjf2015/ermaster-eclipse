@@ -43,7 +43,7 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 		if (localDisplay != null) {
 			localDisplay.dispose();
 		}
-		
+
 		Resources.PINK.dispose();
 		Resources.ADDED_COLOR.dispose();
 		Resources.UPDATED_COLOR.dispose();
@@ -82,10 +82,10 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 		if (display != null) {
 			return display;
 		}
-		
-//		localDisplay = new Display();
-return null;
-//		return localDisplay;
+
+		// localDisplay = new Display();
+		return null;
+		// return localDisplay;
 	}
 
 	/**
@@ -236,8 +236,8 @@ return null;
 	 *            例外
 	 */
 	public static void showExceptionDialog(Throwable e) {
-		IStatus status = new Status(IStatus.ERROR, ERDiagramActivator.PLUGIN_ID, 0,
-				e.toString(), e);
+		IStatus status = new Status(IStatus.ERROR,
+				ERDiagramActivator.PLUGIN_ID, 0, e.toString(), e);
 
 		ERDiagramActivator.log(e);
 
@@ -323,7 +323,7 @@ return null;
 	 * @return 保存ダイアログで選択されたファイルのパス
 	 */
 	public static String showSaveDialog(File baseDir, String defaultFileName,
-			String filePath, String[] filterExtensions) {
+			String filePath, String[] filterExtensions, boolean save) {
 		String dir = null;
 		String fileName = defaultFileName;
 
@@ -345,8 +345,13 @@ return null;
 			}
 		}
 
+		int mode = SWT.SAVE;
+		if (!save) {
+			mode = SWT.OPEN;
+		}
+
 		FileDialog fileDialog = new FileDialog(PlatformUI.getWorkbench()
-				.getActiveWorkbenchWindow().getShell(), SWT.SAVE);
+				.getActiveWorkbenchWindow().getShell(), mode);
 
 		fileDialog.setFilterPath(dir);
 		fileDialog.setFileName(fileName);
@@ -379,8 +384,8 @@ return null;
 		ERDiagramActivator
 				.getDefault()
 				.getLog()
-				.log(new Status(IStatus.ERROR, ERDiagramActivator.PLUGIN_ID, 0, e
-						.getMessage(), e));
+				.log(new Status(IStatus.ERROR, ERDiagramActivator.PLUGIN_ID, 0,
+						e.getMessage(), e));
 	}
 
 }

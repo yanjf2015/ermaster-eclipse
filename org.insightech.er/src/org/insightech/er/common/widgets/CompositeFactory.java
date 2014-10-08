@@ -37,11 +37,12 @@ import org.insightech.er.editor.view.dialog.dbimport.ViewLabelProvider;
 
 public class CompositeFactory {
 
-	public static Composite createComposite(Composite parent, int numColumns, boolean withMargin) {
+	public static Composite createComposite(Composite parent, int numColumns,
+			boolean withMargin) {
 		GridLayout gridLayout = new GridLayout();
 
 		gridLayout.numColumns = numColumns;
-		
+
 		if (withMargin) {
 			gridLayout.marginTop = Resources.MARGIN;
 			gridLayout.marginBottom = Resources.MARGIN;
@@ -51,9 +52,9 @@ public class CompositeFactory {
 		} else {
 			gridLayout.marginTop = 0;
 			gridLayout.marginBottom = 0;
-			gridLayout.marginWidth = 0;			
+			gridLayout.marginWidth = 0;
 		}
-		
+
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(gridLayout);
 
@@ -748,28 +749,28 @@ public class CompositeFactory {
 		return group;
 	}
 
-	public static FileText createFileText(AbstractDialog dialog,
+	public static FileText createFileText(boolean save, AbstractDialog dialog,
 			Composite parent, String title, File projectDir,
 			String defaultFileName, String filterExtension) {
-		return createFileText(dialog, parent, title, projectDir,
+		return createFileText(save, dialog, parent, title, projectDir,
 				defaultFileName, filterExtension, true);
 	}
 
-	public static FileText createFileText(AbstractDialog dialog,
+	public static FileText createFileText(boolean save, AbstractDialog dialog,
 			Composite parent, String title, File projectDir,
 			String defaultFileName, String filterExtension, boolean indent) {
-		return createFileText(dialog, parent, title, projectDir,
+		return createFileText(save, dialog, parent, title, projectDir,
 				defaultFileName, new String[] { filterExtension }, indent);
 	}
 
-	public static FileText createFileText(AbstractDialog dialog,
+	public static FileText createFileText(boolean save, AbstractDialog dialog,
 			Composite parent, String title, File projectDir,
 			String defaultFileName, String[] filterExtensions) {
-		return createFileText(dialog, parent, title, projectDir,
+		return createFileText(save, dialog, parent, title, projectDir,
 				defaultFileName, filterExtensions, true);
 	}
 
-	public static FileText createFileText(AbstractDialog dialog,
+	public static FileText createFileText(boolean save, AbstractDialog dialog,
 			Composite parent, String title, File projectDir,
 			String defaultFileName, String[] filterExtensions, boolean indent) {
 		if (title != null) {
@@ -783,8 +784,8 @@ public class CompositeFactory {
 			label.setText(ResourceString.getResourceString(title));
 		}
 
-		FileText fileText = new FileText(parent, projectDir, defaultFileName,
-				filterExtensions, indent);
+		FileText fileText = new FileText(save, parent, projectDir,
+				defaultFileName, filterExtensions, indent);
 
 		ListenerAppender.addPathTextListener(fileText, dialog);
 
