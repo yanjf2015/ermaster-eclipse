@@ -78,7 +78,7 @@ public class Index extends AbstractModel implements ObjectModel,
 		for (int i=0; i<this.columns.size(); i++) {
 			NormalColumn column = this.columns.get(i);
 			
-			if (this.table.getNormalColumns().contains(column)) {
+			if (this.table.getExpandedColumns().contains(column)) {
 				list.add(column);
 			}
 		}
@@ -111,7 +111,7 @@ public class Index extends AbstractModel implements ObjectModel,
 		for (int i=0; i<this.columns.size(); i++) {
 			NormalColumn column = this.columns.get(i);
 			
-			if (this.table.getNormalColumns().contains(column)) {
+			if (this.table.getExpandedColumns().contains(column)) {
 				list.add(this.descs.get(i));
 			}
 		}
@@ -175,21 +175,10 @@ public class Index extends AbstractModel implements ObjectModel,
 		this.table = table;
 	}
 
-	/**
-	 * description ���擾���܂�.
-	 * 
-	 * @return description
-	 */
 	public String getDescription() {
 		return description;
 	}
 
-	/**
-	 * description ��ݒ肵�܂�.
-	 * 
-	 * @param description
-	 *            description
-	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}

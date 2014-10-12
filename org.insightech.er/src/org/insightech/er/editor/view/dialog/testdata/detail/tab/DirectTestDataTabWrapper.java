@@ -155,7 +155,6 @@ public class DirectTestDataTabWrapper extends ValidatableTabWrapper {
 			this.addTableItem(data);
 		}
 
-		// ��s
 		this.addNewRowToTable();
 
 		this.editColumnTable.setVisible(true);

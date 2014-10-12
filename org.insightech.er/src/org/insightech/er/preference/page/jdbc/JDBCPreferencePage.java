@@ -68,7 +68,7 @@ public class JDBCPreferencePage extends PreferencePage implements
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
-		gridData.heightHint = 200;
+		gridData.heightHint = 400;
 		gridData.horizontalSpan = 3;
 
 		this.table.setLayoutData(gridData);

@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -199,6 +201,21 @@ public class RowHeaderTable extends JScrollPane implements ClipboardOwner {
 							if (!table.isEditing()) {
 								deleteCell();
 								event.consume();
+							}
+						
+						} else if (event.isControlDown() && event.getKeyCode() == ';') {
+							if (!table.isEditing()) {
+								int row = table.getSelectionModel().getLeadSelectionIndex();
+
+								int column = table.getColumnModel().getSelectionModel()
+										.getLeadSelectionIndex();
+
+								if (row != -1 && column != -1) {
+									SimpleDateFormat format = new SimpleDateFormat(
+											"yyyy-MM-dd HH:mm:ss.SSS");
+									
+									setValueAt(format.format(new Date()), row, column);
+								}
 							}
 						}
 					}
