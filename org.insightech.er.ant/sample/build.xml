@@ -1,11 +1,14 @@
-<project default="report_html">
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="ddl">
 
 	<target name="ddl">
-		<ermaster.ddl diagramFile="c:\work\sample\sample_category.erm" outputFile="ddl.sql" encoding="UTF-8" />
+		<ermaster.ddl diagramFile="c:\work\sample\sample_category.erm" 
+			outputFile="ddl.sql" encoding="UTF-8" />
 	</target>
 
 	<target name="image">
-		<ermaster.image diagramfile="c:\work\sample\sample_category.erm" outputfile="c:\work\test.png" withCategory="true" />
+		<ermaster.image diagramfile="c:\work\sample\sample_category.erm" 
+			outputfile="c:\work\test.png" withCategory="true" />
 	</target>
 
 	<target name="report_html">
@@ -13,7 +16,11 @@
 	</target>
 
 	<target name="report_excel">
-		<ermaster.reportExcel diagramfile="c:\work\sample\sample_category.erm" outputfile="c:\work\test.xls" template="default_en" outputimage="true" uselogicalnameassheetname="true" />
+		<ermaster.reportExcel diagramfile="c:\work\sample\sample_category.erm" 
+			outputfile="c:\work\test.xls" 
+			template="default_en" 
+			outputimage="true" 
+			uselogicalnameassheetname="true" />
 	</target>
 
 	<target name="testdata">
@@ -24,3 +31,4 @@
 	</target>
 
 </project>
+
