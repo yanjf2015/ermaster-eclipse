@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.editor.model.dbexport.AbstractExportManager;
 import org.insightech.er.editor.model.dbexport.html.page_generator.HtmlReportPageGenerator;
@@ -210,8 +211,9 @@ public class ExportToHtmlManager extends AbstractExportManager {
 	}
 
 	public static String getTemplate(String key) throws IOException {
-		InputStream in = ExportToHtmlManager.class.getClassLoader()
+		InputStream in = ERDiagramActivator.getClassLoader()
 				.getResourceAsStream(TEMPLATE_DIR + key);
+
 		if (in == null) {
 			throw new FileNotFoundException(TEMPLATE_DIR + key);
 		}
@@ -254,9 +256,9 @@ public class ExportToHtmlManager extends AbstractExportManager {
 		InputStream in = null;
 
 		try {
-			in = ExportToHtmlManager.class.getClassLoader()
-					.getResourceAsStream(srcPath);
-			copyOutResource(dstPath, in);
+			in = ERDiagramActivator.getClassLoader().getResourceAsStream(
+					srcPath);
+			this.copyOutResource(dstPath, in);
 
 		} finally {
 			if (in != null) {

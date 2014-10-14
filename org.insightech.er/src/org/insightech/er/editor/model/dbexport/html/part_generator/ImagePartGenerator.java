@@ -41,11 +41,8 @@ public class ImagePartGenerator {
 		String template = ExportToHtmlManager
 				.getTemplate("overview/overview-summary_image_template.html");
 
-		String pathToImageFile = imageInfo.getPath();
-
-		if (relativePath != null) {
-			pathToImageFile = relativePath + File.separator + pathToImageFile;
-		}
+		String pathToImageFile = relativePath + ExportToHtmlManager.IMAGE_DIR
+				+ File.separator + imageInfo.getPath();
 
 		Object[] args = {
 				pathToImageFile,
@@ -72,9 +69,7 @@ public class ImagePartGenerator {
 					String pathToHtmlFile = entry.getKey().getObjectType()
 							+ "/" + this.getObjectId(entry.getKey()) + ".html";
 
-					if (relativePath != null) {
-						pathToHtmlFile = relativePath + pathToHtmlFile;
-					}
+					pathToHtmlFile = relativePath + pathToHtmlFile;
 
 					Object[] args = { String.valueOf(location.x),
 							String.valueOf(location.y),

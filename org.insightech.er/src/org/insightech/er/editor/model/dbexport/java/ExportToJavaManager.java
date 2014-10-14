@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
@@ -212,7 +213,7 @@ public class ExportToJavaManager extends AbstractExportManager {
 	private static String loadResource(String templateName) throws IOException {
 		String resourceName = TEMPLATE_DIR + templateName + ".txt";
 
-		InputStream in = ExportToJavaManager.class.getClassLoader()
+		InputStream in = ERDiagramActivator.getClassLoader()
 				.getResourceAsStream(resourceName);
 
 		if (in == null) {

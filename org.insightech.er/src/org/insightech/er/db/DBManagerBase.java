@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.ui.PlatformUI;
+import org.insightech.er.ERDiagramActivator;
 import org.insightech.er.editor.model.settings.JDBCDriverSetting;
 import org.insightech.er.preference.PreferenceInitializer;
 import org.insightech.er.preference.page.jdbc.JDBCPathDialog;
@@ -123,8 +124,8 @@ public abstract class DBManagerBase implements DBManager {
 			urls[i] = new URL("file", "", tokenizer.nextToken());
 		}
 
-		URLClassLoader loader = new URLClassLoader(urls, this.getClass()
-				.getClassLoader());
+		URLClassLoader loader = new URLClassLoader(urls,
+				ERDiagramActivator.getClassLoader());
 
 		return loader;
 	}

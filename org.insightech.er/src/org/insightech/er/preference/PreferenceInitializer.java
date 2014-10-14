@@ -59,6 +59,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
 	private static final String DB_SETTING_PASSWORD = "setting.password.";
 
+	private static final String EXTENDED_CLASSPATH = "extended.classpath";
+
 	public PreferenceInitializer() {
 	}
 
@@ -72,6 +74,23 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 				.append(fileName).toOSString();
 
 		return path;
+	}
+
+	public static String getExtendedClasspath() {
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
+
+		String path = store.getString(PreferenceInitializer.EXTENDED_CLASSPATH);
+
+		return path;
+	}
+
+	public static void saveExtendedClasspath(String path) {
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
+
+		store.setValue(PreferenceInitializer.EXTENDED_CLASSPATH,
+				Format.null2blank(path));
 	}
 
 	public static String getTranslationPath(String fileName) {
@@ -94,7 +113,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void addJDBCDriver(String db, String className, String path) {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -126,7 +146,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			}
 		}
 
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -160,7 +181,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void clearJDBCDriverInfo() {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int num = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -178,7 +200,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static String getJDBCDriverPath(String db, String driverClassName) {
 		String path = null;
 
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int listSize = store
 				.getInt(PreferenceInitializer.JDBC_DRIVER_CLASS_NAME_LIST_NUM);
@@ -202,7 +225,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static DBSetting getDBSetting(int no) {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		String dbsystem = store
 				.getString(PreferenceInitializer.DB_SETTING_DBSYSTEM + no);
@@ -236,7 +260,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void saveSetting(int no, DBSetting dbSetting) {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		store.setValue(PreferenceInitializer.DB_SETTING_DBSYSTEM + no,
 				Format.null2blank(dbSetting.getDbsystem()));
@@ -260,7 +285,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void saveSetting(List<DBSetting> dbSettingList) {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		store.setValue(PreferenceInitializer.DB_SETTING_LIST_NUM,
 				dbSettingList.size());
@@ -274,7 +300,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static List<DBSetting> getDBSettingList(String database) {
 		List<DBSetting> dbSettingList = new ArrayList<DBSetting>();
 
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int num = store.getInt(PreferenceInitializer.DB_SETTING_LIST_NUM);
 
@@ -292,7 +319,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	}
 
 	public static void addDBSetting(DBSetting dbSetting) {
-		IPreferenceStore store = ERDiagramActivator.getDefault().getPreferenceStore();
+		IPreferenceStore store = ERDiagramActivator.getDefault()
+				.getPreferenceStore();
 
 		int num = store.getInt(PreferenceInitializer.DB_SETTING_LIST_NUM);
 		num++;
@@ -326,7 +354,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public static List<String> getAllExcelTemplateFiles() {
 		String str = ERDiagramActivator.getDefault().getPreferenceStore()
 				.getString(PreferenceInitializer.TEMPLATE_FILE_LIST);
-		
+
 		return parseStringToList(str);
 	}
 

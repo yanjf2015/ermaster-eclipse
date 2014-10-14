@@ -38,7 +38,21 @@ public class SQLiteDDLCreator extends DDLCreator {
 
 	@Override
 	protected String getPrimaryKeyDDL(ERTable table) {
-		StringBuilder ddl = new StringBuilder(super.getPrimaryKeyDDL(table));
+		boolean isAutoIncrement = false;
+
+		for (NormalColumn column : table.getNormalColumns()) {
+			isAutoIncrement = column.isAutoIncrement();
+
+			if (isAutoIncrement) {
+				break;
+			}
+		}
+
+		StringBuilder ddl = new StringBuilder();
+
+		if (!isAutoIncrement) {
+			ddl.append(super.getPrimaryKeyDDL(table));
+		}
 
 		for (Relation relation : table.getIncomingRelations()) {
 			ddl.append(",\r\n\tFOREIGN KEY (");

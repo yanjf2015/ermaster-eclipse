@@ -72,8 +72,7 @@ public class OverviewHtmlReportPageGenerator {
 					this.idMap);
 
 			imagePart = imagePartGenerator.generateImage(
-					imageInfoSet.getDiagramImageInfo(),
-					ExportToHtmlManager.IMAGE_DIR);
+					imageInfoSet.getDiagramImageInfo(), "");
 		}
 
 		Object[] args = { imagePart,

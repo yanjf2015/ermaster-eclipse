@@ -614,6 +614,18 @@ public class CompositeFactory {
 		return button;
 	}
 
+	public static Button createFillButton(Composite composite, String text) {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+
+		Button button = new Button(composite, SWT.NONE);
+		button.setText(ResourceString.getResourceString(text));
+		button.setLayoutData(gridData);
+
+		return button;
+	}
+
 	public static Button createAddButton(Composite composite) {
 		GridData gridData = new GridData();
 		gridData.grabExcessVerticalSpace = true;

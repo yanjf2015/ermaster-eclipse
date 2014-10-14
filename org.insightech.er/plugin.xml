@@ -44,6 +44,12 @@
             id="org.insightech.er.page.jdbc"
             name="%preference.jdbc">
       </page>
+      <page
+            category="org.insightech.er.page"
+            class="org.insightech.er.preference.page.classpath.ExtClassPathPreferencePage"
+            id="org.insightech.er.page.classpath"
+            name="%preference.classpath">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.editors">

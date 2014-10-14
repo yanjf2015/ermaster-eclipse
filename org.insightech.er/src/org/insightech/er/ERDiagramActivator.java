@@ -1,6 +1,8 @@
 package org.insightech.er;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -15,7 +17,10 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.insightech.er.preference.PreferenceInitializer;
+import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
+import org.insightech.er.util.URLFirstClassLoader;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -388,4 +393,27 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 						e.getMessage(), e));
 	}
 
+	public static ClassLoader getClassLoader() {
+		ClassLoader currentClassLoader = ERDiagramActivator.class
+				.getClassLoader();
+
+		String path = PreferenceInitializer.getExtendedClasspath();
+
+		if (!Check.isEmpty(path)) {
+			URL[] urls = new URL[1];
+
+			try {
+				urls[0] = new File(path + "/").toURI().toURL();
+
+				URLFirstClassLoader classLoader = new URLFirstClassLoader(urls,
+						currentClassLoader);
+
+				return classLoader;
+
+			} catch (MalformedURLException e) {
+			}
+		}
+
+		return currentClassLoader;
+	}
 }
