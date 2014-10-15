@@ -3,6 +3,9 @@ package org.insightech.er;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -415,5 +418,18 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 		}
 
 		return currentClassLoader;
+	}
+
+	public static List<URL> getURLList(String rootPath) {
+		List<URL> urlList = new ArrayList<URL>();
+
+		Enumeration<URL> urls = plugin.getBundle().findEntries(
+				"template/" + rootPath, "*", true);
+
+		while (urls.hasMoreElements()) {
+			urlList.add(urls.nextElement());
+		}
+
+		return urlList;
 	}
 }

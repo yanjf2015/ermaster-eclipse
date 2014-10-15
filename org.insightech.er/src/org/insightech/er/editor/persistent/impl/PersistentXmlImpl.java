@@ -906,6 +906,9 @@ public class PersistentXmlImpl extends Persistent {
 		xml.append("\t<encoding>")
 				.append(escape(exportDDLSetting.getSrcFileEncoding()))
 				.append("</encoding>\n");
+		xml.append("\t<line_feed>")
+				.append(escape(exportDDLSetting.getLineFeed()))
+				.append("</line_feed>\n");
 		xml.append("\t<is_open_after_saved>")
 				.append(exportDDLSetting.isOpenAfterSaved())
 				.append("</is_open_after_saved>\n");

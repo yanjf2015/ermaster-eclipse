@@ -55,7 +55,7 @@ public class SQLiteDDLCreator extends DDLCreator {
 		}
 
 		for (Relation relation : table.getIncomingRelations()) {
-			ddl.append(",\r\n\tFOREIGN KEY (");
+			ddl.append("," + LF() + "\tFOREIGN KEY (");
 
 			boolean first = true;
 
@@ -68,7 +68,7 @@ public class SQLiteDDLCreator extends DDLCreator {
 				first = false;
 			}
 
-			ddl.append(")\r\n");
+			ddl.append(")" + LF());
 			ddl.append("\tREFERENCES ");
 			ddl.append(filterName(relation.getSourceTableView()
 					.getNameWithSchema(this.getDiagram().getDatabase())));

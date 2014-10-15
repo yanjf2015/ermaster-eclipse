@@ -1,7 +1,6 @@
 package org.insightech.er.db.impl.mysql;
 
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.insightech.er.ResourceString;
 import org.insightech.er.db.DBManager;
@@ -59,6 +58,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		if (this.ddlTarget.createComment) {
 			String comment = this.filterComment(table.getLogicalName(),
 					table.getDescription(), false);
+			comment = replaceLF(comment, LF());
 
 			if (!Check.isEmpty(comment)) {
 				postDDL.append(" COMMENT = '");
@@ -93,8 +93,8 @@ public class MySQLDDLCreator extends DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineColumnComment) {
 			ddl.append("\t-- ");
-			ddl.append(description.replaceAll("\n", "\n\t-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "\t-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("\t");
@@ -166,6 +166,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		if (this.ddlTarget.createComment) {
 			String comment = this.filterComment(normalColumn.getLogicalName(),
 					normalColumn.getDescription(), true);
+			comment = replaceLF(comment, LF());
 
 			if (!Check.isEmpty(comment)) {
 				ddl.append(" COMMENT '");
@@ -200,26 +201,26 @@ public class MySQLDDLCreator extends DDLCreator {
 
 		ddl.append("CREATE TABLESPACE ");
 		ddl.append(filterName(tablespace.getName()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append(" ADD DATAFILE '");
 		ddl.append(tablespaceProperties.getDataFile());
-		ddl.append("'\r\n");
+		ddl.append("'" + LF());
 		ddl.append(" USE LOGFILE GROUP ");
 		ddl.append(tablespaceProperties.getLogFileGroup());
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (!Check.isEmpty(tablespaceProperties.getExtentSize())) {
 			ddl.append(" EXTENT_SIZE ");
 			ddl.append(tablespaceProperties.getExtentSize());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		ddl.append(" INITIAL_SIZE ");
 		ddl.append(tablespaceProperties.getInitialSize());
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append(" ENGINE ");
 		ddl.append(tablespaceProperties.getEngine());
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (this.semicolon) {
 			ddl.append(";");
@@ -249,13 +250,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		}
 
 		if (ddlTarget.commentReplaceLineFeed) {
-			comment = comment.replaceAll("\r\n", Matcher
-					.quoteReplacement(Format
-							.null2blank(ddlTarget.commentReplaceString)));
-			comment = comment.replaceAll("\r", Format.null2blank(Matcher
-					.quoteReplacement(ddlTarget.commentReplaceString)));
-			comment = comment.replaceAll("\n", Format.null2blank(Matcher
-					.quoteReplacement(ddlTarget.commentReplaceString)));
+			comment = replaceLF(comment, ddlTarget.commentReplaceString);
 		}
 
 		int maxLength = 60;
@@ -279,8 +274,8 @@ public class MySQLDDLCreator extends DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");
@@ -344,7 +339,7 @@ public class MySQLDDLCreator extends DDLCreator {
 		if (this.semicolon) {
 			ddl.append(";");
 		}
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		ddl.append(super.getDropDDL(diagram));
 

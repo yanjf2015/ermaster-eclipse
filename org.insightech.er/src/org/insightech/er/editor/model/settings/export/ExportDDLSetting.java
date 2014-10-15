@@ -11,12 +11,18 @@ public class ExportDDLSetting implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1616332815609079246L;
 
+	public static final String CRLF = "CR+LF";
+	
+	public static final String LF = "LF";
+	
 	private String ddlOutput;
 
 	private boolean openAfterSaved = true;
 
 	private String srcFileEncoding;
 
+	private String lineFeed;
+	
 	private DDLTarget ddlTarget = new DDLTarget();
 
 	private Environment environment;
@@ -71,6 +77,14 @@ public class ExportDDLSetting implements Serializable, Cloneable {
 		this.category = category;
 	}
 
+	public String getLineFeed() {
+		return lineFeed;
+	}
+
+	public void setLineFeed(String lineFeed) {
+		this.lineFeed = lineFeed;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -83,6 +97,8 @@ public class ExportDDLSetting implements Serializable, Cloneable {
 				+ ((ddlTarget == null) ? 0 : ddlTarget.hashCode());
 		result = prime * result
 				+ ((environment == null) ? 0 : environment.hashCode());
+		result = prime * result
+				+ ((lineFeed == null) ? 0 : lineFeed.hashCode());
 		result = prime * result + (openAfterSaved ? 1231 : 1237);
 		result = prime * result
 				+ ((srcFileEncoding == null) ? 0 : srcFileEncoding.hashCode());
@@ -117,6 +133,11 @@ public class ExportDDLSetting implements Serializable, Cloneable {
 			if (other.environment != null)
 				return false;
 		} else if (!environment.equals(other.environment))
+			return false;
+		if (lineFeed == null) {
+			if (other.lineFeed != null)
+				return false;
+		} else if (!lineFeed.equals(other.lineFeed))
 			return false;
 		if (openAfterSaved != other.openAfterSaved)
 			return false;

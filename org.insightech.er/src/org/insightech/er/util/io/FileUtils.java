@@ -6,10 +6,27 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.insightech.er.util.Check;
 
 public class FileUtils {
+
+	public static List<File> getChildren(File file) {
+		List<File> children = new ArrayList<File>();
+
+		if (file.isDirectory()) {
+			for (File child : file.listFiles()) {
+				children.addAll(getChildren(child));
+			}
+
+		} else {
+			children.add(file);
+		}
+
+		return children;
+	}
 
 	public static void deleteDirectory(File directory) throws IOException {
 		if (!directory.exists())

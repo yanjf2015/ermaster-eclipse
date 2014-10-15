@@ -66,6 +66,7 @@ public class PostgresDDLCreator extends DDLCreator {
 
 		String tableComment = this.filterComment(table.getLogicalName(),
 				table.getDescription(), false);
+		tableComment = replaceLF(tableComment, LF());
 
 		if (!Check.isEmpty(tableComment)) {
 			StringBuilder ddl = new StringBuilder();
@@ -90,6 +91,7 @@ public class PostgresDDLCreator extends DDLCreator {
 				String comment = this.filterComment(
 						normalColumn.getLogicalName(),
 						normalColumn.getDescription(), true);
+				comment = replaceLF(comment, LF());
 
 				if (!Check.isEmpty(comment)) {
 					StringBuilder ddl = new StringBuilder();
@@ -150,17 +152,17 @@ public class PostgresDDLCreator extends DDLCreator {
 
 		ddl.append("CREATE TABLESPACE ");
 		ddl.append(filterName(tablespace.getName()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (!Check.isEmpty(tablespaceProperties.getOwner())) {
 			ddl.append(" OWNER ");
 			ddl.append(tablespaceProperties.getOwner());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		ddl.append(" LOCATION '");
 		ddl.append(tablespaceProperties.getLocation());
-		ddl.append("'\r\n");
+		ddl.append("'" + LF());
 
 		if (this.semicolon) {
 			ddl.append(";");
@@ -229,7 +231,7 @@ public class PostgresDDLCreator extends DDLCreator {
 							table, column);
 					if (!Check.isEmpty(autoIncrementSettingDDL)) {
 						ddl.append(autoIncrementSettingDDL);
-						ddl.append("\r\n");
+						ddl.append(LF());
 						first = false;
 					}
 				}
@@ -237,8 +239,7 @@ public class PostgresDDLCreator extends DDLCreator {
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();

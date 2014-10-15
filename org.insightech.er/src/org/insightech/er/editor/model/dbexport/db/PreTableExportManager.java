@@ -274,7 +274,7 @@ public abstract class PreTableExportManager {
 		DDLCreator ddlCreator = DBManagerFactory.getDBManager(this.diagram)
 				.getDDLCreator(this.diagram, this.diagram.getCurrentCategory(),
 						true);
-		ddlCreator.init(this.environment, new DDLTarget());
+		ddlCreator.init(this.environment, new DDLTarget(), null);
 
 		return ddlCreator.getCreateDDL(this.diagram);
 	}

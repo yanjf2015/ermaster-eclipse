@@ -1153,6 +1153,8 @@ public class XMLLoader {
 					.getStringValue(element, "output_path")));
 			exportDDLSetting.setSrcFileEncoding(Format.null2blank(this
 					.getStringValue(element, "encoding")));
+			exportDDLSetting.setLineFeed(Format.null2blank(this
+					.getStringValue(element, "line_feed")));
 			exportDDLSetting.setOpenAfterSaved(this.getBooleanValue(element,
 					"is_open_after_saved", true));
 

@@ -38,6 +38,8 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 
 	private Combo fileEncodingCombo;
 
+	private Combo lineFeedCombo;
+
 	// private Combo categoryCombo;
 	private Label categoryLabel;
 
@@ -95,13 +97,18 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 			this.environmentCombo.add(environment.getName());
 		}
 
-		this.outputFileText = CompositeFactory.createFileText(true, this, parent,
-				"label.output.file", this.getBaseDir(),
+		this.outputFileText = CompositeFactory.createFileText(true, this,
+				parent, "label.output.file", this.getBaseDir(),
 				this.getDefaultOutputFileName(".sql"), "*.sql");
 
 		this.fileEncodingCombo = CompositeFactory.createFileEncodingCombo(
 				this.diagram.getEditor().getDefaultCharset(), this, parent,
 				"label.output.file.encoding", 2);
+
+		this.lineFeedCombo = CompositeFactory.createReadOnlyCombo(this, parent,
+				"label.line.feed.code", 2);
+		this.lineFeedCombo.add(ExportDDLSetting.CRLF);
+		this.lineFeedCombo.add(ExportDDLSetting.LF);
 
 		CompositeFactory.createLabel(parent, "label.category");
 		this.categoryLabel = CompositeFactory.createLabelAsValue(parent, "", 2);
@@ -342,6 +349,17 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 					.getSrcFileEncoding());
 		}
 
+		if (!Check.isEmpty(exportDDLSetting.getLineFeed())) {
+			this.lineFeedCombo.setText(exportDDLSetting.getLineFeed());
+			
+		} else {
+			if ("\n".equals(System.lineSeparator())) {
+				this.lineFeedCombo.setText(ExportDDLSetting.LF);
+			} else {
+				this.lineFeedCombo.setText(ExportDDLSetting.CRLF);
+			}
+		}
+
 		this.openAfterSavedButton.setSelection(exportDDLSetting
 				.isOpenAfterSaved());
 	}
@@ -390,6 +408,7 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 		exportDDLSetting.setEnvironment(environment);
 
 		exportDDLSetting.setSrcFileEncoding(this.fileEncodingCombo.getText());
+		exportDDLSetting.setLineFeed(this.lineFeedCombo.getText());
 
 		exportDDLSetting.setDdlTarget(this.createDDLTarget());
 

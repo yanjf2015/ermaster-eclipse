@@ -27,6 +27,14 @@ public class IOUtils {
 		}
 	}
 
+	public static void closeQuietly(Writer writer) {
+		try {
+			if (writer != null)
+				writer.close();
+		} catch (IOException ioe) {
+		}
+	}
+
 	public static int copy(InputStream input, OutputStream output)
 			throws IOException {
 		byte buffer[] = new byte[4096];

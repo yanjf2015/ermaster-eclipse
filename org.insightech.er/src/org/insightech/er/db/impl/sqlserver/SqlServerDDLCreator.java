@@ -66,36 +66,36 @@ public class SqlServerDDLCreator extends DDLCreator {
 
 		ddl.append("TABLESPACE ");
 		ddl.append(filterName(tablespace.getName()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (!Check.isEmpty(tablespaceProperties.getPageSize())) {
 			ddl.append(" PAGESIZE ");
 			ddl.append(tablespaceProperties.getPageSize());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		ddl.append(" MANAGED BY ");
 		ddl.append(tablespaceProperties.getManagedBy());
 		ddl.append(" USING(");
 		ddl.append(tablespaceProperties.getContainer());
-		ddl.append(")\r\n");
+		ddl.append(")" + LF());
 
 		if (!Check.isEmpty(tablespaceProperties.getExtentSize())) {
 			ddl.append(" EXTENTSIZE ");
 			ddl.append(tablespaceProperties.getExtentSize());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!Check.isEmpty(tablespaceProperties.getPrefetchSize())) {
 			ddl.append(" PREFETCHSIZE ");
 			ddl.append(tablespaceProperties.getPrefetchSize());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!Check.isEmpty(tablespaceProperties.getBufferPoolName())) {
 			ddl.append(" BUFFERPOOL ");
 			ddl.append(tablespaceProperties.getBufferPoolName());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (this.semicolon) {
@@ -113,8 +113,8 @@ public class SqlServerDDLCreator extends DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");

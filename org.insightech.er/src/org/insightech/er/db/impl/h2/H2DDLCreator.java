@@ -26,8 +26,8 @@ public class H2DDLCreator extends DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");

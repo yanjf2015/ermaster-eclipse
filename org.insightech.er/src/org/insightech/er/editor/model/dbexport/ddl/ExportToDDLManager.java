@@ -37,7 +37,8 @@ public class ExportToDDLManager extends AbstractExportManager {
 							this.exportDDLSetting.getCategory(), true);
 
 			ddlCreator.init(this.exportDDLSetting.getEnvironment(),
-					this.exportDDLSetting.getDdlTarget());
+					this.exportDDLSetting.getDdlTarget(),
+					this.exportDDLSetting.getLineFeed());
 
 			File file = FileUtils.getFile(this.projectDir,
 					this.exportDDLSetting.getDdlOutput());

@@ -39,6 +39,7 @@ public class OracleDDLCreator extends DDLCreator {
 
 		String tableComment = this.filterComment(table.getLogicalName(),
 				table.getDescription(), false);
+		tableComment = replaceLF(tableComment, LF());
 
 		if (!Check.isEmpty(tableComment)) {
 			StringBuilder ddl = new StringBuilder();
@@ -63,6 +64,7 @@ public class OracleDDLCreator extends DDLCreator {
 				String comment = this.filterComment(
 						normalColumn.getLogicalName(),
 						normalColumn.getDescription(), true);
+				comment = replaceLF(comment, LF());
 
 				if (!Check.isEmpty(comment)) {
 					StringBuilder ddl = new StringBuilder();
@@ -124,7 +126,7 @@ public class OracleDDLCreator extends DDLCreator {
 		ddl.append("ALTER TABLE ");
 		ddl.append(filterName(relation.getTargetTableView().getNameWithSchema(
 				this.getDiagram().getDatabase())));
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append("\tADD ");
 		if (relation.getName() != null && !relation.getName().trim().equals("")) {
 			ddl.append("CONSTRAINT ");
@@ -144,7 +146,7 @@ public class OracleDDLCreator extends DDLCreator {
 			first = false;
 		}
 
-		ddl.append(")\r\n");
+		ddl.append(")" + LF());
 		ddl.append("\tREFERENCES ");
 		ddl.append(filterName(relation.getSourceTableView().getNameWithSchema(
 				this.getDiagram().getDatabase())));
@@ -170,11 +172,11 @@ public class OracleDDLCreator extends DDLCreator {
 
 		}
 
-		ddl.append(")\r\n");
+		ddl.append(")" + LF());
 		if (!"RESTRICT".equalsIgnoreCase(relation.getOnDeleteAction())) {
 			ddl.append("\tON DELETE ");
 			ddl.append(filterName(relation.getOnDeleteAction()));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (this.semicolon) {
@@ -193,7 +195,7 @@ public class OracleDDLCreator extends DDLCreator {
 
 		ddl.append("CREATE TABLESPACE ");
 		ddl.append(filterName(tablespace.getName()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (!Check.isEmpty(tablespaceProperties.getDataFile())) {
 			ddl.append(" DATAFILE ");
@@ -204,7 +206,7 @@ public class OracleDDLCreator extends DDLCreator {
 				ddl.append(tablespaceProperties.getFileSize());
 			}
 
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (tablespaceProperties.isAutoExtend()) {
@@ -216,70 +218,70 @@ public class OracleDDLCreator extends DDLCreator {
 				ddl.append(tablespaceProperties.getAutoExtendMaxSize());
 			}
 
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!Check.isEmpty(tablespaceProperties.getMinimumExtentSize())) {
 			ddl.append(" MINIMUM EXTENT ");
 			ddl.append(tablespaceProperties.getMinimumExtentSize());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
-		ddl.append(" DEFAULT STORAGE(\r\n");
+		ddl.append(" DEFAULT STORAGE(" + LF());
 		if (!Check.isEmpty(tablespaceProperties.getInitial())) {
 			ddl.append("  INITIAL ");
 			ddl.append(tablespaceProperties.getInitial());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 		if (!Check.isEmpty(tablespaceProperties.getNext())) {
 			ddl.append("  NEXT ");
 			ddl.append(tablespaceProperties.getNext());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 		if (!Check.isEmpty(tablespaceProperties.getMinExtents())) {
 			ddl.append("  MINEXTENTS ");
 			ddl.append(tablespaceProperties.getMinExtents());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 		if (!Check.isEmpty(tablespaceProperties.getMaxExtents())) {
 			ddl.append("  MAXEXTEMTS ");
 			ddl.append(tablespaceProperties.getMaxExtents());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 		if (!Check.isEmpty(tablespaceProperties.getPctIncrease())) {
 			ddl.append("  PCTINCREASE ");
 			ddl.append(tablespaceProperties.getPctIncrease());
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
-		ddl.append(" )\r\n");
+		ddl.append(" )" + LF());
 
 		if (tablespaceProperties.isLogging()) {
 			ddl.append(" LOGGING ");
 		} else {
 			ddl.append(" NOLOGGING ");
 		}
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (tablespaceProperties.isOffline()) {
 			ddl.append(" OFFLINE ");
 		} else {
 			ddl.append(" ONLINE ");
 		}
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (tablespaceProperties.isTemporary()) {
 			ddl.append(" TEMPORARY");
 		} else {
 			ddl.append(" PERMANENT ");
 		}
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (tablespaceProperties.isAutoSegmentSpaceManagement()) {
 			ddl.append(" SEGMENT SPACE MANAGEMENT AUTO ");
 		} else {
 			ddl.append(" SEGMENT SPACE MANAGEMENT MANUAL ");
 		}
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (this.semicolon) {
 			ddl.append(";");
@@ -296,8 +298,8 @@ public class OracleDDLCreator extends DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");
@@ -343,7 +345,7 @@ public class OracleDDLCreator extends DDLCreator {
 
 	@Override
 	public String getDDL(Trigger trigger) {
-		return super.getDDL(trigger) + "\r\n\r\n/\r\n";
+		return super.getDDL(trigger) + LF(2) + "/" + LF();
 	}
 
 	@Override

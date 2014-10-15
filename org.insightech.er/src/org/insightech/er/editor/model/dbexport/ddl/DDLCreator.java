@@ -27,6 +27,7 @@ import org.insightech.er.editor.model.diagram_contents.not_element.tablespace.Ta
 import org.insightech.er.editor.model.diagram_contents.not_element.trigger.Trigger;
 import org.insightech.er.editor.model.settings.Environment;
 import org.insightech.er.editor.model.settings.Settings;
+import org.insightech.er.editor.model.settings.export.ExportDDLSetting;
 import org.insightech.er.util.Check;
 import org.insightech.er.util.Format;
 
@@ -42,6 +43,8 @@ public abstract class DDLCreator {
 
 	protected DDLTarget ddlTarget;
 
+	private String lineFeedCode;
+
 	public DDLCreator(ERDiagram diagram, Category targetCategory,
 			boolean semicolon) {
 		this.diagram = diagram;
@@ -49,9 +52,11 @@ public abstract class DDLCreator {
 		this.targetCategory = targetCategory;
 	}
 
-	public void init(Environment environment, DDLTarget ddlTarget) {
+	public void init(Environment environment, DDLTarget ddlTarget,
+			String lineFeedCode) {
 		this.environment = environment;
 		this.ddlTarget = ddlTarget;
+		this.lineFeedCode = lineFeedCode;
 	}
 
 	public String getDropDDL(ERDiagram diagram) {
@@ -92,14 +97,12 @@ public abstract class DDLCreator {
 			for (Tablespace tablespace : diagram.getDiagramContents()
 					.getTablespaceSet()) {
 				if (first) {
-					ddl.append("\r\n/* Drop Tablespaces */\r\n\r\n");
+					ddl.append(LF() + "/* Drop Tablespaces */" + LF(2));
 					first = false;
 				}
 
 				ddl.append(this.getDropDDL(tablespace));
-				ddl.append("\r\n");
-				ddl.append("\r\n");
-				ddl.append("\r\n");
+				ddl.append(LF(3));
 			}
 		}
 
@@ -113,16 +116,15 @@ public abstract class DDLCreator {
 
 		for (Sequence sequence : diagram.getDiagramContents().getSequenceSet()) {
 			if (first) {
-				ddl.append("\r\n/* Drop Sequences */\r\n\r\n");
+				ddl.append(LF() + "/* Drop Sequences */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDropDDL(sequence));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -136,16 +138,15 @@ public abstract class DDLCreator {
 		for (View view : diagram.getDiagramContents().getContents()
 				.getViewSet()) {
 			if (first) {
-				ddl.append("\r\n/* Drop Views */\r\n\r\n");
+				ddl.append(LF() + "/* Drop Views */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDropDDL(view));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -158,16 +159,15 @@ public abstract class DDLCreator {
 
 		for (Trigger trigger : diagram.getDiagramContents().getTriggerSet()) {
 			if (first) {
-				ddl.append("\r\n/* Drop Triggers */\r\n\r\n");
+				ddl.append(LF() + "/* Drop Triggers */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDropDDL(trigger));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -188,17 +188,16 @@ public abstract class DDLCreator {
 
 			for (Index index : table.getIndexes()) {
 				if (first) {
-					ddl.append("\r\n/* Drop Indexes */\r\n\r\n");
+					ddl.append(LF() + "/* Drop Indexes */" + LF(2));
 					first = false;
 				}
 				ddl.append(this.getDropDDL(index, table));
-				ddl.append("\r\n");
+				ddl.append(LF());
 			}
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -220,7 +219,7 @@ public abstract class DDLCreator {
 			}
 
 			if (first) {
-				ddl.append("\r\n/* Drop Tables */\r\n\r\n");
+				ddl.append(LF() + "/* Drop Tables */" + LF(2));
 				first = false;
 			}
 
@@ -230,8 +229,7 @@ public abstract class DDLCreator {
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -280,7 +278,7 @@ public abstract class DDLCreator {
 			for (Tablespace tablespace : diagram.getDiagramContents()
 					.getTablespaceSet()) {
 				if (first) {
-					ddl.append("\r\n/* Create Tablespaces */\r\n\r\n");
+					ddl.append(LF() + "/* Create Tablespaces */" + LF(2));
 					first = false;
 				}
 
@@ -288,14 +286,12 @@ public abstract class DDLCreator {
 				if (this.semicolon && !Check.isEmpty(description)
 						&& this.ddlTarget.inlineTableComment) {
 					ddl.append("-- ");
-					ddl.append(description.replaceAll("\n", "\n-- "));
-					ddl.append("\r\n");
+					ddl.append(replaceLF(description, LF() + "-- "));
+					ddl.append(LF());
 				}
 
 				ddl.append(this.getDDL(tablespace));
-				ddl.append("\r\n");
-				ddl.append("\r\n");
-				ddl.append("\r\n");
+				ddl.append(LF(3));
 			}
 		}
 
@@ -321,14 +317,12 @@ public abstract class DDLCreator {
 			}
 
 			if (first) {
-				ddl.append("\r\n/* Create Tables */\r\n\r\n");
+				ddl.append(LF() + "/* Create Tables */" + LF(2));
 				first = false;
 			}
 
 			ddl.append(this.getDDL(table));
-			ddl.append("\r\n");
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(3));
 			ddl.append(this.getTableSettingDDL(table));
 		}
 
@@ -350,13 +344,11 @@ public abstract class DDLCreator {
 
 			for (Relation relation : table.getOutgoingRelations()) {
 				if (first) {
-					ddl.append("\r\n/* Create Foreign Keys */\r\n\r\n");
+					ddl.append(LF() + "/* Create Foreign Keys */" + LF(2));
 					first = false;
 				}
 				ddl.append(this.getDDL(relation));
-				ddl.append("\r\n");
-				ddl.append("\r\n");
-				ddl.append("\r\n");
+				ddl.append(LF(3));
 			}
 		}
 
@@ -378,17 +370,16 @@ public abstract class DDLCreator {
 
 			for (Index index : table.getIndexes()) {
 				if (first) {
-					ddl.append("\r\n/* Create Indexes */\r\n\r\n");
+					ddl.append(LF() + "/* Create Indexes */" + LF(2));
 					first = false;
 				}
 				ddl.append(this.getDDL(index, table));
-				ddl.append("\r\n");
+				ddl.append(LF());
 			}
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -403,16 +394,15 @@ public abstract class DDLCreator {
 				.getViewSet()) {
 
 			if (first) {
-				ddl.append("\r\n/* Create Views */\r\n\r\n");
+				ddl.append(LF() + "/* Create Views */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDDL(view));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -426,16 +416,15 @@ public abstract class DDLCreator {
 		for (Trigger trigger : diagram.getDiagramContents().getTriggerSet()) {
 
 			if (first) {
-				ddl.append("\r\n/* Create Triggers */\r\n\r\n");
+				ddl.append(LF() + "/* Create Triggers */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDDL(trigger));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -458,16 +447,15 @@ public abstract class DDLCreator {
 			}
 
 			if (first) {
-				ddl.append("\r\n/* Create Sequences */\r\n\r\n");
+				ddl.append(LF() + "/* Create Sequences */" + LF(2));
 				first = false;
 			}
 			ddl.append(this.getDDL(sequence));
-			ddl.append("\r\n");
+			ddl.append(LF());
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -489,20 +477,19 @@ public abstract class DDLCreator {
 
 			if (!commentDDLList.isEmpty()) {
 				if (first) {
-					ddl.append("\r\n/* Comments */\r\n\r\n");
+					ddl.append(LF() + "/* Comments */" + LF(2));
 					first = false;
 				}
 
 				for (String commentDDL : commentDDLList) {
 					ddl.append(commentDDL);
-					ddl.append("\r\n");
+					ddl.append(LF());
 				}
 			}
 		}
 
 		if (!first) {
-			ddl.append("\r\n");
-			ddl.append("\r\n");
+			ddl.append(LF(2));
 		}
 
 		return ddl.toString();
@@ -517,12 +504,12 @@ public abstract class DDLCreator {
 		if (this.semicolon && !Check.isEmpty(tableComment)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(tableComment.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(tableComment, LF() + "-- "));
+			ddl.append(LF());
 		}
 		ddl.append("CREATE TABLE ");
 		ddl.append(filterName(table.getNameWithSchema(diagram.getDatabase())));
-		ddl.append("\r\n(\r\n");
+		ddl.append(LF() + "(" + LF());
 
 		boolean first = true;
 
@@ -531,7 +518,7 @@ public abstract class DDLCreator {
 				NormalColumn normalColumn = (NormalColumn) column;
 
 				if (!first) {
-					ddl.append(",\r\n");
+					ddl.append("," + LF());
 				}
 
 				ddl.append(this.getColulmnDDL(normalColumn));
@@ -543,7 +530,7 @@ public abstract class DDLCreator {
 
 				for (NormalColumn normalColumn : columnGroup.getColumns()) {
 					if (!first) {
-						ddl.append(",\r\n");
+						ddl.append("," + LF());
 					}
 
 					ddl.append(this.getColulmnDDL(normalColumn));
@@ -558,7 +545,7 @@ public abstract class DDLCreator {
 		List<ComplexUniqueKey> complexUniqueKeyList = table
 				.getComplexUniqueKeyList();
 		for (ComplexUniqueKey complexUniqueKey : complexUniqueKeyList) {
-			ddl.append(",\r\n");
+			ddl.append("," + LF());
 			ddl.append("\t");
 			if (!Check.isEmpty(complexUniqueKey.getUniqueKeyName())) {
 				ddl.append("CONSTRAINT ");
@@ -582,21 +569,21 @@ public abstract class DDLCreator {
 
 		String constraint = Format.null2blank(table.getConstraint()).trim();
 		if (!"".equals(constraint)) {
-			constraint = constraint.replaceAll("\r\n", "\r\n\t");
+			constraint = replaceLF(constraint, LF() + "\t");
 
-			ddl.append(",\r\n");
+			ddl.append("," + LF());
 			ddl.append("\t");
 			ddl.append(constraint);
 		}
 
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append(")");
 
 		ddl.append(this.getPostDDL(table));
 
 		String option = Format.null2blank(table.getOption()).trim();
 		if (!"".equals(option)) {
-			ddl.append("\r\n");
+			ddl.append(LF());
 			ddl.append(option);
 		}
 
@@ -613,7 +600,7 @@ public abstract class DDLCreator {
 		List<NormalColumn> primaryKeys = table.getPrimaryKeys();
 
 		if (primaryKeys.size() != 0) {
-			ddl.append(",\r\n");
+			ddl.append("," + LF());
 			ddl.append("\t");
 			if (!Check.isEmpty(table.getPrimaryKeyName())) {
 				ddl.append("CONSTRAINT ");
@@ -649,14 +636,15 @@ public abstract class DDLCreator {
 	protected String getColulmnDDL(NormalColumn normalColumn) {
 		StringBuilder ddl = new StringBuilder();
 
-		String columnComment = this.filterComment(normalColumn.getLogicalName(),
-				normalColumn.getDescription(), true);
+		String columnComment = this.filterComment(
+				normalColumn.getLogicalName(), normalColumn.getDescription(),
+				true);
 
 		if (this.semicolon && !Check.isEmpty(columnComment)
 				&& this.ddlTarget.inlineColumnComment) {
 			ddl.append("\t-- ");
-			ddl.append(columnComment.replaceAll("\n", "\n\t-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(columnComment, LF() + "\t-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("\t");
@@ -768,8 +756,8 @@ public abstract class DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");
@@ -830,7 +818,7 @@ public abstract class DDLCreator {
 		ddl.append("ALTER TABLE ");
 		ddl.append(filterName(relation.getTargetTableView().getNameWithSchema(
 				diagram.getDatabase())));
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append("\tADD ");
 		if (relation.getName() != null && !relation.getName().trim().equals("")) {
 			ddl.append("CONSTRAINT ");
@@ -850,7 +838,7 @@ public abstract class DDLCreator {
 			first = false;
 		}
 
-		ddl.append(")\r\n");
+		ddl.append(")" + LF());
 		ddl.append("\tREFERENCES ");
 		ddl.append(filterName(relation.getSourceTableView().getNameWithSchema(
 				diagram.getDatabase())));
@@ -869,13 +857,13 @@ public abstract class DDLCreator {
 			first = false;
 		}
 
-		ddl.append(")\r\n");
+		ddl.append(")" + LF());
 		ddl.append("\tON UPDATE ");
 		ddl.append(filterName(relation.getOnUpdateAction()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 		ddl.append("\tON DELETE ");
 		ddl.append(filterName(relation.getOnDeleteAction()));
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		if (this.semicolon) {
 			ddl.append(";");
@@ -891,8 +879,8 @@ public abstract class DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append(this.getCreateOrReplacePrefix() + " VIEW ");
@@ -919,8 +907,8 @@ public abstract class DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append(this.getCreateOrReplacePrefix() + " TRIGGER ");
@@ -943,8 +931,8 @@ public abstract class DDLCreator {
 		if (this.semicolon && !Check.isEmpty(description)
 				&& this.ddlTarget.inlineTableComment) {
 			ddl.append("-- ");
-			ddl.append(description.replaceAll("\n", "\n-- "));
-			ddl.append("\r\n");
+			ddl.append(replaceLF(description, LF() + "-- "));
+			ddl.append(LF());
 		}
 
 		ddl.append("CREATE ");
@@ -1022,7 +1010,7 @@ public abstract class DDLCreator {
 			ddl.append(";");
 		}
 
-		ddl.append("\r\n");
+		ddl.append(LF());
 
 		return ddl.toString();
 	}
@@ -1161,13 +1149,7 @@ public abstract class DDLCreator {
 		}
 
 		if (ddlTarget.commentReplaceLineFeed) {
-			comment = comment.replaceAll("\r\n", Matcher
-					.quoteReplacement(Format
-							.null2blank(ddlTarget.commentReplaceString)));
-			comment = comment.replaceAll("\r", Matcher.quoteReplacement(Format
-					.null2blank(ddlTarget.commentReplaceString)));
-			comment = comment.replaceAll("\n", Matcher.quoteReplacement(Format
-					.null2blank(ddlTarget.commentReplaceString)));
+			comment = replaceLF(comment, ddlTarget.commentReplaceString);
 		}
 
 		return comment;
@@ -1177,4 +1159,35 @@ public abstract class DDLCreator {
 		return "CREATE";
 	}
 
+	protected String replaceLF(String str, String replaceString) {
+		str = str.replaceAll("\r\n", "\n");
+		str = str.replaceAll("\r", "\n");
+		str = str.replaceAll("\n",
+				Matcher.quoteReplacement(Format.null2blank(replaceString)));
+
+		return str;
+	}
+
+	protected String LF() {
+		return LF(1);
+	}
+
+	protected String LF(int num) {
+		String lf = System.lineSeparator();
+
+		if (ExportDDLSetting.LF.equals(this.lineFeedCode)) {
+			lf = "\n";
+
+		} else if (ExportDDLSetting.CRLF.equals(this.lineFeedCode)) {
+			lf = "\r\n";
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < num; i++) {
+			sb.append(lf);
+		}
+
+		return sb.toString();
+	}
 }
