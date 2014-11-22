@@ -24,6 +24,8 @@ public class CategoryEditPart extends NodeElementEditPart implements IResizable 
 		Category category = (Category) this.getModel();
 		CategoryFigure figure = new CategoryFigure(category.getName());
 
+		this.changeFont(figure);
+		
 		return figure;
 	}
 

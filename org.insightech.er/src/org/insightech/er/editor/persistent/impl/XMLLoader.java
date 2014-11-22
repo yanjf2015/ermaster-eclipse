@@ -1445,6 +1445,7 @@ public class XMLLoader {
 
 		this.loadLocation(modelProperties, element);
 		this.loadColor(modelProperties, element);
+		this.loadFont(modelProperties, element);
 
 		modelProperties.setDisplay(this.getBooleanValue(element, "display",
 				false));
