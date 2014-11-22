@@ -50,13 +50,13 @@ public class ExportToDDLManager extends AbstractExportManager {
 
 			monitor.subTaskWithCounter("writing drop ddl");
 
-			out.println(ddlCreator.getDropDDL(this.diagram));
+			out.print(ddlCreator.getDropDDL(this.diagram));
 
 			monitor.worked(1);
 
 			monitor.subTaskWithCounter("writing create ddl");
 
-			out.println(ddlCreator.getCreateDDL(this.diagram));
+			out.print(ddlCreator.getCreateDDL(this.diagram));
 
 			monitor.worked(1);
 

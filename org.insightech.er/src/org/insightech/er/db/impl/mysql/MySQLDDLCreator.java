@@ -82,6 +82,31 @@ public class MySQLDDLCreator extends DDLCreator {
 		return postDDL.toString();
 	}
 
+	@Override
+	protected String getUniqueKeyDDL(ERTable table) {
+		StringBuilder ddl = new StringBuilder();
+
+		for (NormalColumn column : table.getExpandedColumns()) {
+			if (column.isUniqueKey()) {
+				ddl.append("," + LF());
+				ddl.append("\t");
+				if (!Check.isEmpty(column.getUniqueKeyName())) {
+					ddl.append("CONSTRAINT ");
+					ddl.append(column.getUniqueKeyName());
+					ddl.append(" ");
+				}
+
+				ddl.append("UNIQUE (");
+				ddl.append(filterName(column.getPhysicalName()));				
+				ddl.append(")");
+			}
+		}
+
+		ddl.append(super.getUniqueKeyDDL(table));
+
+		return ddl.toString();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -143,14 +168,6 @@ public class MySQLDDLCreator extends DDLCreator {
 
 		if (normalColumn.isNotNull()) {
 			ddl.append(" NOT NULL");
-		}
-
-		if (normalColumn.isUniqueKey()) {
-			if (!Check.isEmpty(normalColumn.getUniqueKeyName())) {
-				ddl.append(" CONSTRAINT ");
-				ddl.append(normalColumn.getUniqueKeyName());
-			}
-			ddl.append(" UNIQUE");
 		}
 
 		String constraint = Format.null2blank(normalColumn.getConstraint());
@@ -351,7 +368,6 @@ public class MySQLDDLCreator extends DDLCreator {
 		StringBuilder ddl = new StringBuilder();
 
 		ddl.append("DROP INDEX ");
-		ddl.append(this.getIfExistsOption());
 		ddl.append(filterName(index.getName()));
 		ddl.append(" ON ");
 		ddl.append(filterName(table.getNameWithSchema(this.getDiagram()

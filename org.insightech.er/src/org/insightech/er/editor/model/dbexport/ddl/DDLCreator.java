@@ -85,6 +85,8 @@ public abstract class DDLCreator {
 			ddl.append(this.getDropTablespaces(diagram));
 		}
 
+		ddl.append(LF());
+		
 		return ddl.toString();
 	}
 
@@ -266,6 +268,9 @@ public abstract class DDLCreator {
 		if (this.ddlTarget.createComment) {
 			ddl.append(this.getCreateComment(diagram));
 		}
+		
+		ddl.append(LF());
+		
 		return ddl.toString();
 	}
 
@@ -541,31 +546,7 @@ public abstract class DDLCreator {
 		}
 
 		ddl.append(this.getPrimaryKeyDDL(table));
-
-		List<ComplexUniqueKey> complexUniqueKeyList = table
-				.getComplexUniqueKeyList();
-		for (ComplexUniqueKey complexUniqueKey : complexUniqueKeyList) {
-			ddl.append("," + LF());
-			ddl.append("\t");
-			if (!Check.isEmpty(complexUniqueKey.getUniqueKeyName())) {
-				ddl.append("CONSTRAINT ");
-				ddl.append(complexUniqueKey.getUniqueKeyName());
-				ddl.append(" ");
-			}
-
-			ddl.append("UNIQUE (");
-
-			first = true;
-			for (NormalColumn column : complexUniqueKey.getColumnList()) {
-				if (!first) {
-					ddl.append(", ");
-				}
-				ddl.append(filterName(column.getPhysicalName()));
-				first = false;
-			}
-
-			ddl.append(")");
-		}
+		ddl.append(this.getUniqueKeyDDL(table));
 
 		String constraint = Format.null2blank(table.getConstraint()).trim();
 		if (!"".equals(constraint)) {
@@ -625,6 +606,37 @@ public abstract class DDLCreator {
 		return ddl.toString();
 	}
 
+	protected String getUniqueKeyDDL(ERTable table) {
+		StringBuilder ddl = new StringBuilder();
+
+		List<ComplexUniqueKey> complexUniqueKeyList = table
+				.getComplexUniqueKeyList();
+		for (ComplexUniqueKey complexUniqueKey : complexUniqueKeyList) {
+			ddl.append("," + LF());
+			ddl.append("\t");
+			if (!Check.isEmpty(complexUniqueKey.getUniqueKeyName())) {
+				ddl.append("CONSTRAINT ");
+				ddl.append(complexUniqueKey.getUniqueKeyName());
+				ddl.append(" ");
+			}
+
+			ddl.append("UNIQUE (");
+
+			boolean first = true;
+			for (NormalColumn column : complexUniqueKey.getColumnList()) {
+				if (!first) {
+					ddl.append(", ");
+				}
+				ddl.append(filterName(column.getPhysicalName()));
+				first = false;
+			}
+
+			ddl.append(")");
+		}
+		
+		return ddl.toString();
+	}
+	
 	protected String getPrimaryKeyLength(ERTable table, NormalColumn primaryKey) {
 		return "";
 	}
@@ -859,10 +871,10 @@ public abstract class DDLCreator {
 
 		ddl.append(")" + LF());
 		ddl.append("\tON UPDATE ");
-		ddl.append(filterName(relation.getOnUpdateAction()));
+		ddl.append(relation.getOnUpdateAction());
 		ddl.append(LF());
 		ddl.append("\tON DELETE ");
-		ddl.append(filterName(relation.getOnDeleteAction()));
+		ddl.append(relation.getOnDeleteAction());
 		ddl.append(LF());
 
 		if (this.semicolon) {
