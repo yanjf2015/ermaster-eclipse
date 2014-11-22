@@ -160,7 +160,7 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 				loadImageDescriptor("icons/tables--arrow.png"));
 		reg.put(ImageKey.FIND, loadImageDescriptor("icons/binocular.png"));
 		reg.put(ImageKey.FOREIGN_KEY,
-				loadImageDescriptor("icons/foreign_key.gif"));
+				loadImageDescriptor("icons/foreign_key.png"));
 		reg.put(ImageKey.GRID, loadImageDescriptor("icons/grid.png"));
 		reg.put(ImageKey.GRID_SNAP, loadImageDescriptor("icons/grid-snap.png"));
 		reg.put(ImageKey.GROUP, loadImageDescriptor("icons/group.gif"));
@@ -181,7 +181,7 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 		reg.put(ImageKey.PAGE_SETTING_H, loadImageDescriptor("images/h.png"));
 		reg.put(ImageKey.PAGE_SETTING_V, loadImageDescriptor("images/v.png"));
 		reg.put(ImageKey.PALETTE, loadImageDescriptor("icons/palette.png"));
-		reg.put(ImageKey.PRIMARY_KEY, loadImageDescriptor("icons/pkey.gif"));
+		reg.put(ImageKey.PRIMARY_KEY, loadImageDescriptor("icons/pkey.png"));
 		reg.put(ImageKey.PRINTER, loadImageDescriptor("icons/printer.png"));
 		reg.put(ImageKey.RELATION_1_N,
 				loadImageDescriptor("icons/relation_1_n.gif"));
