@@ -46,7 +46,9 @@ public class FunnyStyleSupport extends AbstractStyleSupport {
 
 		Figure title = new Figure();
 		top.add(title, BorderLayout.TOP);
-		title.setLayoutManager(new FlowLayout());
+		FlowLayout titleLayout = new FlowLayout();
+		titleLayout.setMinorAlignment(FlowLayout.ALIGN_CENTER);
+		title.setLayoutManager(titleLayout);
 
 		ImageFigure image = new ImageFigure();
 		image.setBorder(new MarginBorder(new Insets(5, 10, 5, 2)));

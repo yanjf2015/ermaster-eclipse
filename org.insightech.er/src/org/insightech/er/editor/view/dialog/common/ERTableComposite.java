@@ -12,10 +12,13 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
@@ -41,13 +44,13 @@ public class ERTableComposite extends Composite {
 
 	private static final int DEFAULT_HEIGHT = 200;
 
-	private static final int KEY_WIDTH = 45;
+	// private static final int KEY_WIDTH = 45;
 
 	public static final int NAME_WIDTH = 150;
 
 	private static final int TYPE_WIDTH = 130;
 
-	private static final int NOT_NULL_WIDTH = 90;
+	// private static final int NOT_NULL_WIDTH = 90;
 
 	public static final int UNIQUE_KEY_WIDTH = 90;
 
@@ -140,20 +143,50 @@ public class ERTableComposite extends Composite {
 	private void createTable() {
 		this.table = CompositeFactory.createTable(this, this.height, 3);
 
-		CompositeFactory.createTableColumn(this.table, "PK", KEY_WIDTH,
-				SWT.CENTER);
-		CompositeFactory.createTableColumn(this.table, "FK", KEY_WIDTH,
-				SWT.CENTER);
+		table.addListener(SWT.PaintItem, new Listener() {
+
+			public void handleEvent(Event event) {
+				if (event.index == 0 || event.index == 1) {
+					TableItem tableItem = (TableItem) event.item;
+
+					Image tmpImage = (Image) tableItem.getData(String
+							.valueOf(event.index));
+
+					if (tmpImage != null) {
+						int tmpWidth = tableItem.getBounds(event.index).width;
+						int tmpHeight = tableItem.getBounds().height;
+
+						int tmpX = tmpImage.getBounds().width;
+						tmpX = (tmpWidth / 2 - tmpX / 2);
+						int tmpY = tmpImage.getBounds().height;
+						tmpY = (tmpHeight / 2 - tmpY / 2);
+						if (tmpX <= 0)
+							tmpX = event.x;
+						else
+							tmpX += event.x;
+						if (tmpY <= 0)
+							tmpY = event.y;
+						else
+							tmpY += event.y;
+
+						event.gc.drawImage(tmpImage, tmpX, tmpY);
+					}
+				}
+			}
+		});
+
+		CompositeFactory.createTableColumn(this.table, "PK", -1, SWT.CENTER);
+		CompositeFactory.createTableColumn(this.table, "FK", -1, SWT.CENTER);
 		CompositeFactory.createTableColumn(this.table, "label.physical.name",
 				NAME_WIDTH, SWT.NONE);
 		CompositeFactory.createTableColumn(this.table, "label.logical.name",
 				NAME_WIDTH, SWT.NONE);
 		CompositeFactory.createTableColumn(this.table, "label.column.type",
 				TYPE_WIDTH, SWT.NONE);
-		CompositeFactory.createTableColumn(this.table, "label.not.null",
-				NOT_NULL_WIDTH, SWT.CENTER);
-		CompositeFactory.createTableColumn(this.table, "label.unique.key",
-				UNIQUE_KEY_WIDTH, SWT.CENTER);
+		CompositeFactory.createTableColumn(this.table, "label.not.null", -1,
+				SWT.CENTER);
+		CompositeFactory.createTableColumn(this.table, "label.unique.key", -1,
+				SWT.CENTER);
 
 		this.table.addSelectionListener(new SelectionAdapter() {
 
@@ -355,15 +388,17 @@ public class ERTableComposite extends Composite {
 			NormalColumn normalColumn = (NormalColumn) column;
 
 			if (normalColumn.isPrimaryKey()) {
-				tableItem.setImage(0, ERDiagramActivator.getImage(ImageKey.PRIMARY_KEY));
+				tableItem.setData("0",
+						ERDiagramActivator.getImage(ImageKey.PRIMARY_KEY));
 			} else {
-				tableItem.setImage(0, null);
+				tableItem.setData("0", null);
 			}
 
 			if (normalColumn.isForeignKey()) {
-				tableItem.setImage(1, ERDiagramActivator.getImage(ImageKey.FOREIGN_KEY));
+				tableItem.setData("1",
+						ERDiagramActivator.getImage(ImageKey.FOREIGN_KEY));
 			} else {
-				tableItem.setImage(1, null);
+				tableItem.setData("1", null);
 			}
 
 			tableItem.setText(2,
@@ -381,12 +416,13 @@ public class ERTableComposite extends Composite {
 
 		} else {
 			tableItem.setBackground(ColorConstants.white);
-			tableItem.setImage(0, ERDiagramActivator.getImage(ImageKey.GROUP));
-			tableItem.setImage(1, null);
+			tableItem.setData("0", ERDiagramActivator.getImage(ImageKey.GROUP));
+			tableItem.setData("1", null);
 			tableItem.setText(2, column.getName());
 			tableItem.setText(3, "");
 			tableItem.setText(4, "");
 		}
+
 	}
 
 	private void setTableEditor(final NormalColumn normalColumn,
