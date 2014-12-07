@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
@@ -118,6 +117,8 @@ public class ERTableComposite extends Composite {
 
 		GridData gridData = new GridData();
 		gridData.horizontalSpan = horizontalSpan;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.verticalAlignment = GridData.FILL;
 
 		this.setLayoutData(gridData);
 
@@ -224,6 +225,8 @@ public class ERTableComposite extends Composite {
 				}
 			});
 		}
+
+		this.table.pack();
 	}
 
 	/**
@@ -383,7 +386,7 @@ public class ERTableComposite extends Composite {
 		this.disposeCheckBox(column);
 
 		if (column instanceof NormalColumn) {
-			tableItem.setBackground(ColorConstants.white);
+			// tableItem.setBackground(ColorConstants.white);
 
 			NormalColumn normalColumn = (NormalColumn) column;
 
@@ -415,7 +418,7 @@ public class ERTableComposite extends Composite {
 			this.setTableEditor(normalColumn, tableItem);
 
 		} else {
-			tableItem.setBackground(ColorConstants.white);
+			// tableItem.setBackground(ColorConstants.white);
 			tableItem.setData("0", ERDiagramActivator.getImage(ImageKey.GROUP));
 			tableItem.setData("1", null);
 			tableItem.setText(2, column.getName());
