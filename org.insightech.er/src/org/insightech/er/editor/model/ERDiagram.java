@@ -144,6 +144,9 @@ public class ERDiagram extends ViewableModel {
 	public void addCategory(Category category) {
 		category.setColor(this.defaultColor[0], this.defaultColor[1],
 				this.defaultColor[2]);
+		category.setFontName(this.getFontName());
+		category.setFontSize(this.getFontSize());
+
 		this.getDiagramContents().getSettings().getCategorySetting()
 				.addCategoryAsSelected(category);
 		this.editor.initCategoryPages();
