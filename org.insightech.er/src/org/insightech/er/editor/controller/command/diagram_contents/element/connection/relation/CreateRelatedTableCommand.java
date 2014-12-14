@@ -94,7 +94,10 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 		this.diagram.refreshChildren();
 		this.getTargetModel().refresh();
 		this.getSourceModel().refresh();
-		this.category.refresh();
+
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 
 	/**
@@ -114,7 +117,10 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 		this.diagram.refreshChildren();
 		this.getTargetModel().refresh();
 		this.getSourceModel().refresh();
-		this.category.refresh();
+
+		if (this.category != null) {
+			this.category.refresh();
+		}
 	}
 
 	private void init() {
@@ -154,8 +160,7 @@ public class CreateRelatedTableCommand extends AbstractCreateRelationCommand {
 	protected void addToCategory(NodeElement nodeElement) {
 		if (this.category != null) {
 			this.category.add(nodeElement);
-			Location newLocation = category
-					.getNewCategoryLocation(nodeElement);
+			Location newLocation = category.getNewCategoryLocation(nodeElement);
 
 			if (newLocation != null) {
 				this.newCategoryLocation = newLocation;

@@ -25,6 +25,11 @@ public class View extends TableView implements ObjectModel, ColumnHolder {
 		this.tableViewProperties = new ViewProperties();
 	}
 
+	@Override
+	public TableViewProperties getTableViewProperties() {
+		return this.tableViewProperties;
+	}
+
 	public String getSql() {
 		return sql;
 	}
@@ -71,16 +76,10 @@ public class View extends TableView implements ObjectModel, ColumnHolder {
 
 	}
 
-	/**
-	 * �r���[�𕡐����܂��B<br>
-	 * ����������́A���O��SQL�ƃv���p�e�B�̂݁B<br>
-	 * ��͕����ΏۊO�Ƃ��A�ォ�畡������B<br>
-	 */
 	@Override
 	public View clone() {
 		View clone = (View) super.clone();
 
-		// �v���p�e�B�𕡐����܂��B
 		TableViewProperties cloneViewProperties = this.tableViewProperties
 				.clone();
 		clone.tableViewProperties = cloneViewProperties;

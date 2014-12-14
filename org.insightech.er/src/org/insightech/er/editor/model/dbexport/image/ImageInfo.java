@@ -103,29 +103,31 @@ public class ImageInfo {
 	public void toImageData() throws InterruptedException, IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-		try {
+//		try {
 			this.format = SWT.IMAGE_PNG;
-
+//
 			ImageLoader imgLoader = new ImageLoader();
 			imgLoader.data = new ImageData[] { this.image.getImageData() };
 			imgLoader.save(out, this.format);
+//
+//		} catch (SWTException e) {
+//			if (this.format == SWT.IMAGE_PNG) {
+//				BufferedImage bufferedImage = new BufferedImage(
+//						image.getBounds().width, image.getBounds().height,
+//						BufferedImage.TYPE_INT_RGB);
+//
+//				ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
 
-		} catch (SWTException e) {
-			if (this.format == SWT.IMAGE_PNG) {
-				BufferedImage bufferedImage = new BufferedImage(
-						image.getBounds().width, image.getBounds().height,
-						BufferedImage.TYPE_INT_RGB);
+//				BufferedImage bufferedImage = ImageUtils.convertToBufferedImage(image);
+//				
+//				String formatName = "png";
+//
+//				ImageIO.write(bufferedImage, formatName, out);
 
-				ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
-
-				String formatName = "png";
-
-				ImageIO.write(bufferedImage, formatName, out);
-
-			} else {
-				throw e;
-			}
-		}
+//			} else {
+//				throw e;
+//			}
+//		}
 
 		this.imageData = out.toByteArray();
 	}

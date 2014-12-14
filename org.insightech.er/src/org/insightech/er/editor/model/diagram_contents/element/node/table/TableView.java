@@ -70,21 +70,10 @@ public abstract class TableView extends NodeElement implements ObjectModel,
 		return this.getLogicalName();
 	}
 
-	/**
-	 * description ���擾���܂�.
-	 * 
-	 * @return description
-	 */
 	public String getDescription() {
 		return description;
 	}
 
-	/**
-	 * description ��ݒ肵�܂�.
-	 * 
-	 * @param description
-	 *            description
-	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -93,9 +82,7 @@ public abstract class TableView extends NodeElement implements ObjectModel,
 		return this.columns;
 	}
 
-	public TableViewProperties getTableViewProperties() {
-		return this.tableViewProperties;
-	}
+	public abstract TableViewProperties getTableViewProperties();
 
 	public List<NormalColumn> getExpandedColumns() {
 		List<NormalColumn> expandedColumns = new ArrayList<NormalColumn>();
@@ -377,7 +364,7 @@ public abstract class TableView extends NodeElement implements ObjectModel,
 		TableViewProperties commonTableViewProperties = this.getDiagram()
 				.getDiagramContents().getSettings().getTableViewProperties();
 
-		String schema = this.tableViewProperties.getSchema();
+		String schema = this.getTableViewProperties().getSchema();
 
 		if (schema == null || schema.equals("")) {
 			schema = commonTableViewProperties.getSchema();

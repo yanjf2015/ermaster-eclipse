@@ -10,11 +10,7 @@ import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -253,19 +249,19 @@ public class ExportToImageManager extends AbstractExportManager {
 		File file = FileUtils.getFile(this.projectDir, imageInfo.getPath());
 		file.getParentFile().mkdirs();
 
-		try {
-			ImageLoader imgLoader = new ImageLoader();
-			imgLoader.data = new ImageData[] { img.getImageData() };
-			imgLoader.save(file.getAbsolutePath(), format);
+		// try {
+		// ImageLoader imgLoader = new ImageLoader();
+		// imgLoader.data = new ImageData[] { img.getImageData() };
+		// imgLoader.save(file.getAbsolutePath(), format);
+		//
+		// } catch (SWTException e) {
+		// if (format == SWT.IMAGE_PNG) {
+		writePNGByAnotherWay(img, file.getAbsolutePath(), format);
 
-		} catch (SWTException e) {
-			if (format == SWT.IMAGE_PNG) {
-				writePNGByAnotherWay(img, file.getAbsolutePath(), format);
-
-			} else {
-				throw e;
-			}
-		}
+		// } else {
+		// throw e;
+		// }
+		// }
 	}
 
 	/*
@@ -275,13 +271,15 @@ public class ExportToImageManager extends AbstractExportManager {
 	private static void writePNGByAnotherWay(Image image, String saveFilePath,
 			int format) throws IOException, InterruptedException {
 
-		BufferedImage bufferedImage = new BufferedImage(
-				image.getBounds().width, image.getBounds().height,
-				BufferedImage.TYPE_INT_RGB);
+		// BufferedImage bufferedImage = new BufferedImage(
+		// image.getBounds().width, image.getBounds().height,
+		// BufferedImage.TYPE_INT_RGB);
+		//
+		// ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
 
-		ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
+		BufferedImage bufferedImage = ImageUtils.convertToBufferedImage(image);
 
-		String formatName = "png";
+		String formatName = ImageUtils.toFormatName(format);
 
 		ImageIO.write(bufferedImage, formatName, new File(saveFilePath));
 	}

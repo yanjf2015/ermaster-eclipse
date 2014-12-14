@@ -68,8 +68,8 @@ public class PictureSheetGenerator {
 					new HSSFClientAnchor(), this.pictureIndex);
 
 			Dimension dimension = picture.getImageDimension();
-			float rate = dimension.width / dimension.height;
-			float specifiedRate = width / height;
+			float rate = (float) dimension.width / (float) dimension.height;
+			float specifiedRate = (float) width / (float) height;
 
 			if (width == -1 || height == -1) {
 				width = dimension.width;

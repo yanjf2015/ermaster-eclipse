@@ -120,7 +120,7 @@ public class ExportToExcelManager extends AbstractExportManager {
 				this.exportExcelSetting.getExcelOutput());
 		this.excelFile.getParentFile().mkdirs();
 
-		this.backup(this.excelFile, true);
+		//this.backup(this.excelFile, true);
 
 		InputStream templateStream = null;
 
