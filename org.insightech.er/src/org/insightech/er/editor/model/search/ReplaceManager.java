@@ -285,7 +285,7 @@ public class ReplaceManager {
 					oldTypeData.getDecimal(), oldTypeData.isArray(),
 					oldTypeData.getArrayDimension(), oldTypeData.isUnsigned(),
 					oldTypeData.isZerofill(), oldTypeData.isBinary(),
-					oldTypeData.getArgs());
+					oldTypeData.getArgs(), oldTypeData.isCharSemantics());
 
 			word.setType(word.getType(), newTypeData, database);
 
@@ -312,7 +312,7 @@ public class ReplaceManager {
 					newDecimal, oldTypeData.isArray(),
 					oldTypeData.getArrayDimension(), oldTypeData.isUnsigned(),
 					oldTypeData.isZerofill(), oldTypeData.isBinary(),
-					oldTypeData.getArgs());
+					oldTypeData.getArgs(), oldTypeData.isCharSemantics());
 
 			word.setType(word.getType(), newTypeData, database);
 

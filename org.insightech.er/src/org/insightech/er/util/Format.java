@@ -34,7 +34,7 @@ public class Format {
 							len = getFileSizeStr(typeData.getLength()
 									.longValue());
 						} else {
-							len = String.valueOf(typeData.getLength());
+							len = String.valueOf(typeData.getLength());							
 						}
 
 						type = type.replaceAll("\\(.\\)", "(" + len + ")");
@@ -42,6 +42,10 @@ public class Format {
 					}
 				}
 				
+				if (sqlType.isNeedCharSemantics(database) && typeData.isCharSemantics()) {
+					type = type.replaceAll("\\)", " char)");
+				}
+
 				if (typeData.isArray() && PostgresDBManager.ID.equals(database)) {
 					for (int i = 0; i < typeData.getArrayDimension(); i++) {
 						type += "[]";

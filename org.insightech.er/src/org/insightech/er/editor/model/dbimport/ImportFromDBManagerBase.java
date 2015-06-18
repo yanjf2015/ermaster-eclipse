@@ -132,6 +132,8 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
 
 		public boolean isBinary;
 
+		public boolean charSemantics;
+
 		@Override
 		public String toString() {
 			return "ColumnData [columnName=" + columnName + ", type=" + type
@@ -310,6 +312,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
 		columnData.decimalDegits = columnSet.getInt("DECIMAL_DIGITS");
 		columnData.nullable = columnSet.getInt("NULLABLE");
 		columnData.defaultValue = columnSet.getString("COLUMN_DEF");
+		columnData.charSemantics = columnSet.getInt("CHAR_OCTET_LENGTH") == columnData.size;
 
 		if (columnData.defaultValue != null) {
 			if ("bit".equals(columnData.type)) {
@@ -874,7 +877,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
 
 			TypeData typeData = new TypeData(length, decimal, array,
 					arrayDimension, unsigned, zerofill, columnData.isBinary,
-					args);
+					args, columnData.charSemantics);
 
 			Word word = new Word(columnName, logicalName, sqlType, typeData,
 					description, this.diagram.getDatabase());
@@ -1525,7 +1528,7 @@ public abstract class ImportFromDBManagerBase implements ImportFromDBManager {
 			word = new Word(columnAlias,
 					this.translationResources.translate(columnAlias), null,
 					new TypeData(null, null, false, null, false, false, false,
-							null), null, null);
+							null, false), null, null);
 
 		}
 

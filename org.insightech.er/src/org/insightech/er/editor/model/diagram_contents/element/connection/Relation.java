@@ -11,7 +11,7 @@ import org.insightech.er.editor.model.diagram_contents.element.node.table.column
 import org.insightech.er.editor.model.diagram_contents.element.node.table.unique_key.ComplexUniqueKey;
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.Dictionary;
 
-public class Relation extends ConnectionElement implements Comparable<Relation> {
+public class Relation extends ConnectionElement {
 
 	private static final long serialVersionUID = 4456694342537711599L;
 
@@ -399,10 +399,5 @@ public class Relation extends ConnectionElement implements Comparable<Relation> 
 		Relation clone = (Relation) super.clone();
 
 		return clone;
-	}
-
-	public int compareTo(Relation otherRelation) {
-		return this.getTargetTableView().compareTo(
-				otherRelation.getTargetTableView());
 	}
 }

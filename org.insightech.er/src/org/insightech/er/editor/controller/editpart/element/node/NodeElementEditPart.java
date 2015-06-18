@@ -21,7 +21,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.eclipse.gef.requests.CreateConnectionRequest;
 import org.eclipse.gef.requests.ReconnectRequest;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -57,14 +56,7 @@ public abstract class NodeElementEditPart extends AbstractModelEditPart
 	 */
 	@Override
 	public void deactivate() {
-		this.disposeFont();
 		super.deactivate();
-	}
-
-	protected void disposeFont() {
-		if (this.font != null) {
-			this.font.dispose();
-		}
 	}
 
 	@Override
@@ -109,8 +101,6 @@ public abstract class NodeElementEditPart extends AbstractModelEditPart
 	}
 
 	protected Font changeFont(IFigure figure) {
-		this.disposeFont();
-
 		NodeElement nodeElement = (NodeElement) this.getModel();
 
 		String fontName = nodeElement.getFontName();
@@ -127,8 +117,7 @@ public abstract class NodeElementEditPart extends AbstractModelEditPart
 			nodeElement.setFontSize(fontSize);
 		}
 
-		this.font = new Font(Display.getCurrent(), fontName, fontSize,
-				SWT.NORMAL);
+		this.font = Resources.getFont(fontName, fontSize);
 
 		figure.setFont(this.font);
 

@@ -3,7 +3,9 @@ package org.insightech.er;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Display;
 
 public class Resources {
@@ -76,6 +78,49 @@ public class Resources {
 
 	private static Map<Integer, Color> colorMap = new HashMap<Integer, Color>();
 
+	private static Map<FontInfo, Font> fontMap = new HashMap<FontInfo, Font>();
+
+	private static class FontInfo {
+
+		private String fontName;
+
+		private int fontSize;
+
+		private FontInfo(String fontName, int fontSize) {
+			this.fontName = fontName;
+			this.fontSize = fontSize;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((fontName == null) ? 0 : fontName.hashCode());
+			result = prime * result + fontSize;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FontInfo other = (FontInfo) obj;
+			if (fontName == null) {
+				if (other.fontName != null)
+					return false;
+			} else if (!fontName.equals(other.fontName))
+				return false;
+			if (fontSize != other.fontSize)
+				return false;
+			return true;
+		}
+	}
+
 	public static Color getColor(int[] rgb) {
 		int key = rgb[0] * 1000000 + rgb[1] * 1000 + rgb[2];
 
@@ -97,6 +142,37 @@ public class Resources {
 				color.dispose();
 			}
 		}
+
+		colorMap.clear();
+	}
+
+	public static Font getFont(String fontName, int fontSize) {
+		return getFont(fontName, fontSize, SWT.NORMAL);
+	}
+
+	public static Font getFont(String fontName, int fontSize, int style) {
+		FontInfo fontInfo = new FontInfo(fontName, fontSize);
+
+		Font font = fontMap.get(fontInfo);
+
+		if (font != null) {
+			return font;
+		}
+
+		font = new Font(Display.getCurrent(), fontName, fontSize, style);
+		fontMap.put(fontInfo, font);
+
+		return font;
+	}
+
+	public static void disposeFontMap() {
+		for (Font font : fontMap.values()) {
+			if (!font.isDisposed()) {
+				font.dispose();
+			}
+		}
+
+		fontMap.clear();
 	}
 
 }

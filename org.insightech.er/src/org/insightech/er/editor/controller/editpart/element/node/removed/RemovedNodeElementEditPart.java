@@ -12,7 +12,6 @@ import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
@@ -29,22 +28,6 @@ public abstract class RemovedNodeElementEditPart extends AbstractModelEditPart
 		implements NodeEditPart, DeleteableEditPart {
 
 	private Font font;
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void deactivate() {
-		this.disposeFont();
-
-		super.deactivate();
-	}
-
-	protected void disposeFont() {
-		if (this.font != null) {
-			this.font.dispose();
-		}
-	}
 
 	@Override
 	public void doPropertyChange(PropertyChangeEvent event) {
@@ -72,8 +55,6 @@ public abstract class RemovedNodeElementEditPart extends AbstractModelEditPart
 	}
 
 	protected Font changeFont(IFigure figure) {
-		this.disposeFont();
-
 		RemovedNodeElement removedNodeElement = (RemovedNodeElement) this
 				.getModel();
 
@@ -89,8 +70,7 @@ public abstract class RemovedNodeElementEditPart extends AbstractModelEditPart
 			fontSize = ViewableModel.DEFAULT_FONT_SIZE;
 		}
 
-		this.font = new Font(Display.getCurrent(), fontName, fontSize,
-				SWT.NORMAL);
+		this.font = Resources.getFont(fontName, fontSize);
 
 		figure.setFont(this.font);
 
@@ -123,8 +103,8 @@ public abstract class RemovedNodeElementEditPart extends AbstractModelEditPart
 
 		Point point = new Point(nodeElement.getX(), nodeElement.getY());
 
-		Dimension dimension = new Dimension(nodeElement.getWidth(), nodeElement
-				.getHeight());
+		Dimension dimension = new Dimension(nodeElement.getWidth(),
+				nodeElement.getHeight());
 
 		Dimension minimumSize = this.figure.getMinimumSize();
 		if (dimension.width != -1 && dimension.width < minimumSize.width) {

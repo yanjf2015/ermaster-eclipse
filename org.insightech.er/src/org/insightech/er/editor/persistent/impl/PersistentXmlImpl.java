@@ -1901,6 +1901,9 @@ public class PersistentXmlImpl extends Persistent {
 				.append("</binary>\n");
 		xml.append("\t<args>").append(escape(word.getTypeData().getArgs()))
 				.append("</args>\n");
+		xml.append("\t<char_semantics>")
+				.append(word.getTypeData().isCharSemantics())
+				.append("</char_semantics>\n");
 
 		xml.append("\t<description>").append(escape(word.getDescription()))
 				.append("</description>\n");

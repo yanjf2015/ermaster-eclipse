@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.insightech.er.db.DBManagerFactory;
 import org.insightech.er.db.impl.db2.DB2DBManager;
 import org.insightech.er.db.impl.mysql.MySQLDBManager;
+import org.insightech.er.db.impl.oracle.OracleDBManager;
 import org.insightech.er.editor.model.diagram_contents.not_element.dictionary.TypeData;
 import org.insightech.er.util.Format;
 
@@ -33,6 +34,10 @@ public class SqlType implements Serializable {
 	public static final String SQL_TYPE_ID_INTEGER = "integer";
 
 	public static final String SQL_TYPE_ID_BIG_INT = "bigint";
+
+	public static final String SQL_TYPE_ID_CHAR = "character";
+
+	public static final String SQL_TYPE_ID_VARCHAR = "varchar";
 
 	private static final Pattern NEED_LENGTH_PATTERN = Pattern
 			.compile(".+\\([a-zA-Z][,\\)].*");
@@ -277,6 +282,19 @@ public class SqlType implements Serializable {
 		return false;
 	}
 
+	public boolean isNeedCharSemantics(String database) {
+		if (!OracleDBManager.ID.equals(database)) {
+			return false;
+		}
+
+		if (this.name.startsWith(SQL_TYPE_ID_CHAR)
+				|| this.name.startsWith(SQL_TYPE_ID_VARCHAR)) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public boolean isTimestamp() {
 		if (this.javaClass == Date.class) {
 			return true;
@@ -366,7 +384,7 @@ public class SqlType implements Serializable {
 
 		boolean zerofill = false;
 		int testIntValue = 5;
-		
+
 		int maxIdLength = 37;
 
 		StringBuilder msg = new StringBuilder();
@@ -469,9 +487,10 @@ public class SqlType implements Serializable {
 					msg.append("\tCOL_" + count + " ");
 
 					if (type.isNeedLength(db) && type.isNeedDecimal(db)) {
-						TypeData typeData = new TypeData(Integer.valueOf(testIntValue),
-								Integer.valueOf(testIntValue), false, null, false, false,
-								false, null);
+						TypeData typeData = new TypeData(
+								Integer.valueOf(testIntValue),
+								Integer.valueOf(testIntValue), false, null,
+								false, false, false, null, false);
 
 						str = Format.formatType(type, typeData, db, true);
 
@@ -487,8 +506,9 @@ public class SqlType implements Serializable {
 						}
 
 					} else if (type.isNeedLength(db)) {
-						TypeData typeData = new TypeData(Integer.valueOf(testIntValue), null,
-								false, null, false, false, false, null);
+						TypeData typeData = new TypeData(
+								Integer.valueOf(testIntValue), null, false,
+								null, false, false, false, null, false);
 
 						str = Format.formatType(type, typeData, db, true);
 
@@ -504,8 +524,9 @@ public class SqlType implements Serializable {
 						}
 
 					} else if (type.isNeedDecimal(db)) {
-						TypeData typeData = new TypeData(null, Integer.valueOf(testIntValue),
-								false, null, false, false, false, null);
+						TypeData typeData = new TypeData(null,
+								Integer.valueOf(testIntValue), false, null,
+								false, false, false, null, false);
 
 						str = Format.formatType(type, typeData, db, true);
 

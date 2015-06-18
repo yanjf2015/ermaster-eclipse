@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.insightech.er.ResourceString;
+import org.insightech.er.Resources;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
@@ -81,8 +82,7 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 		filterComposite.setLayout(layout);
 
 		FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
-		Font font = new Font(Display.getCurrent(), fontData.getName(), 7,
-				SWT.NORMAL);
+		Font font = Resources.getFont(fontData.getName(), 7, SWT.NORMAL);
 
 		Label label = new Label(filterComposite, SWT.NONE);
 		label.setText(ResourceString.getResourceString("label.filter"));
@@ -133,13 +133,13 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 	@Override
 	protected void initData() {
 		super.initData();
-		
+
 		this.initializeWordCombo(null);
 	}
 
 	private void setWordData(Word word) {
-		this.setData(word.getPhysicalName(), word.getLogicalName(), word
-				.getType(), word.getTypeData(), word.getDescription());
+		this.setData(word.getPhysicalName(), word.getLogicalName(),
+				word.getType(), word.getTypeData(), word.getDescription());
 	}
 
 	/**
@@ -147,10 +147,10 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 	 */
 	@Override
 	protected void setWordData() {
-		this.setData(this.targetColumn.getPhysicalName(), this.targetColumn
-				.getLogicalName(), this.targetColumn.getType(),
-				this.targetColumn.getTypeData(), this.targetColumn
-						.getDescription());
+		this.setData(this.targetColumn.getPhysicalName(),
+				this.targetColumn.getLogicalName(),
+				this.targetColumn.getType(), this.targetColumn.getTypeData(),
+				this.targetColumn.getDescription());
 
 		this.setWordValue();
 	}
@@ -175,7 +175,7 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 				this.wordCombo.add(name);
 
 			}
-		}		
+		}
 	}
 
 	private void setWordValue() {
@@ -230,17 +230,23 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 		if (this.unsignedCheck != null) {
 			unsigned = this.unsignedCheck.getSelection();
 		}
-		
+
 		boolean zerofill = false;
 
 		if (this.zerofillCheck != null) {
 			zerofill = this.zerofillCheck.getSelection();
 		}
-		
+
 		boolean binary = false;
 
 		if (this.binaryCheck != null) {
 			binary = this.binaryCheck.getSelection();
+		}
+
+		boolean charSemantics = false;
+
+		if (this.charSemanticsRadio != null) {
+			charSemantics = this.charSemanticsRadio.getSelection();
 		}
 
 		String physicalName = physicalNameText.getText();
@@ -257,7 +263,7 @@ public abstract class AbstractColumnDialog extends AbstractWordDialog {
 		SqlType selectedType = SqlType.valueOf(database, typeCombo.getText());
 
 		TypeData typeData = new TypeData(length, decimal, array,
-				arrayDimension, unsigned, zerofill, binary, args);
+				arrayDimension, unsigned, zerofill, binary, args, charSemantics);
 
 		int wordIndex = this.wordCombo.getSelectionIndex();
 

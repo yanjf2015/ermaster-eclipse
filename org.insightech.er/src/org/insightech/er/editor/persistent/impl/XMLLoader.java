@@ -941,7 +941,8 @@ public class XMLLoader {
 						"array_dimension"), this.getBooleanValue(element,
 						"unsigned"), this.getBooleanValue(element, "zerofill"),
 				this.getBooleanValue(element, "binary"), this.getStringValue(
-						element, "args"));
+						element, "args"), this.getBooleanValue(element,
+						"char_semantics"));
 
 		Word word = new Word(Format.null2blank(this.getStringValue(element,
 				"physical_name")), Format.null2blank(this.getStringValue(
@@ -1005,7 +1006,7 @@ public class XMLLoader {
 			word = new Word(this.getStringValue(element, "physical_name"),
 					this.getStringValue(element, "logical_name"),
 					SqlType.valueOfId(type), new TypeData(null, null, false,
-							null, false, false, false, null),
+							null, false, false, false, null, false),
 					this.getStringValue(element, "description"), database);
 
 			word = context.uniqueWordDictionary.getUniqueWord(word);
@@ -1153,8 +1154,8 @@ public class XMLLoader {
 					.getStringValue(element, "output_path")));
 			exportDDLSetting.setSrcFileEncoding(Format.null2blank(this
 					.getStringValue(element, "encoding")));
-			exportDDLSetting.setLineFeed(Format.null2blank(this
-					.getStringValue(element, "line_feed")));
+			exportDDLSetting.setLineFeed(Format.null2blank(this.getStringValue(
+					element, "line_feed")));
 			exportDDLSetting.setOpenAfterSaved(this.getBooleanValue(element,
 					"is_open_after_saved", true));
 

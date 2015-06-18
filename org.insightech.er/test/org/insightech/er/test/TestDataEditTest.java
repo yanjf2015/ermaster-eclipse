@@ -34,7 +34,7 @@ public class TestDataEditTest {
 		table.setPhysicalName("table1");
 		table.setLogicalName("table1");
 		TypeData typeData = new TypeData(null, null, false, null, false, false,
-				false, null);
+				false, null, false);
 
 		Word word1 = new Word("a", "a", SqlType.valueOfId("bigint"), typeData,
 				null, MySQLDBManager.ID);

@@ -70,6 +70,7 @@ public class ERDiagramActivator extends AbstractUIPlugin {
 		Resources.FOREIGN_COLOR.dispose();
 
 		Resources.disposeColorMap();
+		Resources.disposeFontMap();
 
 		plugin = null;
 		super.stop(context);

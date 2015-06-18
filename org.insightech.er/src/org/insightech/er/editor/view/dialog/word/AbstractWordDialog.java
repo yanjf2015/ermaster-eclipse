@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Text;
 import org.insightech.er.common.dialog.AbstractDialog;
 import org.insightech.er.common.widgets.CompositeFactory;
 import org.insightech.er.db.impl.mysql.MySQLDBManager;
+import org.insightech.er.db.impl.oracle.OracleDBManager;
 import org.insightech.er.db.impl.postgres.PostgresDBManager;
 import org.insightech.er.db.sqltype.SqlType;
 import org.insightech.er.editor.model.ERDiagram;
@@ -56,6 +57,10 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 
 	protected Text argsText;
 
+	protected Button byteSemanticsRadio;
+
+	protected Button charSemanticsRadio;
+
 	protected ERDiagram diagram;
 
 	public AbstractWordDialog(Shell parentShell, ERDiagram diagram) {
@@ -83,7 +88,8 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 	}
 
 	protected Composite createRootComposite(Composite parent) {
-		return CompositeFactory.createComposite(parent, this.getCompositeNumColumns(), false);
+		return CompositeFactory.createComposite(parent,
+				this.getCompositeNumColumns(), false);
 	}
 
 	protected int getCompositeNumColumns() {
@@ -148,7 +154,8 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 		if (MySQLDBManager.ID.equals(this.diagram.getDatabase())) {
 			CompositeFactory.filler(composite, 1);
 
-			Composite childComposite = CompositeFactory.createChildComposite(composite, 5, 3);
+			Composite childComposite = CompositeFactory.createChildComposite(
+					composite, 5, 3);
 
 			this.unsignedCheck = CompositeFactory.createCheckbox(this,
 					childComposite, "label.column.unsigned", true);
@@ -164,12 +171,29 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 
 			CompositeFactory.filler(composite, 1);
 
-			childComposite = CompositeFactory.createChildComposite(composite, 5, 3);
+			childComposite = CompositeFactory.createChildComposite(composite,
+					5, 3);
 			CompositeFactory.createLabel(childComposite,
 					"label.column.type.enum.set", 1, -1, true, true);
 			this.argsText = CompositeFactory.createText(this, childComposite,
 					null, 1, false, false);
 			this.argsText.setEnabled(false);
+		}
+
+		if (OracleDBManager.ID.equals(this.diagram.getDatabase())) {
+			CompositeFactory.filler(composite, 1);
+
+			Composite childComposite = CompositeFactory.createChildComposite(
+					composite, 5, 2);
+
+			this.byteSemanticsRadio = CompositeFactory.createRadio(this,
+					childComposite, "label.column.byte", 1, true);
+			this.byteSemanticsRadio.setEnabled(false);
+			this.byteSemanticsRadio.setSelection(true);
+
+			this.charSemanticsRadio = CompositeFactory.createRadio(this,
+					childComposite, "label.column.char");
+			this.charSemanticsRadio.setEnabled(false);
 		}
 
 		this.descriptionText = CompositeFactory.createTextArea(this, composite,
@@ -278,6 +302,12 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 		}
 
 		this.descriptionText.setText(Format.toString(description));
+
+		if (this.byteSemanticsRadio != null) {
+			boolean charSemantics = typeData.isCharSemantics();
+			this.byteSemanticsRadio.setSelection(!charSemantics);
+			this.charSemanticsRadio.setSelection(charSemantics);
+		}
 	}
 
 	protected SqlType getSelectedType() {
@@ -337,6 +367,17 @@ public abstract class AbstractWordDialog extends AbstractDialog {
 					this.argsText.setEnabled(true);
 				} else {
 					this.argsText.setEnabled(false);
+				}
+			}
+
+			if (this.charSemanticsRadio != null) {
+				if (selectedType.isNeedCharSemantics(database)) {
+					this.byteSemanticsRadio.setEnabled(true);
+					this.charSemanticsRadio.setEnabled(true);
+
+				} else {
+					this.byteSemanticsRadio.setEnabled(false);
+					this.charSemanticsRadio.setEnabled(false);
 				}
 			}
 		}

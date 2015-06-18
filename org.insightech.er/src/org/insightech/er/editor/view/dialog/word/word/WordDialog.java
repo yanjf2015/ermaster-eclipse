@@ -89,6 +89,12 @@ public class WordDialog extends AbstractWordDialog {
 			binary = this.binaryCheck.getSelection();
 		}
 
+		boolean charSemantics = false;
+
+		if (this.charSemanticsRadio != null) {
+			charSemantics = this.charSemanticsRadio.getSelection();
+		}
+
 		text = physicalNameText.getText();
 
 		String database = this.diagram.getDatabase();
@@ -101,7 +107,7 @@ public class WordDialog extends AbstractWordDialog {
 		}
 
 		TypeData typeData = new TypeData(length, decimal, array,
-				arrayDimension, unsigned, zerofill, binary, args);
+				arrayDimension, unsigned, zerofill, binary, args, charSemantics);
 
 		this.returnWord = new Word(physicalNameText.getText(),
 				logicalNameText.getText(), selectedType, typeData,

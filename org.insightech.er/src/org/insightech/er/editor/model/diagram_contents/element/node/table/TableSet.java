@@ -21,9 +21,14 @@ public class TableSet extends AbstractModel implements ObjectListModel,
 	public TableSet() {
 		this.tableList = new ArrayList<ERTable>();
 	}
-	
+
 	public void sort() {
 		Collections.sort(this.tableList);
+
+		for (ERTable table : this.tableList) {
+			Collections.sort(table.getOutgoings());
+			Collections.sort(table.getIncomings());
+		}
 	}
 
 	public void add(ERTable table) {

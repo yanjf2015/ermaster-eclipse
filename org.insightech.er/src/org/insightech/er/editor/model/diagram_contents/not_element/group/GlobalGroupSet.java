@@ -73,10 +73,13 @@ public class GlobalGroupSet {
 						boolean binary = Boolean.valueOf(
 								columnSection.get("binary")).booleanValue();
 						String args = columnSection.get("args");
+						boolean charSemantics = Boolean.valueOf(
+								columnSection.get("char_semantics"))
+								.booleanValue();
 
 						TypeData typeData = new TypeData(length, decimal,
 								array, arrayDimension, unsigned, zerofill,
-								binary, args);
+								binary, args, charSemantics);
 
 						Word word = new Word(physicalName, logicalName,
 								sqlType, typeData, description, database);
@@ -152,6 +155,8 @@ public class GlobalGroupSet {
 							null2Blank(normalColumn.getConstraint()));
 					columnSection.put("description",
 							null2Blank(normalColumn.getDescription()));
+					columnSection.put("char_semantics", normalColumn
+							.getTypeData().isCharSemantics());
 
 					columnGroupSection.addSection(columnSection);
 				}

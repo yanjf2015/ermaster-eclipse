@@ -325,8 +325,7 @@ public class CompositeFactory {
 		}
 
 		FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
-		Font font = new Font(Display.getCurrent(), fontData.getName(), 8,
-				SWT.NORMAL);
+		Font font = Resources.getFont(fontData.getName(), 8);
 		label.setFont(font);
 
 		return label;
@@ -490,13 +489,26 @@ public class CompositeFactory {
 
 	public static Button createRadio(AbstractDialog dialog,
 			Composite composite, String title, int span) {
+		return createRadio(dialog, composite, title, span, false);
+	}
+
+	public static Button createRadio(AbstractDialog dialog,
+			Composite composite, String title, int span, boolean indent) {
 		Button radio = new Button(composite, SWT.RADIO);
 		radio.setText(ResourceString.getResourceString(title));
+
+		GridData gridData = new GridData();
+
 		if (span != -1) {
-			GridData gridData = new GridData();
 			gridData.horizontalSpan = span;
-			radio.setLayoutData(gridData);
 		}
+
+		if (indent) {
+			gridData.horizontalIndent = Resources.INDENT;
+		}
+
+		radio.setLayoutData(gridData);
+
 		ListenerAppender.addCheckBoxListener(radio, dialog);
 
 		return radio;

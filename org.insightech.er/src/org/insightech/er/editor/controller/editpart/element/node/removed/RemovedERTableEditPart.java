@@ -4,8 +4,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Display;
 import org.insightech.er.ERDiagramActivator;
+import org.insightech.er.Resources;
 import org.insightech.er.editor.controller.editpart.element.node.IResizable;
 import org.insightech.er.editor.controller.editpart.element.node.TableViewEditPart;
 import org.insightech.er.editor.model.ERDiagram;
@@ -83,22 +83,12 @@ public class RemovedERTableEditPart extends RemovedNodeElementEditPart
 		super.changeSettings(settings);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void disposeFont() {
-		if (this.titleFont != null) {
-			this.titleFont.dispose();
-		}
-	}
-
 	private Font changeFont(TableFigure tableFigure) {
 		Font font = super.changeFont(tableFigure);
 
 		FontData fonDatat = font.getFontData()[0];
 
-		this.titleFont = new Font(Display.getCurrent(), fonDatat.getName(),
+		this.titleFont = Resources.getFont(fonDatat.getName(),
 				fonDatat.getHeight(), SWT.BOLD);
 
 		tableFigure.setFont(font, this.titleFont);
@@ -114,8 +104,8 @@ public class RemovedERTableEditPart extends RemovedNodeElementEditPart
 
 		tableFigure.clearColumns();
 
-		TableViewEditPart.showRemovedColumns(diagram, tableFigure, table
-				.getColumns(), false);
+		TableViewEditPart.showRemovedColumns(diagram, tableFigure,
+				table.getColumns(), false);
 	}
 
 	/**

@@ -120,7 +120,7 @@ public class ExportToExcelManager extends AbstractExportManager {
 				this.exportExcelSetting.getExcelOutput());
 		this.excelFile.getParentFile().mkdirs();
 
-		//this.backup(this.excelFile, true);
+		// this.backup(this.excelFile, true);
 
 		InputStream templateStream = null;
 
@@ -306,7 +306,7 @@ public class ExportToExcelManager extends AbstractExportManager {
 					if (this.pictureSheetGenerator != null) {
 						this.pictureSheetGenerator.setImage(workbook, sheet);
 					}
-					
+
 					if (this.sheetIndexSheetGenerator.getTemplateSheetName()
 							.equals(templateSheetName)) {
 						sheetIndexSheetNo = workbook.getNumberOfSheets()
@@ -381,29 +381,6 @@ public class ExportToExcelManager extends AbstractExportManager {
 		}
 
 		return count;
-	}
-
-	private boolean backup(File file, boolean isBackupEnable)
-			throws IOException {
-		if (!isBackupEnable || !file.exists()) {
-			return true;
-		}
-
-		String path;
-		try {
-			path = file.getCanonicalPath();
-
-			String backupFilePath = path.substring(0, path.indexOf(".xls"))
-					+ "_back.xls";
-			File backupFile = new File(backupFilePath);
-			FileUtils.copyFile(file, backupFile);
-
-		} catch (IOException e) {
-			throw new IOException(
-					ResourceString.getResourceString("error.backup.excel.file"));
-		}
-
-		return true;
 	}
 
 	private boolean isExcludeTarget(String templateSheetName) {

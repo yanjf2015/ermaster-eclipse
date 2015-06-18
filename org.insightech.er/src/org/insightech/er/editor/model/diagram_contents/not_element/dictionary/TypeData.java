@@ -15,15 +15,18 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 	private Integer arrayDimension;
 
 	private boolean unsigned;
-	
+
 	private boolean zerofill;
-	
+
 	private boolean binary;
+
+	private boolean charSemantics;
 
 	private String args;
 
 	public TypeData(Integer length, Integer decimal, boolean array,
-			Integer arrayDimension, boolean unsigned, boolean zerofill, boolean binary, String args) {
+			Integer arrayDimension, boolean unsigned, boolean zerofill,
+			boolean binary, String args, boolean charSemantics) {
 		super();
 		this.length = length;
 		this.decimal = decimal;
@@ -33,6 +36,7 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 		this.zerofill = zerofill;
 		this.binary = binary;
 		this.args = args;
+		this.charSemantics = charSemantics;
 	}
 
 	public Integer getLength() {
@@ -97,6 +101,14 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 
 	public void setArgs(String args) {
 		this.args = args;
+	}
+
+	public boolean isCharSemantics() {
+		return charSemantics;
+	}
+
+	public void setCharSemantics(boolean charSemantics) {
+		this.charSemantics = charSemantics;
 	}
 
 	public int compareTo(TypeData o) {
@@ -177,7 +189,7 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 				return -1;
 			}
 		}
-		
+
 		if (this.args == null) {
 			if (o.args != null) {
 				return 1;
@@ -191,7 +203,15 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 				return value;
 			}
 		}
-		
+
+		if (this.charSemantics != o.charSemantics) {
+			if (this.charSemantics) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+
 		return 0;
 	}
 
@@ -219,6 +239,7 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 		result = prime * result + (unsigned ? 1231 : 1237);
 		result = prime * result + (zerofill ? 1231 : 1237);
 		result = prime * result + (binary ? 1231 : 1237);
+		result = prime * result + (charSemantics ? 1231 : 1237);
 		return result;
 	}
 
@@ -258,6 +279,8 @@ public class TypeData implements Serializable, Cloneable, Comparable<TypeData> {
 		if (zerofill != other.zerofill)
 			return false;
 		if (binary != other.binary)
+			return false;
+		if (charSemantics != other.charSemantics)
 			return false;
 		return true;
 	}

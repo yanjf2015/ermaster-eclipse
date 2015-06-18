@@ -710,7 +710,7 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 											.getArrayDimension(), oldTypeData
 											.isUnsigned(), oldTypeData
 											.isZerofill(), oldTypeData
-											.isBinary(), oldTypeData.getArgs());
+											.isBinary(), oldTypeData.getArgs(), oldTypeData.isCharSemantics());
 
 							word.setType(word.getType(), newTypeData, database);
 						}
@@ -743,7 +743,8 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 									oldTypeData.isUnsigned(),
 									oldTypeData.isZerofill(),
 									oldTypeData.isBinary(),
-									oldTypeData.getArgs());
+									oldTypeData.getArgs(),
+									oldTypeData.isCharSemantics());
 
 							word.setType(word.getType(), newTypeData, database);
 						}
@@ -794,11 +795,6 @@ public class EditAllAttributesDialog extends AbstractDialog implements
 		}
 	}
 
-	/**
-	 * diagramContents ���擾���܂�.
-	 * 
-	 * @return diagramContents
-	 */
 	public DiagramContents getDiagramContents() {
 		return this.copyContents;
 	}

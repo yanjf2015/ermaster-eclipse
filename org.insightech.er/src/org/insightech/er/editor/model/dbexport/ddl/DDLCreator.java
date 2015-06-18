@@ -1185,7 +1185,7 @@ public abstract class DDLCreator {
 	}
 
 	protected String LF(int num) {
-		String lf = System.lineSeparator();
+		String lf = System.getProperty("line.separator");
 
 		if (ExportDDLSetting.LF.equals(this.lineFeedCode)) {
 			lf = "\n";

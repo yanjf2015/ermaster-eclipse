@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.insightech.er.editor.model.AbstractModel;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
+import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
 
-public abstract class ConnectionElement extends AbstractModel {
+public abstract class ConnectionElement extends AbstractModel implements
+		Comparable<ConnectionElement> {
 
 	private static final long serialVersionUID = -5418951773059063716L;
 
@@ -33,6 +35,58 @@ public abstract class ConnectionElement extends AbstractModel {
 		this.targetYp = -1;
 
 		this.setColor(0, 0, 0);
+	}
+
+	public int compareTo(ConnectionElement other) {
+		NodeElement source1 = this.getSource();
+		NodeElement source2 = other.getSource();
+
+		if (source1 != source2) {
+			if (source1 == null) {
+				return 1;
+			}
+			if (source2 == null) {
+				return -1;
+			}
+
+			if (!(source1 instanceof TableView)) {
+				return 1;
+			}
+			if (!(source2 instanceof TableView)) {
+				return -1;
+			}
+
+			TableView tableView1 = (TableView) source1;
+			TableView tableView2 = (TableView) source2;
+
+			return tableView1.compareTo(tableView2);
+		}
+
+		NodeElement target1 = this.getTarget();
+		NodeElement target2 = other.getTarget();
+
+		if (target1 != target2) {
+			if (target1 == null) {
+				return 1;
+			}
+			if (target2 == null) {
+				return -1;
+			}
+
+			if (!(target1 instanceof TableView)) {
+				return 1;
+			}
+			if (!(target2 instanceof TableView)) {
+				return -1;
+			}
+
+			TableView tableView1 = (TableView) target1;
+			TableView tableView2 = (TableView) target2;
+
+			return tableView1.compareTo(tableView2);
+		}
+
+		return 0;
 	}
 
 	public NodeElement getSource() {

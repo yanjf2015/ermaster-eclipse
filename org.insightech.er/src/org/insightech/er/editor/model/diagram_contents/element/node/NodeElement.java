@@ -1,6 +1,7 @@
 package org.insightech.er.editor.model.diagram_contents.element.node;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.insightech.er.editor.model.ERDiagram;
@@ -150,6 +151,10 @@ public abstract class NodeElement extends ViewableModel implements ObjectModel {
 		}
 	}
 
+	public void sortRelations() {
+		Collections.sort(this.incomings);
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

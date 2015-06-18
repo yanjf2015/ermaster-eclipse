@@ -51,11 +51,12 @@ public class InsertedImageEditPart extends NodeElementEditPart implements
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void disposeFont() {
+	public void deactivate() {
+		super.deactivate();
+
 		if (this.image != null && !this.image.isDisposed()) {
 			this.image.dispose();
 		}
-		super.disposeFont();
 	}
 
 	/**

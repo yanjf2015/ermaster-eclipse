@@ -353,7 +353,7 @@ public class ExportToDDLDialog extends AbstractExportDialog {
 			this.lineFeedCombo.setText(exportDDLSetting.getLineFeed());
 			
 		} else {
-			if ("\n".equals(System.lineSeparator())) {
+			if ("\n".equals(System.getProperty("line.separator"))) {
 				this.lineFeedCombo.setText(ExportDDLSetting.LF);
 			} else {
 				this.lineFeedCombo.setText(ExportDDLSetting.CRLF);

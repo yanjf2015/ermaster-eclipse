@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.insightech.er.editor.model.dbimport.ImportFromDBManagerEclipseBase;
+import org.insightech.er.util.Check;
 
 public class SqlServerTableImportManager extends ImportFromDBManagerEclipseBase {
 
@@ -75,7 +76,13 @@ public class SqlServerTableImportManager extends ImportFromDBManagerEclipseBase 
 
 	@Override
 	protected String getTableNameWithSchema(String schema, String tableName) {
-		return "[" + super.getTableNameWithSchema(schema, tableName) + "]";
+		if (!Check.isEmpty(schema)) {
+			schema = "[" + schema + "]";
+		}
+
+		tableName = "[" + tableName + "]";
+
+		return super.getTableNameWithSchema(schema, tableName);
 	}
 
 }

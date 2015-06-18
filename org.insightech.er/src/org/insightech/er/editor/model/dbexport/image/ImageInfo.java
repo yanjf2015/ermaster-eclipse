@@ -1,12 +1,9 @@
 package org.insightech.er.editor.model.dbexport.image;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.imageio.ImageIO;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.eclipse.draw2d.Graphics;
@@ -20,7 +17,6 @@ import org.eclipse.gef.editparts.LayerManager;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.SimpleRootEditPart;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -36,7 +32,6 @@ import org.insightech.er.editor.model.diagram_contents.element.node.Location;
 import org.insightech.er.editor.model.diagram_contents.element.node.NodeElement;
 import org.insightech.er.editor.model.diagram_contents.element.node.category.Category;
 import org.insightech.er.editor.model.diagram_contents.element.node.table.TableView;
-import org.insightech.er.util.ImageUtils;
 
 public class ImageInfo {
 
@@ -103,31 +98,32 @@ public class ImageInfo {
 	public void toImageData() throws InterruptedException, IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-//		try {
-			this.format = SWT.IMAGE_PNG;
-//
-			ImageLoader imgLoader = new ImageLoader();
-			imgLoader.data = new ImageData[] { this.image.getImageData() };
-			imgLoader.save(out, this.format);
-//
-//		} catch (SWTException e) {
-//			if (this.format == SWT.IMAGE_PNG) {
-//				BufferedImage bufferedImage = new BufferedImage(
-//						image.getBounds().width, image.getBounds().height,
-//						BufferedImage.TYPE_INT_RGB);
-//
-//				ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
+		// try {
+		this.format = SWT.IMAGE_PNG;
+		//
+		ImageLoader imgLoader = new ImageLoader();
+		imgLoader.data = new ImageData[] { this.image.getImageData() };
+		imgLoader.save(out, this.format);
+		//
+		// } catch (SWTException e) {
+		// if (this.format == SWT.IMAGE_PNG) {
+		// BufferedImage bufferedImage = new BufferedImage(
+		// image.getBounds().width, image.getBounds().height,
+		// BufferedImage.TYPE_INT_RGB);
+		//
+		// ImageUtils.drawAtBufferedImage(bufferedImage, image, 0, 0);
 
-//				BufferedImage bufferedImage = ImageUtils.convertToBufferedImage(image);
-//				
-//				String formatName = "png";
-//
-//				ImageIO.write(bufferedImage, formatName, out);
+		// BufferedImage bufferedImage =
+		// ImageUtils.convertToBufferedImage(image);
+		//
+		// String formatName = "png";
+		//
+		// ImageIO.write(bufferedImage, formatName, out);
 
-//			} else {
-//				throw e;
-//			}
-//		}
+		// } else {
+		// throw e;
+		// }
+		// }
 
 		this.imageData = out.toByteArray();
 	}

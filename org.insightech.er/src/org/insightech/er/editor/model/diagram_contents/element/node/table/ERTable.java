@@ -255,21 +255,10 @@ public class ERTable extends TableView implements TablePropertiesHolder,
 		return clone;
 	}
 
-	/**
-	 * constraint ���擾���܂�.
-	 * 
-	 * @return constraint
-	 */
 	public String getConstraint() {
 		return constraint;
 	}
 
-	/**
-	 * constraint ��ݒ肵�܂�.
-	 * 
-	 * @param constraint
-	 *            constraint
-	 */
 	public void setConstraint(String constraint) {
 		this.constraint = constraint;
 	}
@@ -314,15 +303,16 @@ public class ERTable extends TableView implements TablePropertiesHolder,
 		ComplexUniqueKey referencedComplexUniqueKey = null;
 		NormalColumn referencedColumn = null;
 		boolean notNull = false;
-		
+
 		if (this.getPrimaryKeySize() > 0) {
 			referenceForPK = true;
 			notNull = true;
-			
+
 		} else if (this.getComplexUniqueKeyList().size() > 0) {
 			referencedComplexUniqueKey = this.getComplexUniqueKeyList().get(0);
-			notNull = referencedComplexUniqueKey.getColumnList().get(0).isNotNull();
-			
+			notNull = referencedComplexUniqueKey.getColumnList().get(0)
+					.isNotNull();
+
 		} else {
 			for (NormalColumn normalColumn : this.getNormalColumns()) {
 				if (normalColumn.isUniqueKey()) {

@@ -9,7 +9,7 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Display;
+import org.insightech.er.Resources;
 import org.insightech.er.editor.controller.editpart.element.node.column.ColumnEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.column.GroupColumnEditPart;
 import org.insightech.er.editor.controller.editpart.element.node.column.NormalColumnEditPart;
@@ -151,23 +151,12 @@ public abstract class TableViewEditPart extends NodeElementEditPart implements
 		super.refreshSettings(settings);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void disposeFont() {
-		if (this.titleFont != null) {
-			this.titleFont.dispose();
-		}
-		super.disposeFont();
-	}
-
 	protected Font changeFont(TableFigure tableFigure) {
 		Font font = super.changeFont(tableFigure);
 
 		FontData fonData = font.getFontData()[0];
 
-		this.titleFont = new Font(Display.getCurrent(), fonData.getName(),
+		this.titleFont = Resources.getFont(fonData.getName(),
 				fonData.getHeight(), SWT.BOLD);
 
 		tableFigure.setFont(font, this.titleFont);
